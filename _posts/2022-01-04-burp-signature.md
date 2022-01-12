@@ -8,16 +8,65 @@ description: Many mobile applications include signatures for requests nowadays, 
 
 CSTC: [The only tool you will need.](https://github.com/usdAG/cstc)
 
-## 1. What is signature
-Signing is a process which makes requests more secure since it provides the following:
+## 1. Why even include a signature:
+When:
+- The request is already transported through HTTPS.
+- The request already contains an Authorization header or some forms of token.
 
-Identity verification of the requester: The signature used to verify a request is created from a secret key, which enables you to check the identity of the person who sends the request.
+Both of the above mechanisms are implemented to protect API security, but none of them fully guarantees the <span style="color:#e5202a">integrity</span> of the request or that  the request is not <span style="color:#e5202a">replayable/repeatable</span> (pain to both hacker and tester :rofl:).
 
-In-transit data protection: To prevent a request from being tampered with while in transit, some of its elements are used to calculate a hash of the request. The result of this hash, which is the signature, is included in the request. When the server receives the request, it uses the same information to recalculate the signature and matches it against yours. If the signatures match, the server processes your request. Otherwise, your request is denied.
+By using HTTPS, tampering can be prevented during transit but it cannot be assumed that the request was `not sniffed and modified by the attacker`:
+- Before the request is HTTPS encrypted (at the client side by another malicious (or not) software).
+- At the server side, by a sniffer placed between the HTTPS endpoint and the actual server. For this case, the HTTPS encryption/ decryption process is handled by a load balancer or a reverse proxy, so there is a possibility for sniffing traffic between those two servers.
 
-Protection against replay attacks: In general, a request must reach the server within five minutes of the timestamp specified in the request. Otherwise, your request is denied.
+## 2. Components of a signature:
+How to create a signature is fully dependent on the developer, but most of the applications out there follow [this IETF standard](https://tools.ietf.org/id/draft-cavage-http-signatures-08.html#rfc.section.2.1).
 
-To sign a request, you first need to use a cryptographic hash function (HMAC) to calculate a hash of the request. You then need to use the value of this hash, your secret key and other information to calculate another hash whose result is the signature. Finally, you add the signature to the request, either in the HTTP Authorization header or as a value in the query string. In that last case, the signature is part of the URL, which becomes a pre-signed URL. For more information about the creation process of a signature, see the Creation of a Signature section below.
+Belows is an example of a request containing signature, based on a real Android app:
+
+```http
+POST /api/checkversion HTTP/2
+Host: api.heckintosh.vn
+User-Agent: Dart/2.12 (dart:io)
+Accept-Encoding: gzip, deflate
+Content-Length: 81
+Authorization: Bearer 31337
+Signature: keyId=key-heckintosh,created=1627309524,signature=Krn2pycuWCjeKMB9Cl402rujedZrVF/jKTwjUuTl5Ew=
+Digest: SXlPjVeb52yWclhgo9/rDRYnekneXSerRPfUGr54UGM=
+Content-Type: application/json; charset=utf-8
+Connection: close
+
+{"AccountName":"heckintosh","Version":"1.0.0"}
+```
+
+These elements together contribute to building the `Signature` (header) in the above example:
+- `keyId`: A string for the server to look up the component they need to validate the signature. 
+- `secretkey`: A secret key 
+- `created`: Unix time on which the request is created.
+- `Authorization`: a token for authentication (JWT typically but i'm lazy to generate one).
+- `Digest`: B64 encoded body of the request.
+- `signature`: This parameter is a b64 encoded digital signature. The client uses an algorithm and a <span style="color:#e5202a">sign pattern</span> (consists of a list of concatenated value that developers choose) to form a  <span style="color:#e5202a">signing string</span>. This <span style="color:#e5202a">signing string</span> is then signed with the secret key associated with keyId and the algorithm. The signature parameter is then set to the b64 of the signature.
+
+These elements are combined through the following steps:
+```python
+    keyId = "key-heckintosh"
+    secretkey = "cf1337cd-a133-1337-acac-a337bece1337"
+    created = int(time.time())
+    digest = base64.b64encode(request_body)
+    auth = "31337"
+    sign_pattern = "keyId = {}, digest = {}, created = {},  auth = {}".format(keyId, digest, created, auth)
+    signature = HMAC256(sign_pattern, secret_key)
+    Signature = "keyId = {}, created={}, signature={}".format(keyId, created, signature)
+```
+
+
+## 3. 
+
+## 1. HTTP Requests in Signature
+
+Digital signatures are widely used to provide authentication and integrity assurances without the need for shared secrets. They also do not require a round-trip in order to authenticate the client, and allow the integrity of a message to be verified independently of the transport (e.g. TLS). A server need only have an understanding of the key (e.g. through a mapping between the key being used to sign the content and the authorized entity) to verify that a message was signed by that entity.
+
+When optionally combined with asymmetric keys associated with an identity, this specification can also enable authentication of a client and server with or without prior knowledge of each other.
 
 ## 1. Unsubscribe from irrelevant emails
 

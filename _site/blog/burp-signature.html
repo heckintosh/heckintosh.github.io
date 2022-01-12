@@ -57,7 +57,8 @@
   </button>
 
   <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-    <div class="navbar-nav ml-auto"><a class="nav-item nav-link " href="/about/">About</a>
+    <div class="navbar-nav ml-auto">
+<a class="nav-item nav-link " href="/about/">About</a>
 
       <a class="nav-item nav-link " href="/projects/">Projects</a>
 
@@ -77,7 +78,7 @@
 
 <p class="post-metadata text-muted">
   04 January 2022 -  
-  <b>6 mins read time</b>
+  <b>8 mins read time</b>
 
   <br>Tags: 
     
@@ -92,17 +93,74 @@
 
 <p>CSTC: <a href="https://github.com/usdAG/cstc">The only tool you will need.</a></p>
 
-<p>Signing is a process which makes requests more secure.</p>
+<h2 id="1-why-even-include-a-signature">1. Why even include a signature:</h2>
+<p>When:</p>
+<ul>
+  <li>The request is already transported through HTTPS.</li>
+  <li>The request already contains an Authorization header or some forms of token.</li>
+</ul>
 
-<p>The signing process makes requests more secure as it provides the following:</p>
+<p>Both of the above mechanisms are implemented to protect API security, but none of them fully guarantees the <span style="color:#e5202a">integrity</span> of the request or that  the request is not <span style="color:#e5202a">replayable/repeatable</span> (pain to both hacker and tester <img class="emoji" title=":rofl:" alt=":rofl:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f923.png" height="20" width="20">).</p>
 
-<p>Identity verification of the requester: The signature used to authenticate the request is created from an access key, which enables you to check the identity of the person who sends the request. For more information about access keys, see About Access Keys.</p>
+<p>By using HTTPS, tampering can be prevented during transit but it cannot be assumed that the request was <code class="language-plaintext highlighter-rouge">not sniffed and modified by the attacker</code>:</p>
+<ul>
+  <li>Before the request is HTTPS encrypted (at the client side by another malicious (or not) software).</li>
+  <li>At the server side, by a sniffer placed between the HTTPS endpoint and the actual server. For this case, the HTTPS encryption/ decryption process is handled by a load balancer or a reverse proxy, so there is a possibility for sniffing traffic between those two servers.</li>
+</ul>
 
-<p>In-transit data protection: To prevent a request from being tampered with while in transit, some of its elements are used to calculate a hash of the request. The result of this hash, which is the signature, is included in the request. When 3DS OUTSCALE receives your request, it uses the same information to recalculate the signature and matches it against yours. If the signatures match, 3DS OUTSCALE processes your request. Otherwise, your request is denied.</p>
+<h2 id="2-components-of-a-signature">2. Components of a signature:</h2>
+<p>How to create a signature is fully dependent on the developer, but most of the applications out there follow <a href="https://tools.ietf.org/id/draft-cavage-http-signatures-08.html#rfc.section.2.1">this IETF standard</a>.</p>
 
-<p>Protection against replay attacks: In general, a request must reach 3DS OUTSCALE within five minutes of the timestamp specified in the request. Otherwise, your request is denied.</p>
+<p>Belows is an example of a request containing signature, based on a real Android app:</p>
 
-<p>To sign a request, you first need to use a cryptographic hash function (HMAC) to calculate a hash of the request. You then need to use the value of this hash, your secret key and other information to calculate another hash whose result is the signature. Finally, you add the signature to the request, either in the HTTP Authorization header or as a value in the query string. In that last case, the signature is part of the URL, which becomes a pre-signed URL. For more information about the creation process of a signature, see the Creation of a Signature section below.</p>
+<div class="language-http highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">POST</span> <span class="nn">/api/checkversion</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">2</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">api.heckintosh.vn</span>
+<span class="na">User-Agent</span><span class="p">:</span> <span class="s">Dart/2.12 (dart:io)</span>
+<span class="na">Accept-Encoding</span><span class="p">:</span> <span class="s">gzip, deflate</span>
+<span class="na">Content-Length</span><span class="p">:</span> <span class="s">81</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer 31337</span>
+<span class="na">Signature</span><span class="p">:</span> <span class="s">keyId=key-heckintosh,created=1627309524,signature=Krn2pycuWCjeKMB9Cl402rujedZrVF/jKTwjUuTl5Ew=</span>
+<span class="na">Digest</span><span class="p">:</span> <span class="s">SXlPjVeb52yWclhgo9/rDRYnekneXSerRPfUGr54UGM=</span>
+<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json; charset=utf-8</span>
+<span class="na">Connection</span><span class="p">:</span> <span class="s">close</span>
+
+<span class="p">{</span><span class="nl">"AccountName"</span><span class="p">:</span><span class="s2">"heckintosh"</span><span class="p">,</span><span class="nl">"Version"</span><span class="p">:</span><span class="s2">"1.0.0"</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>These elements together contribute to building the <code class="language-plaintext highlighter-rouge">Signature</code> (header) in the above example:</p>
+<ul>
+  <li>
+<code class="language-plaintext highlighter-rouge">keyId</code>: A string for the server to look up the component they need to validate the signature.</li>
+  <li>
+<code class="language-plaintext highlighter-rouge">secretkey</code>: A secret key</li>
+  <li>
+<code class="language-plaintext highlighter-rouge">created</code>: Unix time on which the request is created.</li>
+  <li>
+<code class="language-plaintext highlighter-rouge">Authorization</code>: a token for authentication (JWT typically but i’m lazy to generate one).</li>
+  <li>
+<code class="language-plaintext highlighter-rouge">Digest</code>: B64 encoded body of the request.</li>
+  <li>
+<code class="language-plaintext highlighter-rouge">signature</code>: This parameter is a b64 encoded digital signature. The client uses an algorithm and a <span style="color:#e5202a">sign pattern</span> (consists of a list of concatenated value that developers choose) to form a  <span style="color:#e5202a">signing string</span>. This <span style="color:#e5202a">signing string</span> is then signed with the secret key associated with keyId and the algorithm. The signature parameter is then set to the b64 of the signature.</li>
+</ul>
+
+<p>These elements are combined through the following steps:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="n">keyId</span> <span class="o">=</span> <span class="s">"key-heckintosh"</span>
+    <span class="n">secretkey</span> <span class="o">=</span> <span class="s">"cf1337cd-a133-1337-acac-a337bece1337"</span>
+    <span class="n">created</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">())</span>
+    <span class="n">digest</span> <span class="o">=</span> <span class="n">base64</span><span class="p">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">request_body</span><span class="p">)</span>
+    <span class="n">auth</span> <span class="o">=</span> <span class="s">"31337"</span>
+    <span class="n">sign_pattern</span> <span class="o">=</span> <span class="s">"keyId = {}, digest = {}, created = {},  auth = {}"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">keyId</span><span class="p">,</span> <span class="n">digest</span><span class="p">,</span> <span class="n">created</span><span class="p">,</span> <span class="n">auth</span><span class="p">)</span>
+    <span class="n">signature</span> <span class="o">=</span> <span class="n">HMAC256</span><span class="p">(</span><span class="n">sign_pattern</span><span class="p">,</span> <span class="n">secret_key</span><span class="p">)</span>
+    <span class="n">Signature</span> <span class="o">=</span> <span class="s">"keyId = {}, created={}, signature={}"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">keyId</span><span class="p">,</span> <span class="n">created</span><span class="p">,</span> <span class="n">signature</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="3">3.</h2>
+
+<h2 id="1-http-requests-in-signature">1. HTTP Requests in Signature</h2>
+
+<p>Digital signatures are widely used to provide authentication and integrity assurances without the need for shared secrets. They also do not require a round-trip in order to authenticate the client, and allow the integrity of a message to be verified independently of the transport (e.g. TLS). A server need only have an understanding of the key (e.g. through a mapping between the key being used to sign the content and the authorized entity) to verify that a message was signed by that entity.</p>
+
+<p>When optionally combined with asymmetric keys associated with an identity, this specification can also enable authentication of a client and server with or without prior knowledge of each other.</p>
 
 <h2 id="1-unsubscribe-from-irrelevant-emails">1. Unsubscribe from irrelevant emails</h2>
 
@@ -139,9 +197,9 @@
 <p>One of my favorite features on my phone is Do Not Disturb. It allows you to silence all non-critical notifications for an indefinite amount of time. This is what I use when I’m working on school work, personal projects, or even this article. On both iOS and Android, you’re given fairly granular control over what is considered critical so you can pick and choose what is worth the focus lost from a distraction.</p>
 
 <figure class="figure w-100">
-  <img src="https://cdn-images-1.medium.com/max/1000/0*MAeS-4fEc0Y7T4VB.jpg" class="figure-img img-fluid rounded" alt="iOS" /><figcaption class="figure-caption text-center">iOS</figcaption></figure>
+  <img src="https://cdn-images-1.medium.com/max/1000/0*MAeS-4fEc0Y7T4VB.jpg" class="figure-img img-fluid rounded" alt="iOS"><figcaption class="figure-caption text-center">iOS</figcaption></figure>
 <figure class="figure w-100">
-  <img src="https://cdn-images-1.medium.com/max/1000/0*nF_H2-8oTY7C0a54.png" class="figure-img img-fluid rounded" alt="Android" /><figcaption class="figure-caption text-center">Android</figcaption></figure>
+  <img src="https://cdn-images-1.medium.com/max/1000/0*nF_H2-8oTY7C0a54.png" class="figure-img img-fluid rounded" alt="Android"><figcaption class="figure-caption text-center">Android</figcaption></figure>
 
 <p>Apple and Google also fairly recently rolled out time management tools which allow the user to be restricted from certain applications after a given amount of use. This really helps to add an extra layer of discipline if you’re trying to build the habit of using your phone less.</p>
 
@@ -161,29 +219,19 @@
     by <strong>heckintosh</strong>
   </small>
 
-  <div class="container-fluid justify-content-center"><a class="social mx-1"  href="mailto:heckintosh@protonmail.com"
-       style="color: #6c757d"
-       onMouseOver="this.style.color='#db4437'"
-       onMouseOut="this.style.color='#6c757d'">
+  <div class="container-fluid justify-content-center">
+<a class="social mx-1" href="mailto:heckintosh@protonmail.com" style="color: #6c757d" onmouseover="this.style.color='#db4437'" onmouseout="this.style.color='#6c757d'">
       <i class="fas fa-envelope fa-1x"></i>
-    </a><a class="social mx-1"  href="https://www.facebook.com/dcanh09"
-       style="color: #6c757d"
-       onMouseOver="this.style.color='#3b5998'"
-       onMouseOut="this.style.color='#6c757d'">
+    </a><a class="social mx-1" href="https://www.facebook.com/dcanh09" style="color: #6c757d" onmouseover="this.style.color='#3b5998'" onmouseout="this.style.color='#6c757d'">
       <i class="fab fa-facebook fa-1x"></i>
-    </a><a class="social mx-1"  href="https://www.github.com/heckintosh"
-       style="color: #6c757d"
-       onMouseOver="this.style.color='#333333'"
-       onMouseOut="this.style.color='#6c757d'">
+    </a><a class="social mx-1" href="https://www.github.com/heckintosh" style="color: #6c757d" onmouseover="this.style.color='#333333'" onmouseout="this.style.color='#6c757d'">
       <i class="fab fa-github fa-1x"></i>
-    </a><a class="social mx-1"  href="https://www.twitter.com/heckintosh_"
-       style="color: #6c757d"
-       onMouseOver="this.style.color='#1da1f2'"
-       onMouseOut="this.style.color='#6c757d'">
+    </a><a class="social mx-1" href="https://www.twitter.com/heckintosh_" style="color: #6c757d" onmouseover="this.style.color='#1da1f2'" onmouseout="this.style.color='#6c757d'">
       <i class="fab fa-twitter fa-1x"></i>
     </a>
 
-</div><small id="attribution">
+</div>
+<small id="attribution">
     theme <a href="https://github.com/YoussefRaafatNasry/portfolYOU">portfolYOU</a>
   </small>
   
