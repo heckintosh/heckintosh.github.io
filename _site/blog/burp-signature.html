@@ -78,7 +78,7 @@
 
 <p class="post-metadata text-muted">
   04 January 2022 -  
-  <b>5 mins read time</b>
+  <b>9 mins read time</b>
 
   <br>Tags: 
     
@@ -101,9 +101,40 @@
 <figure class="figure w-100">
   <img src="https://i.imgur.com/AHXsgDlm.png" class="figure-img img-fluid rounded" alt="My beautiful signature"><figcaption class="figure-caption text-center">My beautiful signature</figcaption></figure>
 
-<p>Now every documents that have this signature definitely come from me. Or are they? Let’s be real, it will probably take you max 10 tries to replicate my signature. In primary school, after every exams, the teachers would always make us bring the exam papers (with grade on it) for our parents to sign on and then submit back to the teacher later. Imagine what the students can do to circumvent that <img class="emoji" title=":thinking:" alt=":thinking:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f914.png" height="20" width="20">. <b>Real life signature is used to serve as a symbol of agreement, similar to a handshake, instead of a verification for people’s identities</b>.</p>
+<p>Now every documents that have this signature definitely come from me. Or are they? Let’s be real, it will probably take you max 10 tries to replicate my signature. In primary school, after every exams, the teachers would always make us bring the exam papers (with grade on it) for our parents to sign on and then submit back to the teacher later. Imagine what the students can do to circumvent that <img class="emoji" title=":thinking:" alt=":thinking:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f914.png" height="20" width="20">.</p>
 
-<p>Digital signature offers better security compared to handwritten signature. The document information is embedded in the digital signature through the magic of cryptography. If any information is changed in the document request the signature becomes invalid. It adds authenticity and integrity.</p>
+<blockquote>
+  <p><b>Real life signature is used to serve as a symbol of agreement, similar to a handshake, instead of a verification for people’s identities</b>.</p>
+</blockquote>
+
+<p>Digital signature offers better security compared to handwritten signature. The document information is embedded in the digital signature through the magic of cryptography. If any information is changed in the document request the signature becomes invalid.</p>
+
+<figure class="figure w-100">
+  <img src="https://i.ibb.co/f4tHNJw/digsig6.png" class="figure-img img-fluid rounded" alt="Digital signature creation and verification flow"><figcaption class="figure-caption text-center">Digital signature creation and verification flow</figcaption></figure>
+
+<p>Not many articles I have found on the Internet mentioned this, but there are 2 ways to implement creation and verification of digital signature. The above figure describes using only one shared key for signing and verifying (done with a symmetric algorithm such as HMAC256). The other way is to have a pair of public key and private key (done with an asymmetric algorithm such as RS256), where signature generated with the private key can be validated with the public key.</p>
+
+<p><a href="https://en.wikipedia.org/wiki/HMAC">HMAC</a> helps prevent manipulation by an actor who has not access to the secret:</p>
+<ul>
+  <li>prevent manipulation by the client if the secret is only known to the server (e.g: verify a request actually comes from an Android app, shared key obfuscated in the code).</li>
+  <li>prevent manipulation in transit if the secret is known to client and server.</li>
+</ul>
+
+<p><a href="https://en.wikipedia.org/wiki/RSA_(cryptosystem)">RSA</a> signature can be used to:</p>
+<ul>
+  <li>prevent manipulation.</li>
+  <li>allow those with the public key to verify the integrity and source of the data without being able to manipulate the data.</li>
+</ul>
+
+<blockquote>
+  <p><b><u>Note:</u></b> The traditional understanding of RSA is “public keys encrypt, private keys decrypt”. For signatures, things are backwards. You are attempting to prove the message is signed by you and came from you. So you need to have your own private key. This is inherently a little more secure than HMAC but you can see the hassle behind it when trying to implement it in a traditional Android web application, each clients must have their own key pairs and the server needs to have information on which public keys belong to which clients.</p>
+</blockquote>
+
+<blockquote>
+  <p>Choosing the algorithm therefore depends on your use case. In case the server just wants to guarantee no token manipulation is going on, the client can implement HMAC with a server side secret.</p>
+</blockquote>
+
+<p>For more details, you can checkout <a href="https://www.youtube.com/watch?v=s22eJ1eVLTU">this video</a> on digital signature and <a href="https://www.youtube.com/watch?v=NmM9HA2MQGI">this video</a> on how to exchange the key pair securely.</p>
 
 <h2 id="2-why-even-include-a-signature">2. Why even include a signature:</h2>
 <p>When:</p>
@@ -123,8 +154,7 @@
 <h2 id="2-components-of-a-signature">2. Components of a signature:</h2>
 <p>How to create a signature is fully dependent on the developer, but most of the applications out there follow <a href="https://tools.ietf.org/id/draft-cavage-http-signatures-08.html#rfc.section.2.1">this IETF standard</a>.</p>
 
-<p>Belows is an example of a request containing signature, based on a real Android app:</p>
-
+<p>Belows is an example of a request containing signature, created with a shared key, based on a real Android web app:</p>
 <div class="language-http highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">POST</span> <span class="nn">/api/checkversion</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">2</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">api.heckintosh.vn</span>
 <span class="na">User-Agent</span><span class="p">:</span> <span class="s">Dart/2.12 (dart:io)</span>
@@ -138,6 +168,10 @@
 
 <span class="p">{</span><span class="nl">"AccountName"</span><span class="p">:</span><span class="s2">"heckintosh"</span><span class="p">,</span><span class="nl">"Version"</span><span class="p">:</span><span class="s2">"1.0.0"</span><span class="p">}</span><span class="w">
 </span></code></pre></div></div>
+
+<blockquote>
+  <p>You need to know to catch Android webapp requests with a proxy like Burp to get the above request.</p>
+</blockquote>
 
 <p>The following elements together contribute to building the <code class="language-plaintext highlighter-rouge">Signature</code> header in the above example:</p>
 <ul>
@@ -153,9 +187,14 @@
 <code class="language-plaintext highlighter-rouge">Digest</code>: B64 encoded body of the request.</li>
   <li>
 <code class="language-plaintext highlighter-rouge">signature</code>: This parameter is a b64 encoded digital signature. The client uses an algorithm and a <span style="color:#e5202a">sign pattern</span> (consists of a list of concatenated value that developers choose) to form a  <span style="color:#e5202a">signing string</span>. This <span style="color:#e5202a">signing string</span> is then signed using the secret key associated with keyId and the algorithm. The signature parameter is then set to the b64 of itself</li>
+  <li>
+<code class="language-plaintext highlighter-rouge">Signature</code>: Concatenation of <span style="color:#e5202a">keyId</span>, <span style="color:#e5202a">created</span> and <span style="color:#e5202a">signature</span>.</li>
 </ul>
 
-<p>Sometimes it is obvious how the signature is composed, but most of the time you will have to do some reverse engineering on the application to figure out the logic:</p>
+<blockquote>
+  <p>Sometimes it is obvious how the signature is composed, but most of the time you will have to do some reverse engineering on the Android application to figure out the hardcoded key and the algorithm behind creating the signature.</p>
+</blockquote>
+
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">base64</span>
 <span class="kn">import</span> <span class="nn">hmac</span>
@@ -166,21 +205,50 @@
 <span class="n">created</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">())</span>
 <span class="n">dig</span> <span class="o">=</span> <span class="n">hmac</span><span class="p">.</span><span class="n">new</span><span class="p">(</span><span class="n">secretkey</span><span class="p">,</span><span class="n">request_body</span><span class="p">,</span><span class="n">hashlib</span><span class="p">.</span><span class="n">sha256</span><span class="p">)</span>
 <span class="n">digest</span> <span class="o">=</span> <span class="n">base64</span><span class="p">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">dig</span><span class="p">.</span><span class="n">digest</span><span class="p">()).</span><span class="n">decode</span><span class="p">(</span><span class="s">"utf-8"</span><span class="p">)</span>
-<span class="n">auth</span> <span class="o">=</span> <span class="s">"31337"</span>
-<span class="n">sign_pattern</span> <span class="o">=</span> <span class="s">"keyId={},digest={},created={},auth={}"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">keyId</span><span class="p">,</span> <span class="n">digest</span><span class="p">,</span> <span class="n">created</span><span class="p">,</span> <span class="n">auth</span><span class="p">)</span>
-<span class="n">signature</span> <span class="o">=</span> <span class="n">base64</span><span class="p">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">hmac</span><span class="p">.</span><span class="n">new</span><span class="p">(</span><span class="n">secretkey</span><span class="p">,</span><span class="nb">bytes</span><span class="p">(</span><span class="n">sign_pattern</span><span class="p">,</span><span class="s">'utf-8'</span><span class="p">),</span><span class="n">hashlib</span><span class="p">.</span><span class="n">sha256</span><span class="p">).</span><span class="n">digest</span><span class="p">()).</span><span class="n">decode</span><span class="p">(</span><span class="s">"utf-8"</span><span class="p">)</span>
+<span class="n">auth</span> <span class="o">=</span> <span class="s">"Bearer 31337"</span>
+<span class="n">signstring</span> <span class="o">=</span> <span class="s">"keyId={},digest={},created={},auth={}"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">keyId</span><span class="p">,</span> <span class="n">digest</span><span class="p">,</span> <span class="n">created</span><span class="p">,</span> <span class="n">auth</span><span class="p">)</span>
+<span class="n">signature</span> <span class="o">=</span> <span class="n">base64</span><span class="p">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">hmac</span><span class="p">.</span><span class="n">new</span><span class="p">(</span><span class="n">secretkey</span><span class="p">,</span><span class="nb">bytes</span><span class="p">(</span><span class="n">signstring</span><span class="p">,</span><span class="s">'utf-8'</span><span class="p">),</span><span class="n">hashlib</span><span class="p">.</span><span class="n">sha256</span><span class="p">).</span><span class="n">digest</span><span class="p">()).</span><span class="n">decode</span><span class="p">(</span><span class="s">"utf-8"</span><span class="p">)</span>
 <span class="n">Signature</span> <span class="o">=</span> <span class="s">"keyId={},created={},signature={}"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">keyId</span><span class="p">,</span> <span class="n">created</span><span class="p">,</span> <span class="n">signature</span><span class="p">)</span>
 </code></pre></div></div>
 
-<h2 id="3-introducing-cstc-a-burp-extension-for-manipulating-http-requests">3. Introducing CSTC: A Burp extension for manipulating HTTP requests</h2>
+<h2 id="3-cstc-a-burp-extension-for-manipulating-http-requests">3. CSTC: A Burp extension for manipulating HTTP requests</h2>
+<p>For these signed requests, it is max pain to manually create a valid request. Fortunately, the <a href="https://github.com/usdAG/cstc">Cyber Security Transformation Chef (CSTC)</a> extension made by usd AG is available on Burp for us to turn Repeater request to a valid request.</p>
+
+<blockquote>
+  <p>Use a light theme for CSTC. It has a <a href="https://github.com/usdAG/cstc/issues/55">bug</a> with the dark theme</p>
+</blockquote>
+
 <figure class="figure w-100">
-  <img src="https://cdn-images-1.medium.com/max/1000/0*nF_H2-8oTY7C0a54.png" class="figure-img img-fluid rounded" alt="Android"><figcaption class="figure-caption text-center">Android</figcaption></figure>
+  <img src="https://i.ibb.co/chCXFnv/cstc.png" class="figure-img img-fluid rounded" alt="CSTC UI"><figcaption class="figure-caption text-center">CSTC UI</figcaption></figure>
 
-<p>Apple and Google also fairly recently rolled out time management tools which allow the user to be restricted from certain applications after a given amount of use. This really helps to add an extra layer of discipline if you’re trying to build the habit of using your phone less.</p>
+<p>What is special about this extension? Well, you can define variable, pipe them through a cryptography function and obtain the output. Initialize a variable with that output as the value, then replace a part of the request with that variable.</p>
 
-<p>Minimalism isn’t a philosophy that demands you to sell everything you own, wear the same outfit for the rest of your life, and live out of your van. Rather, it’s taking a hard look at everything in your life and determining whether something truly provides happiness for you. Digital Minimalism is a subset of this way of thinking and is a philosophy that has allowed me to work in tech and be an active participant of social media, but also maintain my own level of free thinking and choose what I focus on.</p>
+<p>I’ll demonstrate step by step to construct these two values from the original request:</p>
 
-<p>I hope this has helped at least one person out there better manage their digital engagement. When I was first starting my foray into this way of thinking, this documentary by Matt D’Avella really helped me understand what minimalism was all about and is something I’d recommend if you’d like to learn more!</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Signature: keyId=key-heckintosh,created=1642617796,signature=P5AAtQW4qPFUZxwOabNfEZsAhYtz2/eRnu/KvyeCe6Q=
+Digest: nNAoy4A0Mp9EhFKOGLW0B9hdAELIkQbhUSwvmae2Csg=
+</code></pre></div></div>
+
+<figure class="figure w-100">
+  <img src="https://i.ibb.co/K9fKNCS/step1-2.png" class="figure-img img-fluid rounded" alt="1. Obtain keyId and secret keys through reverse engineering and assign those values to variables"><figcaption class="figure-caption text-center">1. Obtain keyId and secret keys through reverse engineering and assign those values to variables</figcaption></figure>
+
+<figure class="figure w-100">
+  <img src="https://i.ibb.co/kgXw1vY/step2.png" class="figure-img img-fluid rounded" alt="2. Extract the request body and store it as variable &lt;i&gt;req_body&lt;/i&gt;"><figcaption class="figure-caption text-center">2. Extract the request body and store it as variable <i>req_body</i></figcaption></figure>
+
+<figure class="figure w-100">
+  <img src="https://i.ibb.co/dPDfry7/step3.png" class="figure-img img-fluid rounded" alt="3. Get the current time and store it as variable &lt;i&gt;created&lt;/i&gt;"><figcaption class="figure-caption text-center">3. Get the current time and store it as variable <i>created</i></figcaption></figure>
+
+<figure class="figure w-100">
+  <img src="https://i.ibb.co/xX56VSj/step4.png" class="figure-img img-fluid rounded" alt="4. Create a base64 digest from the request body and store it as variable &lt;i&gt;digest&lt;/i&gt;"><figcaption class="figure-caption text-center">4. Create a base64 digest from the request body and store it as variable <i>digest</i></figcaption></figure>
+
+<figure class="figure w-100">
+  <img src="https://i.ibb.co/s1QsWsw/step5.png" class="figure-img img-fluid rounded" alt="5. Get the auth header and store it as variable &lt;i&gt;auth&lt;/i&gt;"><figcaption class="figure-caption text-center">5. Get the auth header and store it as variable <i>auth</i></figcaption></figure>
+
+<figure class="figure w-100">
+  <img src="https://i.ibb.co/s1QsWsw/step5.png" class="figure-img img-fluid rounded" alt="6. Create the sign string and stores it as variable &lt;i&gt;sign_string&lt;/i&gt;"><figcaption class="figure-caption text-center">6. Create the sign string and stores it as variable <i>sign_string</i></figcaption></figure>
+
+<figure class="figure w-100">
+  <img src="https://i.ibb.co/s1QsWsw/step5.png" class="figure-img img-fluid rounded" alt="7. Create the base64 encoded signature from the signing string and the secret key "><figcaption class="figure-caption text-center">7. Create the base64 encoded signature from the signing string and the secret key </figcaption></figure>
 
 
 
