@@ -128,6 +128,8 @@ Digest: nNAoy4A0Mp9EhFKOGLW0B9hdAELIkQbhUSwvmae2Csg=
 
 {% include elements/figure.html image="https://i.ibb.co/s1QsWsw/step5.png" caption="5. Get the auth header and store it as variable <i>auth</i>" %}
 
-{% include elements/figure.html image="https://i.ibb.co/s1QsWsw/step5.png" caption="6. Create the sign string and stores it as variable <i>sign_string</i>" %}
+{% include elements/figure.html image="https://i.ibb.co/Pgv7nG9/step6.png" caption="6. Create the sign string and stores it as variable <i>sign_string</i>" %}
 
-{% include elements/figure.html image="https://i.ibb.co/s1QsWsw/step5.png" caption="7. Create the base64 encoded signature from the signing string and the secret key " %}
+{% include elements/figure.html image="https://i.ibb.co/RbSy15H/step7.png" caption="7. Create the base64 encoded signature from the signing string and the secret key " %}
+
+{% include elements/figure.html image="https://i.ibb.co/yyWS2ZP/step8.png" caption="8. Append the signature and digest header to the request" %}

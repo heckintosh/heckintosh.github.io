@@ -1,7 +1,7 @@
 ### Site Settings ###
 title               : heckintosh_
 description         : >-
-  I'm a hecker by day, a hecker by noon, a hecker by afternoon and a hecker by night. Based in :vietnam:.
+   Hecker by day, hecker by noon, hecker by afternoon and also hecker by night. Based in :vietnam:.
 baseurl             : ""                     # Change to empty quotes if you are hosting your site at <your-username>.github.io directly
 repository          : heckintosh/heckintosh.github.io     # Change to <your-username>/<your-username>.github.io (or remove it if you don't need remote projects)
 remote_theme        : YoussefRaafatNasry/portfolYOU
@@ -24,7 +24,7 @@ nav_exclude:                                            # The following paths ar
 ### Author Info ###
 author:
   name              : heckintosh
-  image             : http://localhost:4000/assets/images/avatar.png
+  image             : https://raw.githubusercontent.com/heckintosh/heckintosh.github.io/main/assets/images/avatar.png
 # behance           : your_username
 # dribbble          : your_username
   email             : heckintosh@protonmail.com
