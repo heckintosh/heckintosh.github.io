@@ -1,12 +1,12 @@
 ---
-title: Handling requests containing signatures with Burp Suite
+title: Handling HTTP signed requests with Burp Suite
 tags: [Encryption, Burp]
 style: border
 color: info
-description: Many mobile applications include signatures for requests nowadays, making scanning and repeating requests infeasible. Fortunately, there is a way to deal with this issue in Burp.
+description: Many mobile applications include signatures for requests nowadays, making scanning and repeating requests difficult. Fortunately, there is a way to deal with this issue in Burp using an extension called Cyber Security Transformation Chef (CSTC).
 ---
 
-CSTC: [The only tool you will need.](https://github.com/usdAG/cstc)
+TLDR: [CSTC -> The only Burp extension you will need.](https://github.com/usdAG/cstc)
 
 As a hacker, one would like to be able to examine a request, alter and replay it to probe for application vulnerabilities in inputs. Such a trivial task turns out to be a hassle because more and more devs are adding signatures to requests sent to applications, causing repeated/altered requests to fail. This article will help you deal with that problem. 
 
@@ -82,7 +82,7 @@ The following elements together contribute to building the `Signature` header in
 - `signature`: This parameter is a b64 encoded digital signature. The client uses an algorithm and a <span style="color:#e5202a">sign pattern</span> (consists of a list of concatenated value that developers choose) to form a  <span style="color:#e5202a">signing string</span>. This <span style="color:#e5202a">signing string</span> is then signed using the secret key associated with keyId and the algorithm. The signature parameter is then set to the b64 of itself
 - `Signature`: Concatenation of <span style="color:#e5202a">keyId</span>, <span style="color:#e5202a">created</span> and <span style="color:#e5202a">signature</span>.
 
-> Sometimes it is obvious how the signature is composed, but most of the time you will have to do some reverse engineering on the Android application to figure out the hardcoded key and the algorithm behind creating the signature.
+> Sometimes it is obvious how the signature is composed, but most of the time you will have to do some reverse engineering on the Android application to figure out the hardcoded key and the algorithm behind creating the signature. Below is how this example application generates the digest plus signature header and appends them to the parameter.
 
 ```python
 import time
@@ -111,7 +111,22 @@ For these signed requests, it is max pain to manually create a valid request. Fo
 
 What is special about this extension? Well, you can define variable, pipe them through a cryptography function and obtain the output. Initialize a variable with that output as the value, then replace a part of the request with that variable.
 
-I'll demonstrate step by step to construct these two values from the original request:
+This is the unsigned request from the above example:
+
+```http
+POST /api/checkversion HTTP/2
+Host: api.heckintosh.vn
+User-Agent: Dart/2.12 (dart:io)
+Accept-Encoding: gzip, deflate
+Authorization: Bearer 31337
+Content-Type: application/json; charset=utf-8
+Connection: close
+
+{"AccountName":"heckintosh","Version":"1.0.0"}
+```
+
+
+I'll demonstrate step by step how to append the following two values automatically to the request with CSTC so that it becomes signed:
 
 ```
 Signature: keyId=key-heckintosh,created=1642617796,signature=P5AAtQW4qPFUZxwOabNfEZsAhYtz2/eRnu/KvyeCe6Q=
@@ -133,3 +148,9 @@ Digest: nNAoy4A0Mp9EhFKOGLW0B9hdAELIkQbhUSwvmae2Csg=
 {% include elements/figure.html image="https://i.ibb.co/RbSy15H/step7.png" caption="7. Create the base64 encoded signature from the signing string and the secret key " %}
 
 {% include elements/figure.html image="https://i.ibb.co/yyWS2ZP/step8.png" caption="8. Append the signature and digest header to the request" %}
+
+{% include elements/figure.html image="https://i.ibb.co/1swfcz9/final.png" caption="Final. Check the input and output to the right" %}
+
+Check the CSTC options to modify Repeater request and now you can all go replaying signed Android traffic using this amazing extension. One last thing though, the current version of CSTC is buggy in Windows and in Burp Suite dark mode, but my tests run great in Linux and default Burp light mode. 
+
+{% include blog/donation.html %}

@@ -15,11 +15,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Handling requests containing signatures with Burp Suite">
-  <meta property="og:description" content="Many mobile applications include signatures for requests nowadays, making scanning and repeating requests infeasible. Fortunately, there is a way to deal wit...">
+  <meta property="og:title" content="Handling HTTP signed requests with Burp Suite">
+  <meta property="og:description" content="Many mobile applications include signatures for requests nowadays, making scanning and repeating requests difficult. Fortunately, there is a way to deal with...">
 
-  <title>Handling requests containing signatures with Burp Suite</title>
-  <meta name="description" content="Many mobile applications include signatures for requests nowadays, making scanning and repeating requests infeasible. Fortunately, there is a way to deal wit...">
+  <title>Handling HTTP signed requests with Burp Suite</title>
+  <meta name="description" content="Many mobile applications include signatures for requests nowadays, making scanning and repeating requests difficult. Fortunately, there is a way to deal with...">
 
   <link rel="shortcut icon" type="image/x-icon" href="/assets/favicon.ico">
 
@@ -53,13 +53,13 @@
 
   <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
     <div class="navbar-nav ml-auto">
-<a class="nav-item nav-link " href="/about/">About</a>
-
-      <a class="nav-item nav-link " href="/projects/">Projects</a>
+<a class="nav-item nav-link active" href="/blog/">Blog</a>
 
       <a class="nav-item nav-link " href="/writeups/">Writeups</a>
 
-      <a class="nav-item nav-link active" href="/blog/">Blog</a>
+      <a class="nav-item nav-link " href="/projects/">Projects</a>
+
+      <a class="nav-item nav-link " href="/about/">About</a>
 
       
 
@@ -69,11 +69,11 @@
 
 </nav>
     <div class="col-lg-10 mx-auto mt-5 markdown-body">
-  <h1><b>Handling requests containing signatures with Burp Suite</b></h1>
+  <h1><b>Handling HTTP signed requests with Burp Suite</b></h1>
 
 <p class="post-metadata text-muted">
   04 January 2022 -  
-  <b>9 mins read time</b>
+  <b>10 mins read time</b>
 
   <br>Tags: 
     
@@ -86,7 +86,7 @@
     </a>
     </p>
 
-<p>CSTC: <a href="https://github.com/usdAG/cstc">The only tool you will need.</a></p>
+<p>TLDR: <a href="https://github.com/usdAG/cstc">CSTC -&gt; The only Burp extension you will need.</a></p>
 
 <p>As a hacker, one would like to be able to examine a request, alter and replay it to probe for application vulnerabilities in inputs. Such a trivial task turns out to be a hassle because more and more devs are adding signatures to requests sent to applications, causing repeated/altered requests to fail. This article will help you deal with that problem.</p>
 
@@ -187,7 +187,7 @@
 </ul>
 
 <blockquote>
-  <p>Sometimes it is obvious how the signature is composed, but most of the time you will have to do some reverse engineering on the Android application to figure out the hardcoded key and the algorithm behind creating the signature.</p>
+  <p>Sometimes it is obvious how the signature is composed, but most of the time you will have to do some reverse engineering on the Android application to figure out the hardcoded key and the algorithm behind creating the signature. Below is how this example application generates the digest plus signature header and appends them to the parameter.</p>
 </blockquote>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">time</span>
@@ -218,7 +218,20 @@
 
 <p>What is special about this extension? Well, you can define variable, pipe them through a cryptography function and obtain the output. Initialize a variable with that output as the value, then replace a part of the request with that variable.</p>
 
-<p>I’ll demonstrate step by step to construct these two values from the original request:</p>
+<p>This is the unsigned request from the above example:</p>
+
+<div class="language-http highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">POST</span> <span class="nn">/api/checkversion</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">2</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">api.heckintosh.vn</span>
+<span class="na">User-Agent</span><span class="p">:</span> <span class="s">Dart/2.12 (dart:io)</span>
+<span class="na">Accept-Encoding</span><span class="p">:</span> <span class="s">gzip, deflate</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer 31337</span>
+<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json; charset=utf-8</span>
+<span class="na">Connection</span><span class="p">:</span> <span class="s">close</span>
+
+<span class="p">{</span><span class="nl">"AccountName"</span><span class="p">:</span><span class="s2">"heckintosh"</span><span class="p">,</span><span class="nl">"Version"</span><span class="p">:</span><span class="s2">"1.0.0"</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>I’ll demonstrate step by step how to append the following two values automatically to the request with CSTC so that it becomes signed:</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Signature: keyId=key-heckintosh,created=1642617796,signature=P5AAtQW4qPFUZxwOabNfEZsAhYtz2/eRnu/KvyeCe6Q=
 Digest: nNAoy4A0Mp9EhFKOGLW0B9hdAELIkQbhUSwvmae2Csg=
@@ -247,6 +260,13 @@ Digest: nNAoy4A0Mp9EhFKOGLW0B9hdAELIkQbhUSwvmae2Csg=
 
 <figure class="figure w-100">
   <img src="https://i.ibb.co/yyWS2ZP/step8.png" class="figure-img img-fluid rounded" alt="8. Append the signature and digest header to the request"><figcaption class="figure-caption text-center">8. Append the signature and digest header to the request</figcaption></figure>
+
+<figure class="figure w-100">
+  <img src="https://i.ibb.co/1swfcz9/final.png" class="figure-img img-fluid rounded" alt="Final. Check the input and output to the right"><figcaption class="figure-caption text-center">Final. Check the input and output to the right</figcaption></figure>
+
+<p>Check the CSTC options to modify Repeater request and now you can all go replaying signed Android traffic using this amazing extension. One last thing though, the current version of CSTC is buggy in Windows and in Burp Suite dark mode, but my tests run great in Linux and default Burp light mode.</p>
+
+<p><u>PS:</u> If you like the content, you can go donate over these <a href="https://heckintosh.github.io">links</a> <img class="emoji" title=":wink:" alt=":wink:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f609.png" height="20" width="20"></p>
 
 
 
