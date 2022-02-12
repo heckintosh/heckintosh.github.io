@@ -1,12 +1,12 @@
 ---
 title: Handling HTTP signed requests with Burp Suite
-tags: [Encryption, Burp]
+tags: [Signature, Burp Suite, Android]
 style: border
 color: info
-description: Many mobile applications include signatures for requests nowadays, making scanning and repeating requests difficult. Fortunately, there is a way to deal with this issue in Burp using an extension called Cyber Security Transformation Chef (CSTC).
+description: Many Android applications include signatures for requests nowadays, making scanning and repeating requests difficult. Fortunately, there is a way to deal with this issue in Burp using an extension called Cyber Security Transformation Chef (CSTC).
 ---
 
-TLDR: [CSTC -> The only Burp extension you will need.](https://github.com/usdAG/cstc)
+TLDR: [Use CSTC -> A Burp extension](https://github.com/usdAG/cstc)
 
 As a hacker, one would like to be able to examine a request, alter and replay it to probe for application vulnerabilities in inputs. Such a trivial task turns out to be a hassle because more and more devs are adding signatures to requests sent to applications, causing repeated/altered requests to fail. This article will help you deal with that problem. 
 
@@ -52,7 +52,7 @@ By using HTTPS, tampering can be prevented during transit but it <b>cannot</b> b
 - Before the request is HTTPS encrypted (at the client side by another malicious (or not) software).
 - At the server side, by a sniffer placed between the HTTPS endpoint and the actual server. For this case, the HTTPS encryption/ decryption process is handled by a load balancer or a reverse proxy, so there is a possibility for sniffing traffic between those two servers.
 
-## 2. Components of a signature:
+## 3. Components of a signature:
 How to create a signature is fully dependent on the developer, but most of the applications out there follow [this IETF standard](https://tools.ietf.org/id/draft-cavage-http-signatures-08.html#rfc.section.2.1).
 
 Belows is an example of a request containing signature, created with a shared key, based on a real Android web app:
@@ -102,7 +102,7 @@ Signature = "keyId={},created={},signature={}".format(keyId, created, signature)
 ```
 
 
-## 3. CSTC: A Burp extension for manipulating HTTP requests
+## 4. CSTC: A Burp extension for manipulating HTTP requests
 For these signed requests, it is max pain to manually create a valid request. Fortunately, the [Cyber Security Transformation Chef (CSTC)](https://github.com/usdAG/cstc) extension made by usd AG is available on Burp for us to turn Repeater request to a valid request.
 
 > Use a light theme for CSTC. It has a [bug](https://github.com/usdAG/cstc/issues/55) with the dark theme
@@ -149,8 +149,8 @@ Digest: nNAoy4A0Mp9EhFKOGLW0B9hdAELIkQbhUSwvmae2Csg=
 
 {% include elements/figure.html image="https://i.ibb.co/yyWS2ZP/step8.png" caption="8. Append the signature and digest header to the request" %}
 
-{% include elements/figure.html image="https://i.ibb.co/1swfcz9/final.png" caption="Final. Check the input and output to the right" %}
+{% include elements/figure.html image="https://i.ibb.co/1swfcz9/final.png" caption="Finally, check the input and output to the right" %}
 
-Check the CSTC options to modify Repeater request and now you can all go replaying signed Android traffic using this amazing extension. One last thing though, the current version of CSTC is buggy in Windows and in Burp Suite dark mode, but my tests run great in Linux and default Burp light mode. 
+Tick the CSTC option to allow it to modify Repeater request and now you can all go replaying signed Android traffic using this amazing extension. One last thing though, the current version of CSTC is buggy in Windows and in Burp Suite dark mode, but my tests run great in Linux and default Burp light mode. 
 
 {% include blog/donation.html %}

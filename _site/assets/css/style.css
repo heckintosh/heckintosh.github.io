@@ -1,5 +1,5 @@
 @charset "UTF-8";
-@import url("https://fonts.googleapis.com/css?family=Poppins");
+@import url('https://fonts.googleapis.com/css2?family=Fira+Sans&display=swap');
 .cls-1 { fill: #ffc541; }
 
 .cls-2 { fill: #4e4066; }
@@ -90,9 +90,11 @@
 @keyframes four-anim { 50% { transform: scale(0.98); } }
 html { padding-left: calc(100vw - 100%); }
 
-body { font-family: "Poppins", sans-serif; }
+body { font-family: "Fira Sans", sans-serif; font-size: 18px; line-height: 1.7;}
 
 .badge { font-weight: 500; }
+
+.text-muted {margin-bottom: 70px;}
 
 .bg-light, .bg-light *, .badge-light, .badge-light * { color: #343a40 !important; }
 
@@ -108,6 +110,8 @@ body { font-family: "Poppins", sans-serif; }
 
 .social { text-decoration: none !important; }
 
+.crypto {width: 400px; position: relative; right: 35px; border-style: solid; padding: 5px; border-color: #007bff;}
+
 #attribution { opacity: 0.5; }
 #attribution a { text-decoration: none; font-weight: bold; }
 
@@ -116,11 +120,11 @@ body { font-family: "Poppins", sans-serif; }
 
 #container { display: inline-block; position: relative; width: 100%; }
 
-#dummy { padding-top: 100%; /* 1:1 aspect ratio */ }
+#dummy { padding-top: 60%; /* 1:1 aspect ratio */ }
 
-#element { position: absolute; top: 0; bottom: 0; left: 0; right: 0; }
+#element {position: absolute; top: 1; bottom: 0; left: 0; right: 0; }
 
-.circle-image { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; object-position: center; }
+.circle-image { width: 50%; height: 50%; border-radius: 80%; object-fit: cover; object-position: center}
 
 .link-after, .nav-link::after, .navbar-brand::after, .nav-item.active::after { content: ""; display: block; height: 0.15em; background: #007bff; }
 
@@ -133,8 +137,9 @@ body { font-family: "Poppins", sans-serif; }
 .navbar-brand { margin-bottom: -14px; }
 .navbar-brand::after { margin-top: -0.25em; }
 
-.markdown-body h1, .markdown-body h2 { margin-top: 32px; }
-.markdown-body hr { background: #6c757d; }
+.markdown-body {font-size: 18.5px;}
+.markdown-body h1, .markdown-body h2 { margin-top: 32px;}
+.markdown-body hr { background: #6c757d;}
 .markdown-body img:not(.emoji) { display: block; max-width: 100%; height: auto; margin: 1rem auto; }
 .markdown-body .video { position: relative; padding-bottom: 56.25%; margin-bottom: 1rem; width: 100%; }
 .markdown-body .video iframe { position: absolute; height: 100%; width: 100%; }

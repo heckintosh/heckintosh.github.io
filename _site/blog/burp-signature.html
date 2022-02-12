@@ -16,10 +16,10 @@
 
   <meta property="og:type" content="website">
   <meta property="og:title" content="Handling HTTP signed requests with Burp Suite">
-  <meta property="og:description" content="Many mobile applications include signatures for requests nowadays, making scanning and repeating requests difficult. Fortunately, there is a way to deal with...">
+  <meta property="og:description" content="Many Android applications include signatures for requests nowadays, making scanning and repeating requests difficult. Fortunately, there is a way to deal wit...">
 
   <title>Handling HTTP signed requests with Burp Suite</title>
-  <meta name="description" content="Many mobile applications include signatures for requests nowadays, making scanning and repeating requests difficult. Fortunately, there is a way to deal with...">
+  <meta name="description" content="Many Android applications include signatures for requests nowadays, making scanning and repeating requests difficult. Fortunately, there is a way to deal wit...">
 
   <link rel="shortcut icon" type="image/x-icon" href="/assets/favicon.ico">
 
@@ -45,7 +45,7 @@
   <main class="flex-shrink-0 container mt-5">
     <nav class="navbar navbar-expand-lg navbar-themed">
 
-  <a class="navbar-brand" href="/"><h5><b>heckintosh_</b></h5></a>
+  <a class="navbar-brand" href="/"><h5><b>heckintosh</b></h5></a>
 
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
     <i class="fas fa-1x fa-bars text-themed"></i>
@@ -58,8 +58,6 @@
       <a class="nav-item nav-link " href="/writeups/">Writeups</a>
 
       <a class="nav-item nav-link " href="/projects/">Projects</a>
-
-      <a class="nav-item nav-link " href="/about/">About</a>
 
       
 
@@ -77,16 +75,20 @@
 
   <br>Tags: 
     
-    <a class="text-decoration-none no-underline" href="/blog/tags#encryption">
-      <span class="tag badge badge-pill text-primary border border-primary">Encryption</span>
+    <a class="text-decoration-none no-underline" href="/blog/tags#signature">
+      <span class="tag badge badge-pill text-primary border border-primary">Signature</span>
     </a>
     
-    <a class="text-decoration-none no-underline" href="/blog/tags#burp">
-      <span class="tag badge badge-pill text-primary border border-primary">Burp</span>
+    <a class="text-decoration-none no-underline" href="/blog/tags#burp-suite">
+      <span class="tag badge badge-pill text-primary border border-primary">Burp Suite</span>
+    </a>
+    
+    <a class="text-decoration-none no-underline" href="/blog/tags#android">
+      <span class="tag badge badge-pill text-primary border border-primary">Android</span>
     </a>
     </p>
 
-<p>TLDR: <a href="https://github.com/usdAG/cstc">CSTC -&gt; The only Burp extension you will need.</a></p>
+<p>TLDR: <a href="https://github.com/usdAG/cstc">Use CSTC -&gt; A Burp extension</a></p>
 
 <p>As a hacker, one would like to be able to examine a request, alter and replay it to probe for application vulnerabilities in inputs. Such a trivial task turns out to be a hassle because more and more devs are adding signatures to requests sent to applications, causing repeated/altered requests to fail. This article will help you deal with that problem.</p>
 
@@ -146,7 +148,7 @@
   <li>At the server side, by a sniffer placed between the HTTPS endpoint and the actual server. For this case, the HTTPS encryption/ decryption process is handled by a load balancer or a reverse proxy, so there is a possibility for sniffing traffic between those two servers.</li>
 </ul>
 
-<h2 id="2-components-of-a-signature">2. Components of a signature:</h2>
+<h2 id="3-components-of-a-signature">3. Components of a signature:</h2>
 <p>How to create a signature is fully dependent on the developer, but most of the applications out there follow <a href="https://tools.ietf.org/id/draft-cavage-http-signatures-08.html#rfc.section.2.1">this IETF standard</a>.</p>
 
 <p>Belows is an example of a request containing signature, created with a shared key, based on a real Android web app:</p>
@@ -206,7 +208,7 @@
 <span class="n">Signature</span> <span class="o">=</span> <span class="s">"keyId={},created={},signature={}"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">keyId</span><span class="p">,</span> <span class="n">created</span><span class="p">,</span> <span class="n">signature</span><span class="p">)</span>
 </code></pre></div></div>
 
-<h2 id="3-cstc-a-burp-extension-for-manipulating-http-requests">3. CSTC: A Burp extension for manipulating HTTP requests</h2>
+<h2 id="4-cstc-a-burp-extension-for-manipulating-http-requests">4. CSTC: A Burp extension for manipulating HTTP requests</h2>
 <p>For these signed requests, it is max pain to manually create a valid request. Fortunately, the <a href="https://github.com/usdAG/cstc">Cyber Security Transformation Chef (CSTC)</a> extension made by usd AG is available on Burp for us to turn Repeater request to a valid request.</p>
 
 <blockquote>
@@ -262,9 +264,9 @@ Digest: nNAoy4A0Mp9EhFKOGLW0B9hdAELIkQbhUSwvmae2Csg=
   <img src="https://i.ibb.co/yyWS2ZP/step8.png" class="figure-img img-fluid rounded" alt="8. Append the signature and digest header to the request"><figcaption class="figure-caption text-center">8. Append the signature and digest header to the request</figcaption></figure>
 
 <figure class="figure w-100">
-  <img src="https://i.ibb.co/1swfcz9/final.png" class="figure-img img-fluid rounded" alt="Final. Check the input and output to the right"><figcaption class="figure-caption text-center">Final. Check the input and output to the right</figcaption></figure>
+  <img src="https://i.ibb.co/1swfcz9/final.png" class="figure-img img-fluid rounded" alt="Finally, check the input and output to the right"><figcaption class="figure-caption text-center">Finally, check the input and output to the right</figcaption></figure>
 
-<p>Check the CSTC options to modify Repeater request and now you can all go replaying signed Android traffic using this amazing extension. One last thing though, the current version of CSTC is buggy in Windows and in Burp Suite dark mode, but my tests run great in Linux and default Burp light mode.</p>
+<p>Tick the CSTC option to allow it to modify Repeater request and now you can all go replaying signed Android traffic using this amazing extension. One last thing though, the current version of CSTC is buggy in Windows and in Burp Suite dark mode, but my tests run great in Linux and default Burp light mode.</p>
 
 <p><u>PS:</u> If you like the content, you can go donate over these <a href="https://heckintosh.github.io">links</a> <img class="emoji" title=":wink:" alt=":wink:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f609.png" height="20" width="20"></p>
 

@@ -3,7 +3,7 @@
     {
       "title"    : "Handling HTTP signed requests with Burp Suite",
       "category" : "",
-      "tags"     : "Encryption, Burp",
+      "tags"     : "Signature, Burp Suite, Android",
       "url"      : "/blog/burp-signature",
       "date"     : "2022-01-04 00:00:00 +0700"
     } 

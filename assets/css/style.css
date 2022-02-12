@@ -90,7 +90,7 @@
 @keyframes four-anim { 50% { transform: scale(0.98); } }
 html { padding-left: calc(100vw - 100%); }
 
-body { font-family: "Fira Sans", sans-serif; font-size: 18px;}
+body { font-family: "Fira Sans", sans-serif; font-size: 18px; line-height: 1.7;}
 
 .badge { font-weight: 500; }
 
