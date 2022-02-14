@@ -1,7 +1,23 @@
-- name: Adobe Photoshop
-  percentage: 95
+- name: Burp Suite
+  percentage: 100
+  color: success
+
+- name: Linux
+  percentage: 85
   color: info
 
-- name: Adobe Illustrator
-  percentage: 90
-  color: success
+- name: Reverse Engineering
+  percentage: 65
+  color: secondary
+
+- name: Android
+  percentage: 65
+  color: secondary
+
+
+- name: Windows
+  percentage: 45
+  color: danger
+
+
+

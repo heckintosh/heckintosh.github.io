@@ -54,9 +54,9 @@ permalink: /blog/:title
 collections:
   projects:
     output: true
-    permalink: /projects/:name
-  elements:                                             # For Documentation Only
-    output: true                                        # For Documentation Only
+    permalink: /writeups/:name
+  writeups:                                             # For Documentation Only
+    output: false                                        # For Documentation Only
 
 
 ### Disqus ###
@@ -75,14 +75,14 @@ analytics:
 defaults:
   - scope:
       path: ""
-      type: "projects"
+      type: "writeups"
     values:
       layout: "page"
   - scope:                                              # For Documentation Only
       path: ""                                          # For Documentation Only
-      type: "elements"                                  # For Documentation Only
+      type: "element"                                  # For Documentation Only
     values:                                             # For Documentation Only
-      layout: "element"                                 # For Documentation Only
+      layout: "elements"                                 # For Documentation Only
   - scope:
       path: ""
       type: "posts"

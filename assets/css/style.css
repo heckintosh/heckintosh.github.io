@@ -466,4 +466,6 @@ body { font-family: "Fira Sans", sans-serif; font-size: 18px; line-height: 1.7;}
 [data-theme="dark"] .list-group-item-action { background-color: #242526; color: rgba(255, 255, 255, 0.9); }
 [data-theme="dark"] .list-group-item-action:hover, [data-theme="dark"] .list-group-item-action:focus { background-color: #1d1d1e; }
 [data-theme="dark"] .post footer { text-decoration: none; }
-[data-theme="dark"] .timeline-body .timeline-item:after { background-color: #17191a; }
+[data-theme="dark"] .timeline-body .timeline-item:after { background-color: rgba(255, 255, 255, 0.9); }
+[data-theme="dark"] .timeline-body { background-color: rgba(52, 58, 64, 0.3);}
+

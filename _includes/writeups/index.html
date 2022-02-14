@@ -1,0 +1,59 @@
+
+<div class="card-columns m-3 mt-5">
+
+    <!-- Remote writeups -->
+    {% for remote_writeup in page.remote_writeups %}
+  
+      {%- for repo in site.github.public_repositories -%}
+  
+        {%- if remote_writeup == repo.name -%}
+  
+          {%- assign writeup = repo -%}
+          {%- assign words = writeup.name | split: '-' -%}
+          
+          {%- capture titlecase -%}
+            {%- for word in words -%}
+              {{ word | capitalize | append: ' ' }}
+            {%- endfor -%}
+          {%- endcapture -%}
+  
+          {%- assign writeup_type  = "remote" -%}
+          {%- assign writeup_id    = writeup.name -%}
+          {%- assign writeup_img   = false -%}
+          {%- assign writeup_name  = titlecase | strip -%}
+          {%- assign writeup_desc  = writeup.description -%}
+          {%- assign writeup_url   = writeup.html_url -%}
+          {%- assign writeup_tools = writeup.topics -%}
+          {%- assign external      = true -%}
+  
+          {% include writeups/writeup-card.html %}
+  
+        {%- endif -%}
+  
+      {%- endfor -%}
+  
+    {% endfor %}
+  
+    <!-- Local writeups -->
+    {% for writeup in site.writeups %}
+  
+      {%- assign writeup_type  = "local" -%}
+      {%- assign writeup_id    = writeup.name | slugify -%}
+      {%- assign writeup_img   = writeup.image -%}
+      {%- assign writeup_name  = writeup.name -%}
+      {%- assign writeup_desc  = writeup.description -%}
+      {%- assign writeup_tools = writeup.tools -%}
+  
+      {%- if writeup.external_url -%}
+        {%- assign writeup_url = writeup.external_url -%}
+        {%- assign external    = true -%}
+      {%- else -%}
+        {%- assign writeup_url = writeup.url | relative_url -%}
+        {%- assign external    = false -%}
+      {%- endif -%}
+  
+      {% include writeups/writeup-card.html %}
+  
+    {% endfor %}
+  
+  </div>
