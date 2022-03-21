@@ -1,11 +1,19 @@
 [
   
     {
+      "title"    : "Bypass Certificate Flutter",
+      "category" : "",
+      "tags"     : "Signature, Burp Suite, Android",
+      "url"      : "/blog/frida-bypassssl",
+      "date"     : "2022-03-21 00:00:00 +0700"
+    } ,
+  
+    {
       "title"    : "Handling HTTP signed requests with Burp Suite",
       "category" : "",
       "tags"     : "Signature, Burp Suite, Android",
       "url"      : "/blog/burp-signature",
-      "date"     : "2022-01-07 00:00:00 +0700"
+      "date"     : "2022-03-19 00:00:00 +0700"
     } 
   
 ]

@@ -3,9 +3,9 @@ title               : heckintosh
 description         : >-
    Hecker by day, hecker by noon, hecker by afternoon and also hecker by night. Based in :vietnam:.
 baseurl             : ""                     # Change to empty quotes if you are hosting your site at <your-username>.github.io directly
-repository          : heckintosh/heckintosh.github.io     # Change to <your-username>/<your-username>.github.io (or remove it if you don't need remote projects)
+repository          : heckintosh/heckintosh.github.io     # Change to <your-username>/<your-username>.github.io (or remove it if you don't need remote writeups)
 remote_theme        : YoussefRaafatNasry/portfolYOU
-open_new_tab        : false                             # Opens external URLs in new tab (works for posts, projects and navbar only)
+open_new_tab        : false                             # Opens external URLs in new tab (works for posts, writeups and navbar only)
 
 
 ### Plugins ###
@@ -52,12 +52,9 @@ permalink: /blog/:title
 
 ### Collections ###
 collections:
-  projects:
+  writeups:
     output: true
     permalink: /writeups/:name
-  writeups:                                             # For Documentation Only
-    output: false                                        # For Documentation Only
-
 
 ### Disqus ###
 disqus:
@@ -80,9 +77,9 @@ defaults:
       layout: "page"
   - scope:                                              # For Documentation Only
       path: ""                                          # For Documentation Only
-      type: "element"                                  # For Documentation Only
+      type: "elements"                                  # For Documentation Only
     values:                                             # For Documentation Only
-      layout: "elements"                                 # For Documentation Only
+      layout: "element"                                 # For Documentation Only
   - scope:
       path: ""
       type: "posts"

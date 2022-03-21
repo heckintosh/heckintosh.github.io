@@ -15,11 +15,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Tags">
-  <meta property="og:description" content="Hecker by day, hecker by noon, hecker by afternoon and also hecker by night. Based in :vietnam:.">
+  <meta property="og:title" content="Hack the Box &amp;#58; Bolt">
+  <meta property="og:description" content="A medium difficulty box from Hack The Box">
 
-  <title>Tags</title>
-  <meta name="description" content="Hecker by day, hecker by noon, hecker by afternoon and also hecker by night. Based in :vietnam:.">
+  <title>Hack the Box &amp;#58; Bolt</title>
+  <meta name="description" content="A medium difficulty box from Hack The Box">
 
   <link rel="shortcut icon" type="image/x-icon" href="/assets/favicon.ico">
 
@@ -52,10 +52,9 @@
   </button>
 
   <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-    <div class="navbar-nav ml-auto">
-<a class="nav-item nav-link active" href="/blog/">Blog</a>
+    <div class="navbar-nav ml-auto"><a class="nav-item nav-link " href="/blog/">Blog</a>
 
-      <a class="nav-item nav-link " href="/writeups/">Writeups</a>
+      <a class="nav-item nav-link active" href="/writeups/">Writeups</a>
 
       <a class="nav-item nav-link " href="/about/">About</a>
 
@@ -67,43 +66,23 @@
 
 </nav>
     <div class="col-lg-10 mx-auto mt-5 markdown-body">
-  <!-- Collect tags from all posts --><!-- List tags & related posts -->
+  <h1 id="bolt-writeup">Bolt Writeup</h1>
 
-<div class="py-3">
-  <h4 id="android">Android</h4>
-  <ol>
-  <a href="/blog/frida-bypassssl"><li>Bypass Certificate Flutter</li></a>
-    <small class="text-muted"> - 21 March 2022</small>
-    <br><a href="/blog/burp-signature"><li>Handling HTTP signed requests with Burp Suite</li></a>
-    <small class="text-muted"> - 19 March 2022</small>
-    <br>
-  </ol>
-</div>
-<hr class="bg-light">
+<p>This box has a combination of these vulnerabilities: <strong>SSTI</strong> and <strong>PGP key leak</strong></p>
 
-<div class="py-3">
-  <h4 id="burp-suite">Burp Suite</h4>
-  <ol>
-  <a href="/blog/frida-bypassssl"><li>Bypass Certificate Flutter</li></a>
-    <small class="text-muted"> - 21 March 2022</small>
-    <br><a href="/blog/burp-signature"><li>Handling HTTP signed requests with Burp Suite</li></a>
-    <small class="text-muted"> - 19 March 2022</small>
-    <br>
-  </ol>
-</div>
-<hr class="bg-light">
+<p>Fireflow is something like <strong>Netflix</strong>, the only difference is that <strong>it’s not real</strong>! It doesn’t exist! I just created it to demonstrate how the <strong>showcase</strong> page looks like and how you can write whatever you want with full markdown support.</p>
 
-<div class="py-3">
-  <h4 id="signature">Signature</h4>
-  <ol>
-  <a href="/blog/frida-bypassssl"><li>Bypass Certificate Flutter</li></a>
-    <small class="text-muted"> - 21 March 2022</small>
-    <br><a href="/blog/burp-signature"><li>Handling HTTP signed requests with Burp Suite</li></a>
-    <small class="text-muted"> - 19 March 2022</small>
-    <br>
-  </ol>
-</div>
-<hr class="bg-light">
+<p><img src="https://www.sketchappsources.com/resources/source-image/we-were-soldiers-landing-page-dbruggisser.jpg" alt="preview" /></p>
+
+<h2 id="search-movies">Search Movies</h2>
+
+<p><img src="https://www.sketchappsources.com/resources/source-image/microsoft-windows-10-virtual-keyboard-diogo-sousa.png" alt="search" /></p>
+
+<p class="text-center">
+<a class="m-1 btn btn-outline-primary btn-2 " href="https://github.com/YoussefRaafatNasry/portfolYOU">
+  Learn More
+</a>
+</p>
 
 </div>
   </main>
@@ -115,14 +94,25 @@
       by <strong>heckintosh</strong>
     </small>
   
-    <div class="container-fluid justify-content-center">
-<a class="social mx-1" href="mailto:heckintosh@protonmail.com" style="color: #6c757d" onmouseover="this.style.color='#db4437'" onmouseout="this.style.color='#6c757d'">
+    <div class="container-fluid justify-content-center"><a class="social mx-1"  href="mailto:heckintosh@protonmail.com"
+       style="color: #6c757d"
+       onMouseOver="this.style.color='#db4437'"
+       onMouseOut="this.style.color='#6c757d'">
       <i class="fas fa-envelope fa-1x"></i>
-    </a><a class="social mx-1" href="https://www.facebook.com/dcanh09" style="color: #6c757d" onmouseover="this.style.color='#3b5998'" onmouseout="this.style.color='#6c757d'">
+    </a><a class="social mx-1"  href="https://www.facebook.com/dcanh09"
+       style="color: #6c757d"
+       onMouseOver="this.style.color='#3b5998'"
+       onMouseOut="this.style.color='#6c757d'">
       <i class="fab fa-facebook fa-1x"></i>
-    </a><a class="social mx-1" href="https://www.github.com/heckintosh" style="color: #6c757d" onmouseover="this.style.color='#333333'" onmouseout="this.style.color='#6c757d'">
+    </a><a class="social mx-1"  href="https://www.github.com/heckintosh"
+       style="color: #6c757d"
+       onMouseOver="this.style.color='#333333'"
+       onMouseOut="this.style.color='#6c757d'">
       <i class="fab fa-github fa-1x"></i>
-    </a><a class="social mx-1" href="https://www.twitter.com/heckintosh_" style="color: #6c757d" onmouseover="this.style.color='#1da1f2'" onmouseout="this.style.color='#6c757d'">
+    </a><a class="social mx-1"  href="https://www.twitter.com/heckintosh_"
+       style="color: #6c757d"
+       onMouseOver="this.style.color='#1da1f2'"
+       onMouseOut="this.style.color='#6c757d'">
       <i class="fab fa-twitter fa-1x"></i>
     </a>
 
