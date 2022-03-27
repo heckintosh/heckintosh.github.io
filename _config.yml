@@ -74,7 +74,7 @@ defaults:
       path: ""
       type: "writeups"
     values:
-      layout: "page"
+      layout: "writeup"
   - scope:                                              # For Documentation Only
       path: ""                                          # For Documentation Only
       type: "elements"                                  # For Documentation Only
