@@ -179,6 +179,6 @@ You only need to have one DC and one attacking machine to replicate this attack.
 
 | Role              | OS                     | IP    |
 |-------------------|------------------------|-------|
-| Domain Controller | Windows Server 2012 R2 | tseat |
-| Domain Member     | Windows 10             | aset  |
-| Attacking machine | Kali                   | aset  |
+| Domain Controller | Windows Server 2012 R2 | 192.168.5.1 |
+| Domain Member     | Windows 10             | 192.168.5.2  |
+| Attacking machine | Kali                   | 192.168.5.3  |
