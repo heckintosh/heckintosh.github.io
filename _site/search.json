@@ -1,9 +1,9 @@
 [
   
     {
-      "title"    : "Bypass Certificate Flutter",
+      "title"    : "Bypass SSL Pinning in Flutter using IDA",
       "category" : "",
-      "tags"     : "Signature, Burp Suite, Android",
+      "tags"     : "Android",
       "url"      : "/blog/frida-bypassssl",
       "date"     : "2022-03-21 00:00:00 +0700"
     } ,
