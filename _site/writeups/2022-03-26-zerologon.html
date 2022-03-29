@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+
+
+<html lang="en" class="h-100">
+
+<head>
+
+  
+  
+
+  
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Recreating the CVE-2020-1472 (the Zerologon attack)">
+  <meta property="og:description" content="Recreating the infamous Zerologon attack on Windows Active Directory.">
+
+  <title>Recreating the CVE-2020-1472 (the Zerologon attack)</title>
+  <meta name="description" content="Recreating the infamous Zerologon attack on Windows Active Directory.">
+
+  <link rel="shortcut icon" type="image/x-icon" href="/assets/favicon.ico">
+
+  <!-- Theme style -->
+  <script src="/assets/js/theme.js"></script>
+
+  <!-- Font Awesome CDN -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.10.0/css/all.css">
+
+  <!-- Bootstrap CSS CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+
+  <!-- Animate CSS CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/assets/css/style.css">
+
+</head>
+
+<body class="h-100 d-flex flex-column">
+
+  <main class="flex-shrink-0 container mt-5">
+    <nav class="navbar navbar-expand-lg navbar-themed">
+
+  <a class="navbar-brand" href="/"><h5><b>heckintosh</b></h5></a>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+    <i class="fas fa-1x fa-bars text-themed"></i>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+    <div class="navbar-nav ml-auto">
+<a class="nav-item nav-link " href="/blog/">Blog</a>
+
+      <a class="nav-item nav-link active" href="/writeups/">Writeups</a>
+
+      <a class="nav-item nav-link " href="/about/">About</a>
+
+      
+
+      <span id="theme-toggler" class="nav-item nav-link" role="button" onclick="toggleTheme()"></span>
+    </div>
+  </div>
+
+</nav>
+    <div class="col-lg-10 mx-auto mt-5 markdown-body">
+  <h1><b>Recreating the CVE-2020-1472 (the Zerologon attack)</b></h1>
+
+<p class="post-metadata text-muted">
+  26 March 2022 -  
+  <b>12 mins read time</b>
+
+  <br></p>
+
+<p>I am going to take the OSCP exam soon and almost all big corps (including my company) are using Active Directory (AD) in their infrastracture so I figure it wouldn’t be a waste of time digging into some good old AD vulnerabilies to understand the security aspect of this massive tech product better. This is a short blog where I explain the Zerologon attack on AD (and how I recreate it) as clear as possible. Kudo to Secura for providing an execellent <a href="https://www.secura.com/uploads/whitepapers/Zerologon.pdf">article</a> regarding this vulnerability.</p>
+
+<h2 id="zerologon-overview">Zerologon overview</h2>
+
+<p>This CVE allows an unauthenticated attacker with network access to a domain controller, to establish a Netlogon session and eventually gain domain administrator privileges. This vulnerability is considered a privilege escalation vulnerability.</p>
+
+<h2 id="what-is-netlogon-remote-protocol-ms-nrpc">What is Netlogon Remote Protocol (MS-NRPC)?</h2>
+<p>This attack is due to a cryptographic flaw in MS-NRPC. So let’s dive into the protocol details.</p>
+
+<p><a href="https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-nrpc/ff8f970f-3e37-40f7-bd4b-af7336e4792f">MS-NRPC</a> existed to maintain
+the relationship between a domain member and its domain, and relationships among domain controllers (DC) and other machines in the domain. So there are certain criteria it needs to meet:</p>
+
+<ol>
+  <li>
+    <p>Able to setup a secure channel that is used by domain members to talk with the DC.</p>
+  </li>
+  <li>
+    <p>Able to pass authentication requests from domain members to DC, and among DCs. Used by NTLM, Kerberos and Digest.</p>
+  </li>
+  <li>
+    <p>Able to transmit certain account changes, for example password changes or account lockout information.</p>
+  </li>
+</ol>
+
+<p>The protocol is described in details <a href="https://winprotocoldoc.blob.cor%0Ae%20%20%20.windows.net/productionwindowsarchives/MS-NRPC/%5BMS-NRPC%5D-170601.pdf">in this Microsoft document</a>.</p>
+
+<p>Below is a simplified diagram for the steps performed by a client and a server implementing NETLOGON when <span style="color:#f88949">establishing a secure channel</span>:</p>
+
+<figure class="figure w-100">
+  <img src="https://i.ibb.co/yVv72bG/final-netlogon.png" class="figure-img img-fluid rounded" alt="NETLOGON authentication handshake"><figcaption class="figure-caption text-center">NETLOGON authentication handshake</figcaption></figure>
+
+<p>Unlike many other challenge-response protocols, NETLOGON employs <a href="https://en.wikipedia.org/wiki/Mutual_authentication">mutual authentication</a> which means that both side will do the authentication work.  The server ensures that the client knows the secret, and the client also ensures that the server knows the secret, which prevents impersonation of the server.</p>
+
+<p>Two 8-byte nonces (challenges) are first exchanged. An unpredictable session key is them computed using a <a href="https://crypto.stackexchange.com/questions/40757/key-derivation-functions-kdf-what-are-main-purposes-how-can-they-be-used">Key Derivation Function</a>.</p>
+
+<p>The session key computation is documented by Microsoft <a href="https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-nrpc/77334f84-8fef-4b5f-a55e-1125f9e6adae">here</a>. Below is my pseudocode for it:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">challenges</span> <span class="o">=</span> <span class="n">client_challenge</span> <span class="o">+</span> <span class="n">server_challenge</span> <span class="c1"># 16 bytes total
+</span><span class="n">shared_secret</span> <span class="o">=</span> <span class="n">GetClientPass</span><span class="p">()</span> <span class="c1"># Shared secret since both client &amp; DC stores the client pass 
+</span><span class="n">hash_secret</span> <span class="o">=</span> <span class="n">MD4</span><span class="p">(</span><span class="n">shared_secret</span><span class="p">)</span>
+<span class="n">key</span> <span class="o">=</span> <span class="n">HMAC256</span><span class="p">(</span><span class="n">hash_secret</span><span class="p">,</span> <span class="n">challenges</span><span class="p">)[:</span><span class="mi">16</span><span class="p">]</span>
+</code></pre></div></div>
+
+<p>This is effective against MITM, since the attacker does not know the secret (in this case the hash of the client’s password) even if he can sniff out the challenge. Later, messages will be transfered encrypted with this session key.</p>
+
+<h2 id="zerologon-in-depths">Zerologon in depths</h2>
+
+<p>So what is wrong here? <a href="https://msrc.microsoft.com/update-guide/vulnerability/CVE-2020-1472">CVE-2020-1472</a>  exploits a cryptographic flaw in the protocol. The bug is in the orange text (<span style="color:#f88949">the encrypt function</span>) in the diagram above <img class="emoji" title=":wink:" alt=":wink:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f609.png" height="20" width="20">:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">client_cred</span> <span class="o">=</span> <span class="n">encrypt</span><span class="p">(</span><span class="n">iv</span><span class="p">,</span> <span class="n">session_key</span><span class="p">,</span> <span class="n">client_challenge</span><span class="p">)</span>
+<span class="n">server_cred</span> <span class="o">=</span> <span class="n">encrypt</span><span class="p">(</span><span class="n">iv</span><span class="p">,</span> <span class="n">session_key</span><span class="p">,</span> <span class="n">server_challenge</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>There are three versions of the encrypt function: <a href="https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-nrpc/77334f84-8fef-4b5f-a55e-1125f9e6adae">AES</a>, <a href="https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-nrpc/7226b8dc-a5b5-46e8-83a8-97e412d1f46e">Strong-key</a> and <a href="https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-nrpc/3c79af30-6203-4fb6-9e1d-8e6a205f7b3d">DES</a>.  The vulnerability comes from the implemented AES scheme, in particular the usage of the <span style="color:#e5202a">AES-CFB8</span> block cipher mode of operation. You might want to read this <a href="http://www.moserware.com/2009/09/stick-figure-guide-to-advanced.html">comic</a>, it is an effective way to visualize AES. I dig up and write about the AES block cipher modes of operation because it is related to this vulnerability (and because it is short).</p>
+
+<h4 id="aes-modes-of-operation">AES modes of operation</h4>
+<p>AES is a block cipher. It takes a block of 128 bits and encrypts or decrypts it using the key.</p>
+
+<p>In real life, we probably want to encrypt more than a block of few bits. Either we have to create more block ciphers of every size (which is dumb) or we create a method to use existing block cipher like AES to encrypt more data. This method is called “mode of operation”.</p>
+
+<p>The most simple mode is <span style="color:#e5202a">ECB</span>. We simply divide the plaintext into section of 128 bits, if its not a multiple of 128 then we’ll do some padding. Each section is then encrypted with AES, concatenate them and we have the result.</p>
+
+<figure class="figure w-100">
+  <img src="https://i.ibb.co/kQw4gKX/ecbmode.png" class="figure-img img-fluid rounded" alt=""><figcaption class="figure-caption text-center"></figcaption></figure>
+
+<blockquote>
+  <p>Some sideline fun fact: ECB is not very secure since it lacks a cryptography principle which is diffusion. More on <a href="https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation">this</a>.</p>
+</blockquote>
+
+<p>Related to ZEROLOGON, let’s do some digging into the Cipher Feedback (CFB) mode.</p>
+
+<h4 id="cipher-feedback-cfb">Cipher feedback (CFB)</h4>
+<p>For CFB mode, the encryption process is “take the most recent ciphertext block, pass it through the block cipher (AES) and then XOR that with the plaintext block to generate the next ciphertext block”. B-But what about the first block? Well, there’s something called the Initialization Vector (IV), it’s used for encrypting the first plaintext block because previously there is no ciphertext block.</p>
+
+<figure class="figure w-100">
+  <img src="https://i.ibb.co/qdzNYkx/cfb-mode-full.png" class="figure-img img-fluid rounded" alt=""><figcaption class="figure-caption text-center"></figcaption></figure>
+
+<h4 id="cfb8">CFB8</h4>
+<p>Okay, we have CFB, but what about CFB8? The diagram below should give you a clear visualisation.</p>
+
+<figure class="figure w-100">
+  <img src="https://i.ibb.co/tCvQxG4/aes2.png" class="figure-img img-fluid rounded" alt="CFB8 mode"><figcaption class="figure-caption text-center">CFB8 mode</figcaption></figure>
+
+<p>Things get a little convoluted.  You still use the 16 bytes IV, but each time the 16 bytes output comes out of the block cypher encryption, only s bits (s here can be 1, 8, 64 or 128 depending if you use CFB1, CFB8, CFB64 or CFB128, in this case it is 8) of the output is used to calculate an <span style="color:#e5202a">8-bit ciphertext block</span> by XORing with 8 bit of the plaintext. The remaining 128-8 bit (of the IV or of multiple blocks of ciphertext) plus the previous <span style="color:#e5202a">8-bit cipher block</span> is used as input for the next cycle. The advantage here is that 1 character equals 8-bit so we can encrypt every single character without having to do any padding.</p>
+
+<p>The main vulnerability here is from Microsoft’s NETLOGON implementation of CFB8 and it can be easily summed up with this:</p>
+
+<figure class="figure w-100">
+  <img src="https://i.ibb.co/S0d6ZW7/Disloyal-Man-24032022135348.jpg" class="figure-img img-fluid rounded" alt=""><figcaption class="figure-caption text-center"></figcaption></figure>
+
+<p>The initialization vector is typically required to be random. But in Microsoft’s encrypting function, <span style="color:#e5202a">the IV is fixed and consists of 16 zero bytes</span>. What we can control is the plaintext and we have an all-zero IV, but the key is randomly generated by the server. Remember AES gotta output something and all 8 bits that it puts out ranges in : <code class="language-plaintext highlighter-rouge">00 to FF</code> (256 values) when represented in hex.</p>
+
+<p>So I ran some code flipping the last hex of a key and one of the 256 keys will result in the first hex of the cipher being <code class="language-plaintext highlighter-rouge">00</code>.</p>
+
+<figure class="figure w-100">
+  <img src="https://i.ibb.co/NZLpxtx/cfb-fullmode.png" class="figure-img img-fluid rounded" alt=""><figcaption class="figure-caption text-center"></figcaption></figure>
+
+<p>Hmm <img class="emoji" title=":thinking:" alt=":thinking:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f914.png" height="20" width="20">, what would happen to the final cipher text of CFB8 if the first cipher byte is <code class="language-plaintext highlighter-rouge">00</code>?</p>
+
+<figure class="figure w-100">
+  <img src="https://i.ibb.co/pZFt1Nx/cipher-full-zeros.png" class="figure-img img-fluid rounded" alt="Much zero very secure"><figcaption class="figure-caption text-center">Much zero very secure</figcaption></figure>
+
+<p>As you can see above, as attacker, we can control the plaintext (the client challenge), set it to zeros resulting in <span style="color:#e5202a">a ciphertext of full zeros</span> (after bruteforcing around 256 times to get the first byte that AES outputs to be <code class="language-plaintext highlighter-rouge">00</code>).</p>
+
+<h4 id="so-what">So what?</h4>
+
+<p>The NETLOGON flow will become like this when the cipher is all zeros:</p>
+
+<figure class="figure w-100">
+  <img src="https://i.ibb.co/J3jYTs7/sskeynegotiation3.png" class="figure-img img-fluid rounded" alt=""><figcaption class="figure-caption text-center"></figcaption></figure>
+
+<p>Remember this CVE requires an attacker to have access in the network (the ability to talk to the DC). The scenario here is that the attacker can be an internal employee or the attacker has already taken control of an internal machine. He now can use this CVE to try to access information from other machines or the DC without knowing their credentials.</p>
+
+<p>The verify &amp; compare step is just the client/ server taking the challenge from each others and apply the encryption algorithm to it. With the client credential being all 0 and the server will also verify that the client credential is valid, the attacker is now authenticated as if he is a valid user. However, the next step is to setup a secure channel to transport between the client and the server, which utilizes the session key.</p>
+
+<blockquote>
+  <p>The CVE does not use a valid session key. Every time an authentication call is made, an unique key is generated since the server gives out a different server challenge. But there will be eventually one key that makes the server’s verification of the client credential return TRUE.</p>
+</blockquote>
+
+<p>The attacker has no idea what the session key is because the session key is constructed from the client’s password and the algorithm to encrypt the channel is not vulnerable like the one used to client’s cred function. Conveniently, the client can modify the NetrServerAuthenticate3 params and the server will be happy with no encryption for the channel at all <img class="emoji" title=":rofl:" alt=":rofl:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f923.png" height="20" width="20">.</p>
+
+<blockquote>
+  <p>NetrServerAuthenticate3 is the call from client to server and its param contains the client credential, right before establishing the secure channel. The method mutually authenticates both sides.</p>
+</blockquote>
+
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="n">NTSTATUS</span> <span class="nf">NetrServerAuthenticate3</span><span class="p">(</span>
+   <span class="p">[</span><span class="k">in</span><span class="p">,</span> <span class="n">unique</span><span class="p">,</span> <span class="kt">string</span><span class="p">]</span> <span class="n">LOGONSRV_HANDLE</span> <span class="n">PrimaryName</span><span class="p">,</span>
+   <span class="p">[</span><span class="k">in</span><span class="p">,</span> <span class="kt">string</span><span class="p">]</span> <span class="n">wchar_t</span><span class="p">*</span> <span class="n">AccountName</span><span class="p">,</span>
+   <span class="p">[</span><span class="k">in</span><span class="p">]</span> <span class="n">NETLOGON_SECURE_CHANNEL_TYPE</span> <span class="n">SecureChannelType</span><span class="p">,</span>
+   <span class="p">[</span><span class="k">in</span><span class="p">,</span> <span class="kt">string</span><span class="p">]</span> <span class="n">wchar_t</span><span class="p">*</span> <span class="n">ComputerName</span><span class="p">,</span>
+   <span class="p">[</span><span class="k">in</span><span class="p">]</span> <span class="n">PNETLOGON_CREDENTIAL</span> <span class="n">ClientCredential</span><span class="p">,</span>
+   <span class="p">[</span><span class="k">out</span><span class="p">]</span> <span class="n">PNETLOGON_CREDENTIAL</span> <span class="n">ServerCredential</span><span class="p">,</span>
+   <span class="p">[</span><span class="k">in</span><span class="p">,</span> <span class="k">out</span><span class="p">]</span> <span class="n">ULONG</span> <span class="p">*</span> <span class="n">NegotiateFlags</span><span class="p">,</span> <span class="c1">//Set to 0x212fffff, sign/ seal flag is disabled</span>
+   <span class="p">[</span><span class="k">out</span><span class="p">]</span> <span class="n">ULONG</span> <span class="p">*</span> <span class="n">AccountRid</span>
+ <span class="p">);</span>
+</code></pre></div></div>
+
+<p>By setting the sign flag to 0 we can bypass the secure channel step. The doc for <code class="language-plaintext highlighter-rouge">NegotitateFlags</code> can be found <a href="https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-nrpc/5805bc9f-e4c9-4c8a-b191-3c3a7de7eeed">here</a>.</p>
+
+<p>So the exploit flow can now be simplified to this: 
+<img src="https://i.ibb.co/nD2BWqw/netserverauthenticate4.png" alt="NetrServerAuthenticate3"></p>
+
+<h4 id="perform-a-call">Perform a call</h4>
+<p>Annoyingly, there are several more steps til we can reach the true exploit. Any calls that are remotely interesting requires the Authenticator parameter as you can see below:</p>
+
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">NTSTATUS</span> <span class="nf">NetrServerPasswordGet</span><span class="p">(</span>
+   <span class="p">[</span><span class="k">in</span><span class="p">,</span> <span class="n">unique</span><span class="p">,</span> <span class="kt">string</span><span class="p">]</span> <span class="n">LOGONSRV_HANDLE</span> <span class="n">PrimaryName</span><span class="p">,</span>
+   <span class="p">[</span><span class="k">in</span><span class="p">,</span> <span class="kt">string</span><span class="p">]</span> <span class="n">wchar_t</span><span class="p">*</span> <span class="n">AccountName</span><span class="p">,</span>
+   <span class="p">[</span><span class="k">in</span><span class="p">]</span> <span class="n">NETLOGON_SECURE_CHANNEL_TYPE</span> <span class="n">AccountType</span><span class="p">,</span>
+   <span class="p">[</span><span class="k">in</span><span class="p">,</span> <span class="kt">string</span><span class="p">]</span> <span class="n">wchar_t</span><span class="p">*</span> <span class="n">ComputerName</span><span class="p">,</span>
+   <span class="p">[</span><span class="k">in</span><span class="p">]</span> <span class="n">PNETLOGON_AUTHENTICATOR</span> <span class="n">Authenticator</span><span class="p">,</span>
+   <span class="p">[</span><span class="k">out</span><span class="p">]</span> <span class="n">PNETLOGON_AUTHENTICATOR</span> <span class="n">ReturnAuthenticator</span><span class="p">,</span>
+   <span class="p">[</span><span class="k">out</span><span class="p">]</span> <span class="n">PENCRYPTED_NT_OWF_PASSWORD</span> <span class="n">EncryptedNtOwfPassword</span>
+ <span class="p">);</span>
+</code></pre></div></div>
+
+<p>But the authenticator is also computed using the vulnerable function, so that solves that <img class="emoji" title=":grin:" alt=":grin:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f601.png" height="20" width="20">. Just set the authenticator to all 0s (and an additional timestamp parameter to 0) and when the server validates the authenticator, the result will be 0 and the call will be valid.</p>
+
+<p>We can exploit the NetrServerPasswordSet2 call.</p>
+
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="n">NTSTATUS</span> <span class="nf">NetrServerPasswordSet2</span><span class="p">(</span>
+   <span class="p">[</span><span class="k">in</span><span class="p">,</span> <span class="n">unique</span><span class="p">,</span> <span class="kt">string</span><span class="p">]</span> <span class="n">LOGONSRV_HANDLE</span> <span class="n">PrimaryName</span><span class="p">,</span>
+   <span class="p">[</span><span class="k">in</span><span class="p">,</span> <span class="kt">string</span><span class="p">]</span> <span class="n">wchar_t</span><span class="p">*</span> <span class="n">AccountName</span><span class="p">,</span>
+   <span class="p">[</span><span class="k">in</span><span class="p">]</span> <span class="n">NETLOGON_SECURE_CHANNEL_TYPE</span> <span class="n">SecureChannelType</span><span class="p">,</span>
+   <span class="p">[</span><span class="k">in</span><span class="p">,</span> <span class="kt">string</span><span class="p">]</span> <span class="n">wchar_t</span><span class="p">*</span> <span class="n">ComputerName</span><span class="p">,</span>
+   <span class="p">[</span><span class="k">in</span><span class="p">]</span> <span class="n">PNETLOGON_AUTHENTICATOR</span> <span class="n">Authenticator</span><span class="p">,</span>
+   <span class="p">[</span><span class="k">out</span><span class="p">]</span> <span class="n">PNETLOGON_AUTHENTICATOR</span> <span class="n">ReturnAuthenticator</span><span class="p">,</span>
+   <span class="p">[</span><span class="k">in</span><span class="p">]</span> <span class="n">PNL_TRUST_PASSWORD</span> <span class="n">ClearNewPassword</span>
+ <span class="p">);</span>
+</code></pre></div></div>
+
+<p>This is utilized to set a new computer password for the client. Per <a href="https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-nrpc/52d5bd86-5caf-47aa-aae4-cadf7339ec83">Microsoft documentation</a>:</p>
+
+<blockquote>
+  <p>The NL_TRUST_PASSWORD structure is <span style="color:#e5202a">encrypted using the negotiated encryption algorithm</span> before it is sent over the wire.</p>
+</blockquote>
+
+<p>So you have to specify the new password to set and that password is needed to be encrypted with the session key (again <img class="emoji" title=":tired_face:" alt=":tired_face:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f62b.png" height="20" width="20">!?). We do not know the session key so the server will reject this during validation. Luckily, the same vulnerable algorithm is applied to this password as well so we can just set it all to zeros and we are good to go. <span style="color:#e5202a">The DC will happily accept an empty password </span>. So we know the account has an empty password and we can proceed to set it to another password if we prefer to. We can even escalate this to change the password of the DC.</p>
+
+<h2 id="recreation">Recreation</h2>
+<p>You only need to have one DC and one attacking machine to replicate this attack. But I add one more client just to understand this vulnerability better.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Role</th>
+      <th>OS</th>
+      <th>IP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Domain Controller</td>
+      <td>Windows Server 2012 R2</td>
+      <td>192.168.5.1</td>
+    </tr>
+    <tr>
+      <td>Domain Member</td>
+      <td>Windows 10</td>
+      <td>192.168.5.2</td>
+    </tr>
+    <tr>
+      <td>Attacking machine</td>
+      <td>Kali</td>
+      <td>192.168.5.3</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>There are a bunch of POCs around the Internet at this time so I’m not going to waste time on creating a new one. Here are a list of tools I’m going to use to demonstratre this attack:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Tool</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>impacket</td>
+      <td>a collection of Python classes for working with network protocols</td>
+    </tr>
+  </tbody>
+</table>
+
+
+
+</div>
+  </main>
+
+  <footer class="mt-auto py-3 text-center">
+
+    <small class="text-muted mb-2">
+      <i class="fas fa-code"></i> with <i class="fas fa-heart"></i>
+      by <strong>heckintosh</strong>
+    </small>
+  
+    <div class="container-fluid justify-content-center">
+<a class="social mx-1" href="mailto:heckintosh@protonmail.com" style="color: #6c757d" onmouseover="this.style.color='#db4437'" onmouseout="this.style.color='#6c757d'">
+      <i class="fas fa-envelope fa-1x"></i>
+    </a><a class="social mx-1" href="https://www.facebook.com/dcanh09" style="color: #6c757d" onmouseover="this.style.color='#3b5998'" onmouseout="this.style.color='#6c757d'">
+      <i class="fab fa-facebook fa-1x"></i>
+    </a><a class="social mx-1" href="https://www.github.com/heckintosh" style="color: #6c757d" onmouseover="this.style.color='#333333'" onmouseout="this.style.color='#6c757d'">
+      <i class="fab fa-github fa-1x"></i>
+    </a><a class="social mx-1" href="https://www.twitter.com/heckintosh_" style="color: #6c757d" onmouseover="this.style.color='#1da1f2'" onmouseout="this.style.color='#6c757d'">
+      <i class="fab fa-twitter fa-1x"></i>
+    </a>
+
+</div>
+  
+
+    
+  </footer>
+
+  
+  <!-- GitHub Buttons -->
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+
+<!-- jQuery CDN -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<!-- Popper.js CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
+
+<!-- Bootstrap JS CDN -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<!-- wow.js CDN & Activation -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.js"></script>
+<script> new WOW().init(); </script>
+
+<!-- Initialize all tooltips -->
+<script>
+$(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+})
+</script>
+
+
+</body>
+
+</html>
