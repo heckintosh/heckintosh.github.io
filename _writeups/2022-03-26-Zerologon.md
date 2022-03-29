@@ -175,16 +175,19 @@ This is utilized to set a new computer password for the client. Per [Microsoft d
 So you have to specify the new password to set and that password is needed to be encrypted with the session key (again :tired_face:!?). We do not know the session key so the server will reject this during validation. Luckily, the same vulnerable algorithm is applied to this password as well so we can just set it all to zeros and we are good to go. <span style="color:#e5202a">The DC will happily accept an empty password </span>. So we know the account has an empty password and we can proceed to set it to another password if we prefer to. We can even escalate this to change the password of the DC.
 
 ## Recreation
-You only need to have one DC and one attacking machine to replicate this attack. But I add one more client just to understand this vulnerability better. 
+You only need to have one DC and one attacking machine to replicate this attack.
 
 | Role              | OS                     | IP           |
 |-------------------|------------------------|--------------|
 | Domain Controller | Windows Server 2012 R2 | 192.168.5.1  |
-| Domain Member     | Windows 10             | 192.168.5.2  |
 | Attacking machine | Kali                   | 192.168.5.3  |
 
 There are a bunch of POCs around the Internet at this time so I'm not going to waste time on creating a new one. Here are a list of tools I'm going to use to demonstratre this attack:
 
 | Tool              | Description |
 |-------------------|------------ |
-| impacket          | a collection of Python classes for working with network protocols |
+| impacket          | a collection of Python classes for working with network protocols (Support for NETLOGON structure |
+| [Dirkjanm CVE-2020-1472 implementation](https://github.com/dirkjanm/CVE-2020-1472) | POC for CVE-2020-1472
+
+Note that here the demonstration is to login to the DC by changing its password even though we are unauthenticated. A problem arises though:
+When we use this CVE to alter DC password, the one stored in AD gets changed and 
