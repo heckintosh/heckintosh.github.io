@@ -20,7 +20,7 @@ function initTheme() {
     setTheme(themes.DARK);
   } else {
     // Default theme
-    setTheme(themes.DARK);
+    setTheme(themes.LIGHT);
   }
 
   // Watch for system theme changes

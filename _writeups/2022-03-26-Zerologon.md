@@ -177,8 +177,14 @@ So you have to specify the new password to set and that password is needed to be
 ## Recreation
 You only need to have one DC and one attacking machine to replicate this attack. But I add one more client just to understand this vulnerability better. 
 
-| Role              | OS                     | IP    |
-|-------------------|------------------------|-------|
-| Domain Controller | Windows Server 2012 R2 | 192.168.5.1 |
+| Role              | OS                     | IP           |
+|-------------------|------------------------|--------------|
+| Domain Controller | Windows Server 2012 R2 | 192.168.5.1  |
 | Domain Member     | Windows 10             | 192.168.5.2  |
 | Attacking machine | Kali                   | 192.168.5.3  |
+
+There are a bunch of POCs around the Internet at this time so I'm not going to waste time on creating a new one. Here are a list of tools I'm going to use to demonstratre this attack:
+
+| Tool              | Description |
+|-------------------|------------ |
+| impacket          | a collection of Python classes for working with network protocols |
