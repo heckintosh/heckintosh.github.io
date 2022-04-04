@@ -255,7 +255,7 @@ the relationship between a domain member and its domain, and relationships among
 <p>So you have to specify the new password to set and that password is needed to be encrypted with the session key (again <img class="emoji" title=":tired_face:" alt=":tired_face:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f62b.png" height="20" width="20">!?). We do not know the session key so the server will reject this during validation. Luckily, the same vulnerable algorithm is applied to this password as well so we can just set it all to zeros and we are good to go. <span style="color:#e5202a">The DC will happily accept an empty password </span>. So we know the account has an empty password and we can proceed to set it to another password if we prefer to. We can even escalate this to change the password of the DC.</p>
 
 <h2 id="recreation">Recreation</h2>
-<p>You only need to have one DC and one attacking machine to replicate this attack. But I add one more client just to understand this vulnerability better.</p>
+<p>You only need to have one DC and one attacking machine to replicate this attack.</p>
 
 <table>
   <thead>
@@ -270,11 +270,6 @@ the relationship between a domain member and its domain, and relationships among
       <td>Domain Controller</td>
       <td>Windows Server 2012 R2</td>
       <td>192.168.5.1</td>
-    </tr>
-    <tr>
-      <td>Domain Member</td>
-      <td>Windows 10</td>
-      <td>192.168.5.2</td>
     </tr>
     <tr>
       <td>Attacking machine</td>
@@ -296,10 +291,17 @@ the relationship between a domain member and its domain, and relationships among
   <tbody>
     <tr>
       <td>impacket</td>
-      <td>a collection of Python classes for working with network protocols</td>
+      <td>a collection of Python classes for working with network protocols (Support for NETLOGON structure</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/dirkjanm/CVE-2020-1472">Dirkjanm CVE-2020-1472 implementation</a></td>
+      <td>POC for CVE-2020-1472</td>
     </tr>
   </tbody>
 </table>
+
+<p>Note that here the demonstration is to login to the DC by changing its password even though we are unauthenticated. A problem arises though:
+When we use this CVE to alter DC password, the one stored in AD gets changed and</p>
 
 
 
@@ -316,8 +318,6 @@ the relationship between a domain member and its domain, and relationships among
     <div class="container-fluid justify-content-center">
 <a class="social mx-1" href="mailto:heckintosh@protonmail.com" style="color: #6c757d" onmouseover="this.style.color='#db4437'" onmouseout="this.style.color='#6c757d'">
       <i class="fas fa-envelope fa-1x"></i>
-    </a><a class="social mx-1" href="https://www.facebook.com/dcanh09" style="color: #6c757d" onmouseover="this.style.color='#3b5998'" onmouseout="this.style.color='#6c757d'">
-      <i class="fab fa-facebook fa-1x"></i>
     </a><a class="social mx-1" href="https://www.github.com/heckintosh" style="color: #6c757d" onmouseover="this.style.color='#333333'" onmouseout="this.style.color='#6c757d'">
       <i class="fab fa-github fa-1x"></i>
     </a><a class="social mx-1" href="https://www.twitter.com/heckintosh_" style="color: #6c757d" onmouseover="this.style.color='#1da1f2'" onmouseout="this.style.color='#6c757d'">
