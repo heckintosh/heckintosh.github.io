@@ -174,7 +174,7 @@ This is utilized to set a new computer password for the client. Per [Microsoft d
 
 So you have to specify the new password to set and that password is needed to be encrypted with the session key (again :tired_face:!?). We do not know the session key so the server will reject this during validation. Luckily, the same vulnerable algorithm is applied to this password as well so we can just set it all to zeros and we are good to go. <span style="color:#e5202a">The DC will happily accept an empty password </span>. So we know the account has an empty password and we can proceed to set it to another password if we prefer to. We can even escalate this to change the password of the DC.
 
-## Recreation
+# Recreation
 You only need to have one DC and one attacking machine to replicate this attack.
 
 | Role              | OS                     | IP           |
@@ -188,6 +188,28 @@ There are a bunch of POCs around the Internet at this time so I'm not going to w
 |-------------------|------------ |
 | impacket          | a collection of Python classes for working with network protocols (Support for NETLOGON structure |
 | [Dirkjanm CVE-2020-1472 implementation](https://github.com/dirkjanm/CVE-2020-1472) | POC for CVE-2020-1472
+| secretdumps.py | A tool in impacket collections, direct implementation of DCSync attack
 
 Note that here the demonstration is to login to the DC by changing its password even though we are unauthenticated. A problem arises though:
-When we use this CVE to alter DC password, the one stored in AD gets changed and 
+
+When we use this CVE to alter DC password, the one stored in AD gets changed but not in the local registry, which leads to a buggy DC. So we will perform the following additional steps:
+
+- Login to DC using empty password.
+- Use the Domain Replication Service (DRS) to dump hashes from DC.
+- Revert DC password to the original one.
+- Use dumped hash to perform attacks like Golden Ticket and pass the hash.
+
+> The DCSync attack takes advantage of the DRS. The attacker simulates the behavior of a typical domain controller and ask the DC to replicate user information. The DC then returns the data, which has the password hashes. Since replication is a necessary feature, this attack is always available if you have admin creds.
+
+{% include elements/figure.html image="https://i.imgur.com/UQ2NmL9.png" caption='After running the exploit script the DC password is now zero' %}
+
+{% include elements/figure.html image="https://i.imgur.com/v3xq0De.png" caption='Using the secretdumps tool to obtain the hash' %}
+
+```http
+-just-dc: Extract only NTDS.DIT data (NTLM hashes and Kerberos keys)
+-no-pass: Cause the password is empty.
+```
+
+Using `john` to crack the NTLM hash of Win-DC:
+
+{% include elements/figure.html image="https://i.imgur.com/RuBtfgV.png" caption='John shows the NTLM hash to be empty' %}

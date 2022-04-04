@@ -71,7 +71,7 @@
 
 <p class="post-metadata text-muted">
   26 March 2022 -  
-  <b>12 mins read time</b>
+  <b>14 mins read time</b>
 
   <br></p>
 
@@ -254,7 +254,11 @@ the relationship between a domain member and its domain, and relationships among
 
 <p>So you have to specify the new password to set and that password is needed to be encrypted with the session key (again <img class="emoji" title=":tired_face:" alt=":tired_face:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f62b.png" height="20" width="20">!?). We do not know the session key so the server will reject this during validation. Luckily, the same vulnerable algorithm is applied to this password as well so we can just set it all to zeros and we are good to go. <span style="color:#e5202a">The DC will happily accept an empty password </span>. So we know the account has an empty password and we can proceed to set it to another password if we prefer to. We can even escalate this to change the password of the DC.</p>
 
+<<<<<<< HEAD
 <h2 id="recreation">Recreation</h2>
+=======
+<h1 id="recreation">Recreation</h1>
+>>>>>>> 7b56a6324fed4a3e411a144c48a42f075a5b1f68
 <p>You only need to have one DC and one attacking machine to replicate this attack.</p>
 
 <table>
@@ -296,12 +300,51 @@ the relationship between a domain member and its domain, and relationships among
     <tr>
       <td><a href="https://github.com/dirkjanm/CVE-2020-1472">Dirkjanm CVE-2020-1472 implementation</a></td>
       <td>POC for CVE-2020-1472</td>
+<<<<<<< HEAD
+=======
+    </tr>
+    <tr>
+      <td>secretdumps.py</td>
+      <td>A tool in impacket collections, direct implementation of DCSync attack</td>
+>>>>>>> 7b56a6324fed4a3e411a144c48a42f075a5b1f68
     </tr>
   </tbody>
 </table>
 
+<<<<<<< HEAD
 <p>Note that here the demonstration is to login to the DC by changing its password even though we are unauthenticated. A problem arises though:
 When we use this CVE to alter DC password, the one stored in AD gets changed and</p>
+=======
+<p>Note that here the demonstration is to login to the DC by changing its password even though we are unauthenticated. A problem arises though:</p>
+
+<p>When we use this CVE to alter DC password, the one stored in AD gets changed but not in the local registry, which leads to a buggy DC. So we will perform the following additional steps:</p>
+
+<ul>
+  <li>Login to DC using empty password.</li>
+  <li>Use the Domain Replication Service (DRS) to dump hashes from DC.</li>
+  <li>Revert DC password to the original one.</li>
+  <li>Use dumped hash to perform attacks like Golden Ticket and pass the hash.</li>
+</ul>
+
+<blockquote>
+  <p>The DCSync attack takes advantage of the DRS. The attacker simulates the behavior of a typical domain controller and ask the DC to replicate user information. The DC then returns the data, which has the password hashes. Since replication is a necessary feature, this attack is always available if you have admin creds.</p>
+</blockquote>
+
+<figure class="figure w-100">
+  <img src="https://i.imgur.com/UQ2NmL9.png" class="figure-img img-fluid rounded" alt="After running the exploit script the DC password is now zero"><figcaption class="figure-caption text-center">After running the exploit script the DC password is now zero</figcaption></figure>
+
+<figure class="figure w-100">
+  <img src="https://i.imgur.com/v3xq0De.png" class="figure-img img-fluid rounded" alt="Using the secretdumps tool to obtain the hash"><figcaption class="figure-caption text-center">Using the secretdumps tool to obtain the hash</figcaption></figure>
+
+<div class="language-http highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">-just-dc: Extract only NTDS.DIT data (NTLM hashes and Kerberos keys)
+-no-pass: Cause the password is empty.
+</span></code></pre></div></div>
+
+<p>Using <code class="language-plaintext highlighter-rouge">john</code> to crack the NTLM hash of Win-DC:</p>
+
+<figure class="figure w-100">
+  <img src="https://i.imgur.com/RuBtfgV.png" class="figure-img img-fluid rounded" alt="John shows the NTLM hash to be empty"><figcaption class="figure-caption text-center">John shows the NTLM hash to be empty</figcaption></figure>
+>>>>>>> 7b56a6324fed4a3e411a144c48a42f075a5b1f68
 
 
 
