@@ -196,7 +196,6 @@ When we use this CVE to alter DC password, the one stored in AD gets changed but
 
 - Login to DC using empty password.
 - Use the Domain Replication Service (DRS) to dump hashes from DC.
-- Revert DC password to the original one.
 - Use dumped hash to perform attacks like Golden Ticket and pass the hash.
 
 > The DCSync attack takes advantage of the DRS. The attacker simulates the behavior of a typical domain controller and ask the DC to replicate user information. The DC then returns the data, which has the password hashes. Since replication is a necessary feature, this attack is always available if you have admin creds.
@@ -210,6 +209,12 @@ When we use this CVE to alter DC password, the one stored in AD gets changed but
 -no-pass: Cause the password is empty.
 ```
 
-Using `john` to crack the NTLM hash of Win-DC:
+Using `john` to crack the NTLM hash of Win-DC and we can see that the password is empty:
 
 {% include elements/figure.html image="https://i.imgur.com/RuBtfgV.png" caption='John shows the NTLM hash to be empty' %}
+
+And finally, we can use [Pass-the-hash](https://blog.netwrix.com/2021/11/30/passing-the-hash-with-mimikatz/) technique to compromise the DC (and other machines if they exist).
+
+{% include elements/figure.html image="https://i.imgur.com/NPo4uXc.png" caption='Pass the hash: SMB' %}
+
+That's the gist of ZeroLogon. Hope you have fun reading it. Here's the [donate link](https://heckintosh.github.io) if you feel generous :grin:.
