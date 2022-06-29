@@ -1,7 +1,7 @@
 ---
 name: Pwnable &#58; Start
 tools: [Pwnable, Binary Exploitation]
-image: https://byte-mind.net/wp-content/uploads/2022/01/bolt-750x410.jpeg
+image: https://raw.githubusercontent.com/heckintosh/heckintosh.github.io/main/assets/images/pwnable_start.png
 description:  A medium difficulty box from Hack The Box
 ---
 
