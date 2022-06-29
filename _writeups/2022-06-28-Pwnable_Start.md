@@ -1,6 +1,6 @@
 ---
-name: Hack the Box &#58; Bolt
-tools: [HackTheBox, OSCP]
+name: Pwnable &#58; Start
+tools: [Pwnable, Binary Exploitation]
 image: https://byte-mind.net/wp-content/uploads/2022/01/bolt-750x410.jpeg
 description:  A medium difficulty box from Hack The Box
 ---
