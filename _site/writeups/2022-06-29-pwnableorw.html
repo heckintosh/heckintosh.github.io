@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+
+
+<html lang="en" class="h-100">
+
+<head>
+
+  
+  
+
+  
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Pwnable &amp;#58; Orw">
+  <meta property="og:description" content="A 100-point challenge from pwnable">
+
+  <title>Pwnable &amp;#58; Orw</title>
+  <meta name="description" content="A 100-point challenge from pwnable">
+
+  <link rel="shortcut icon" type="image/x-icon" href="/assets/favicon.ico">
+
+  <!-- Theme style -->
+  <script src="/assets/js/theme.js"></script>
+
+  <!-- Font Awesome CDN -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.10.0/css/all.css">
+
+  <!-- Bootstrap CSS CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+
+  <!-- Animate CSS CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/assets/css/style.css">
+
+</head>
+
+<body class="h-100 d-flex flex-column">
+
+  <main class="flex-shrink-0 container mt-5">
+    <nav class="navbar navbar-expand-lg navbar-themed">
+
+  <a class="navbar-brand" href="/"><h5><b>heckintosh</b></h5></a>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+    <i class="fas fa-1x fa-bars text-themed"></i>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+    <div class="navbar-nav ml-auto"><a class="nav-item nav-link " href="/blog/">Blog</a>
+
+      <a class="nav-item nav-link active" href="/writeups/">Writeups</a>
+
+      <a class="nav-item nav-link " href="/about/">About</a>
+
+      
+
+      <span id="theme-toggler" class="nav-item nav-link" role="button" onclick="toggleTheme()"></span>
+    </div>
+  </div>
+
+</nav>
+    <div class="col-lg-10 mx-auto mt-5 markdown-body">
+  <h1><b>Pwnable &#58; Orw</b></h1>
+
+<p class="post-metadata text-muted">
+  29 June 2022 -  
+  <b>6 mins read time</b>
+
+  <br></p>
+
+<p>Follow the normal workflow and you have the following disassembly code from pwndbg.</p>
+
+<div class="language-nasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   <span class="err">0</span><span class="nf">x08048548</span> <span class="o">&lt;+</span><span class="mi">0</span><span class="o">&gt;</span><span class="p">:</span>     <span class="nv">lea</span>    <span class="nb">ecx</span><span class="p">,[</span><span class="nb">esp</span><span class="o">+</span><span class="mh">0x4</span><span class="p">]</span>                <span class="o">//</span> <span class="nv">Stack_Alignment</span>
+   <span class="err">0</span><span class="nf">x0804854c</span> <span class="o">&lt;+</span><span class="mi">4</span><span class="o">&gt;</span><span class="p">:</span>     <span class="nv">and</span>    <span class="nb">esp</span><span class="p">,</span><span class="mh">0xfffffff0</span>               <span class="o">//</span>
+   <span class="err">0</span><span class="nf">x0804854f</span> <span class="o">&lt;+</span><span class="mi">7</span><span class="o">&gt;</span><span class="p">:</span>     <span class="nv">push</span>   <span class="kt">DWORD</span> <span class="nv">PTR</span> <span class="p">[</span><span class="nb">ecx</span><span class="o">-</span><span class="mh">0x4</span><span class="p">]</span>          <span class="o">//</span>
+   <span class="err">0</span><span class="nf">x08048552</span> <span class="o">&lt;+</span><span class="mi">10</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">push</span>   <span class="nb">ebp</span>                          <span class="o">//</span> <span class="nv">Function</span> <span class="nv">Prologue</span>
+   <span class="err">0</span><span class="nf">x08048553</span> <span class="o">&lt;+</span><span class="mi">11</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">mov</span>    <span class="nb">ebp</span><span class="p">,</span><span class="nb">esp</span>                      <span class="o">//</span> 
+   <span class="err">0</span><span class="nf">x08048555</span> <span class="o">&lt;+</span><span class="mi">13</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">push</span>   <span class="nb">ecx</span>
+<span class="err">=&gt;</span> <span class="err">0</span><span class="nf">x08048556</span> <span class="o">&lt;+</span><span class="mi">14</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">sub</span>    <span class="nb">esp</span><span class="p">,</span><span class="mh">0x4</span>
+   <span class="err">0</span><span class="nf">x08048559</span> <span class="o">&lt;+</span><span class="mi">17</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">call</span>   <span class="mh">0x80484cb</span> <span class="o">&lt;</span><span class="nv">orw_seccomp</span><span class="o">&gt;</span>
+   <span class="err">0</span><span class="nf">x0804855e</span> <span class="o">&lt;+</span><span class="mi">22</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">sub</span>    <span class="nb">esp</span><span class="p">,</span><span class="mh">0xc</span>
+   <span class="err">0</span><span class="nf">x08048561</span> <span class="o">&lt;+</span><span class="mi">25</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">push</span>   <span class="mh">0x80486a0</span>
+   <span class="err">0</span><span class="nf">x08048566</span> <span class="o">&lt;+</span><span class="mi">30</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">call</span>   <span class="mh">0x8048380</span> <span class="o">&lt;</span><span class="nv">printf@plt</span><span class="o">&gt;</span>
+   <span class="err">0</span><span class="nf">x0804856b</span> <span class="o">&lt;+</span><span class="mi">35</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">add</span>    <span class="nb">esp</span><span class="p">,</span><span class="mh">0x10</span>
+   <span class="err">0</span><span class="nf">x0804856e</span> <span class="o">&lt;+</span><span class="mi">38</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">sub</span>    <span class="nb">esp</span><span class="p">,</span><span class="mh">0x4</span>
+   <span class="err">0</span><span class="nf">x08048571</span> <span class="o">&lt;+</span><span class="mi">41</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">push</span>   <span class="mh">0xc8</span>
+   <span class="err">0</span><span class="nf">x08048576</span> <span class="o">&lt;+</span><span class="mi">46</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">push</span>   <span class="mh">0x804a060</span>
+   <span class="err">0</span><span class="nf">x0804857b</span> <span class="o">&lt;+</span><span class="mi">51</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">push</span>   <span class="mh">0x0</span>
+   <span class="err">0</span><span class="nf">x0804857d</span> <span class="o">&lt;+</span><span class="mi">53</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">call</span>   <span class="mh">0x8048370</span> <span class="o">&lt;</span><span class="nv">read@plt</span><span class="o">&gt;</span>
+   <span class="err">0</span><span class="nf">x08048582</span> <span class="o">&lt;+</span><span class="mi">58</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">add</span>    <span class="nb">esp</span><span class="p">,</span><span class="mh">0x10</span>
+   <span class="err">0</span><span class="nf">x08048585</span> <span class="o">&lt;+</span><span class="mi">61</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">mov</span>    <span class="nb">eax</span><span class="p">,</span><span class="mh">0x804a060</span>
+   <span class="err">0</span><span class="nf">x0804858a</span> <span class="o">&lt;+</span><span class="mi">66</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">call</span>   <span class="nb">eax</span>
+   <span class="err">0</span><span class="nf">x0804858c</span> <span class="o">&lt;+</span><span class="mi">68</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">mov</span>    <span class="nb">eax</span><span class="p">,</span><span class="mh">0x0</span>
+   <span class="err">0</span><span class="nf">x08048591</span> <span class="o">&lt;+</span><span class="mi">73</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">mov</span>    <span class="nb">ecx</span><span class="p">,</span><span class="kt">DWORD</span> <span class="nv">PTR</span> <span class="p">[</span><span class="nb">ebp</span><span class="o">-</span><span class="mh">0x4</span><span class="p">]</span>
+   <span class="err">0</span><span class="nf">x08048594</span> <span class="o">&lt;+</span><span class="mi">76</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">leave</span>  
+   <span class="err">0</span><span class="nf">x08048595</span> <span class="o">&lt;+</span><span class="mi">77</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">lea</span>    <span class="nb">esp</span><span class="p">,[</span><span class="nb">ecx</span><span class="o">-</span><span class="mh">0x4</span><span class="p">]</span>
+   <span class="err">0</span><span class="nf">x08048598</span> <span class="o">&lt;+</span><span class="mi">80</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">ret</span>    
+</code></pre></div></div>
+
+<p>Let’s try to understand the code first before exploiting.</p>
+
+<h2 id="1-stack-alignment-explained">1. Stack alignment explained</h2>
+<p>If you know about this already, <a href="#section-2">skip to section 2.</a>
+The first 3 instructions is for aligning the stacks. I have read about this concept for a lifetime and everytime I encounter it I still find it confusing. Why aligning stack? To dumb it down: stack alignment helps read data in as few memory access cycles as possible, and that misalignment of stack pointers can lead to serious performance degradation.</p>
+
+<p>Requirement:</p>
+
+<ul>
+  <li>The starting address created by a memory allocation function (alloca, malloc, calloc or realloc) must be a multiple of 16.</li>
+  <li>The boundaries of stack frames for most functions must be 16 direct multiples.
+Not only are the parameters and local variables passed to satisfy byte alignment, but our stack pointer (% rsp) must also be a multiple of 16.</li>
+</ul>
+
+<p>Want to understand deeper? Go <a href="https://developpaper.com/byte-alignment-of-x86_64-linux-runtime-stack/">here.</a></p>
+
+<h4 id="first-instruction">First instruction</h4>
+<div class="language-nasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">0</span><span class="nf">x08048548</span> <span class="o">&lt;+</span><span class="mi">0</span><span class="o">&gt;</span><span class="p">:</span>     <span class="nv">lea</span>    <span class="nb">ecx</span><span class="p">,[</span><span class="nb">esp</span><span class="o">+</span><span class="mh">0x4</span><span class="p">]</span>         <span class="o">//</span> <span class="nv">Load</span> <span class="kc">$</span><span class="nb">esp</span><span class="o">+</span><span class="mi">4</span> <span class="nv">into</span> <span class="nb">ecx</span>
+</code></pre></div></div>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>STACK BEFORE THE INSTRUCTION:
+00:0000│ esp 0xffffcd7c —▸ 0xf7dd1905 (__libc_start_main+229) ◂— add    esp, 0x10
+01:0004│     0xffffcd80 ◂— 0x1
+
+STACK AFTER THE INSTRUCTION:
+
+00:0000│ esp 0xffffcd7c —▸ 0xf7dd1905 (__libc_start_main+229) ◂— add    esp, 0x10
+01:0004│ ecx    0xffffcd80 ◂— 0x1
+</code></pre></div></div>
+<p>Notice that the value of $esp now is 0xffffcd7c. Which is not aligned to 16. 
+A memory address is said to be aligned to 16 if it is evenly divisible by 16 (or the last hex is 0)</p>
+
+<h4 id="second-instruction">Second instruction</h4>
+<div class="language-nasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">0</span><span class="nf">x804854c</span> <span class="o">&lt;</span><span class="nv">main</span><span class="o">+</span><span class="mi">4</span><span class="o">&gt;</span>     <span class="nv">and</span>    <span class="nb">esp</span><span class="p">,</span> <span class="mh">0xfffffff0</span>   <span class="o">//</span> <span class="nv">and</span> <span class="nv">operation</span> <span class="nv">on</span> <span class="kc">$</span><span class="nb">esp</span>
+</code></pre></div></div>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>STACK AFTER THIS INSTRUCTION:
+00:0000│ esp 0xffffcd70 ◂— 0x1
+01:0004│     0xffffcd74 —▸ 0x80483d0 (_start) ◂— xor    ebp, ebp
+02:0008│     0xffffcd78 ◂— 0x0
+03:000c│     0xffffcd7c —▸ 0xf7dd1905 (__libc_start_main+229) ◂— add    esp, 0x10
+04:0010│ ecx 0xffffcd80 ◂— 0x1
+</code></pre></div></div>
+<p>The value of $esp now is 0xffffcd70. Just turn it into decimal and you will see it is divisible by 16.
+Note that $ecx - 4 is the value of $esp at the beginning of main(), it will be relevant in the next instruction.</p>
+
+<h4 id="third-instruction">Third instruction</h4>
+<div class="language-nasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">0</span><span class="nf">x0804854f</span> <span class="o">&lt;+</span><span class="mi">7</span><span class="o">&gt;</span><span class="p">:</span>     <span class="nv">push</span>   <span class="kt">DWORD</span> <span class="nv">PTR</span> <span class="p">[</span><span class="nb">ecx</span><span class="o">-</span><span class="mh">0x4</span><span class="p">]</span>  
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>STACK AFTER THIS INSTRUCTION:
+00:0000│ esp 0xffffcd6c —▸ 0xf7dd1905 (__libc_start_main+229) ◂— add    esp, 0x10
+01:0004│     0xffffcd70 ◂— 0x1
+02:0008│     0xffffcd74 —▸ 0x80483d0 (_start) ◂— xor    ebp, ebp
+03:000c│     0xffffcd78 ◂— 0x0
+04:0010│     0xffffcd7c —▸ 0xf7dd1905 (__libc_start_main+229) ◂— add    esp, 0x10
+05:0014│ ecx 0xffffcd80 ◂— 0x1  // This is the number of arguments, if I suppy two arguments this would be 0x3
+
+This saves the original value of $esp at the beginning of main() to the stack.
+</code></pre></div></div>
+<p>OK, so the first two is pure stack alignment. This one is a little more nuance. These instructions are executed prior to the below <a href="https://www.learnvulnerabilityresearch.com/stack-frame-function-prologue#:~:text=When%20a%20function%20is%20called%2C%20it's%20return%20address%20is%20PUSHed,make%20room%20for%20local%20variables.">function prologue</a>.</p>
+
+<div class="language-nasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">0</span><span class="nf">x8048552</span> <span class="o">&lt;</span><span class="nv">main</span><span class="o">+</span><span class="mi">10</span><span class="o">&gt;</span>    <span class="nv">push</span>   <span class="nb">ebp</span>
+<span class="err">0</span><span class="nf">x8048553</span> <span class="o">&lt;</span><span class="nv">main</span><span class="o">+</span><span class="mi">11</span><span class="o">&gt;</span>    <span class="nv">mov</span>    <span class="nb">ebp</span><span class="p">,</span> <span class="nb">esp</span>
+</code></pre></div></div>
+
+<p>And what is always before the function prologue? Yep, the return address and that return address is $ecx-4 or __libc_start_main(). The EBP is created by the instruction at 0x8048552 and the ret is there by pushing [ecx-4], denoted below:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ESP                                                                              │
+                     ┌────────────────────────────────────────────────────┐       │
+   │                 │                                                    │       │
+   └────────────────►│                   Caller's $ebx                    │       │        LOW ADDR
+                     ├────────────────────────────────────────────────────┤       │
+                     │                                                    │       │
+                     │                   Caller's $esi                    │       │
+                     ├────────────────────────────────────────────────────┤       │
+                     │                                                    │       │
+                     │                   Caller's $edi                    │       │
+                     ├────────────────────────────────────────────────────┤       │
+                     │                                                    │       │
+                     │                  Local Variable 3                  │       │
+                     │                                                    │       │
+                     ├────────────────────────────────────────────────────┤       │
+                     │                                                    │       │
+                     │                  Local Variable 2                  │       │
+                     │                                                    │       │
+                     ├────────────────────────────────────────────────────┤       │
+                     │                                                    │       │
+                     │                  Local Variable 1                  │       │
+                     │                                                    │       │
+                     ├────────────────────────────────────────────────────┤       │
+                     │                                                    │       │
+                     │                        $EBP                        │       │
+                     │                                                    │       │
+                     ├────────────────────────────────────────────────────┤       │
+                     │                                                    │       │
+                     │                     Return Address                 │       │
+                     │                                                    │       │
+                     ├────────────────────────────────────────────────────┤       │
+                     │                                                    │       │
+                     │                   Parameter 1                      │       │
+                     │                                                    │       │
+                     ├────────────────────────────────────────────────────┤       │
+                     │                                                    │       │
+                     │                   Parameter 2                      │       │
+                     ├────────────────────────────────────────────────────┤       │
+                     │                                                    │       │       HIGH ADDR
+                     │                  Parameter 3                       │       │
+                     └────────────────────────────────────────────────────┘       ▼
+
+</code></pre></div></div>
+
+<h3 id="section-2-header"><a id="section-2">Section 2</a> Header</h3>
+
+
+
+</div>
+  </main>
+
+  <footer class="mt-auto py-3 text-center">
+
+    <small class="text-muted mb-2">
+      <i class="fas fa-code"></i> with <i class="fas fa-heart"></i>
+      by <strong>heckintosh</strong>
+    </small>
+  
+    <div class="container-fluid justify-content-center"><a class="social mx-1"  href="mailto:heckintosh@protonmail.com"
+       style="color: #6c757d"
+       onMouseOver="this.style.color='#db4437'"
+       onMouseOut="this.style.color='#6c757d'">
+      <i class="fas fa-envelope fa-1x"></i>
+    </a><a class="social mx-1"  href="https://www.github.com/heckintosh"
+       style="color: #6c757d"
+       onMouseOver="this.style.color='#333333'"
+       onMouseOut="this.style.color='#6c757d'">
+      <i class="fab fa-github fa-1x"></i>
+    </a><a class="social mx-1"  href="https://www.twitter.com/heckintosh_"
+       style="color: #6c757d"
+       onMouseOver="this.style.color='#1da1f2'"
+       onMouseOut="this.style.color='#6c757d'">
+      <i class="fab fa-twitter fa-1x"></i>
+    </a>
+
+</div>
+  
+
+    
+  </footer>
+
+  
+  <!-- GitHub Buttons -->
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+
+<!-- jQuery CDN -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<!-- Popper.js CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
+
+<!-- Bootstrap JS CDN -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<!-- wow.js CDN & Activation -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.js"></script>
+<script> new WOW().init(); </script>
+
+<!-- Initialize all tooltips -->
+<script>
+$(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+})
+</script>
+
+
+</body>
+
+</html>
