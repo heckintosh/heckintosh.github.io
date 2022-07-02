@@ -288,8 +288,4 @@ DEPENDENCIES
   wdm (>= 0.1.0)
 
 BUNDLED WITH
-<<<<<<< HEAD
    2.3.17
-=======
-   2.3.16
->>>>>>> 74bdb60249e9cd4e8b336c8d9a2ec0b8ea23d03f
