@@ -1,7 +1,7 @@
 ---
 name: Pwnable_Start
 tools: [Pwnable, Binary Exploitation]
-image: https://raw.githubusercontent.com/heckintosh/heckintosh.github.io/main/assets/images/pwnable.png
+image: https://raw.githubusercontent.com/heckintosh/heckintosh.github.io/main/assets/images/pwnable/pwnable.png
 description:  A 100-point challenge from Pwnable.tw
 ---
 
