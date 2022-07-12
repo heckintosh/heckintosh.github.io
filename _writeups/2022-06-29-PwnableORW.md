@@ -1,7 +1,7 @@
 ---
-name: Pwnable &#58; Orw
+name: Pwnable.tw Orw
 tools: [Pwnable, Wargame, Beginner-friendly]
-image: https://pwnable.tw/static/image/og_img.png
+image: https://raw.githubusercontent.com/heckintosh/heckintosh.github.io/main/assets/images/pwnable/pwnable.png
 description:  A 100-point challenge from pwnable
 ---
 
