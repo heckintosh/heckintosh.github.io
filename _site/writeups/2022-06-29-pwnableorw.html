@@ -70,7 +70,7 @@
 
 <p class="post-metadata text-muted">
   29 June 2022 -  
-  <b>6 mins read time</b>
+  <b>8 mins read time</b>
 
   <br></p>
 
@@ -105,8 +105,8 @@
 
 <p>Let’s try to understand the code first before exploiting.</p>
 
-<h2 id="1-stack-alignment-explained">1. Stack alignment explained</h2>
-<p>If you know about this already, <a href="#section-2">skip to section 2.</a>
+<h2 id="1-stack-alignment-explained"><u>1. Stack alignment explained</u></h2>
+<p>If you know about this already, <a href="#initial-analysis">skip to the initial analysis.</a>
 The first 3 instructions is for aligning the stacks. I have read about this concept for a lifetime and everytime I encounter it I still find it confusing. Why aligning stack? To dumb it down: stack alignment helps read data in as few memory access cycles as possible, and that misalignment of stack pointers can lead to serious performance degradation.</p>
 
 <p>Requirement:</p>
@@ -119,7 +119,7 @@ Not only are the parameters and local variables passed to satisfy byte alignment
 
 <p>Want to understand deeper? Go <a href="https://developpaper.com/byte-alignment-of-x86_64-linux-runtime-stack/">here.</a></p>
 
-<h4 id="first-instruction">First instruction</h4>
+<h4 id="first-instruction"><i>First instruction</i></h4>
 <div class="language-nasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">0</span><span class="nf">x08048548</span> <span class="o">&lt;+</span><span class="mi">0</span><span class="o">&gt;</span><span class="p">:</span>     <span class="nv">lea</span>    <span class="nb">ecx</span><span class="p">,[</span><span class="nb">esp</span><span class="o">+</span><span class="mh">0x4</span><span class="p">]</span>         <span class="o">//</span> <span class="nv">Load</span> <span class="kc">$</span><span class="nb">esp</span><span class="o">+</span><span class="mi">4</span> <span class="nv">into</span> <span class="nb">ecx</span>
 </code></pre></div></div>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>STACK BEFORE THE INSTRUCTION:
@@ -134,7 +134,7 @@ STACK AFTER THE INSTRUCTION:
 <p>Notice that the value of $esp now is 0xffffcd7c. Which is not aligned to 16. 
 A memory address is said to be aligned to 16 if it is evenly divisible by 16 (or the last hex is 0)</p>
 
-<h4 id="second-instruction">Second instruction</h4>
+<h4 id="second-instruction"><i>Second instruction</i></h4>
 <div class="language-nasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">0</span><span class="nf">x804854c</span> <span class="o">&lt;</span><span class="nv">main</span><span class="o">+</span><span class="mi">4</span><span class="o">&gt;</span>     <span class="nv">and</span>    <span class="nb">esp</span><span class="p">,</span> <span class="mh">0xfffffff0</span>   <span class="o">//</span> <span class="nv">and</span> <span class="nv">operation</span> <span class="nv">on</span> <span class="kc">$</span><span class="nb">esp</span>
 </code></pre></div></div>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>STACK AFTER THIS INSTRUCTION:
@@ -147,7 +147,7 @@ A memory address is said to be aligned to 16 if it is evenly divisible by 16 (or
 <p>The value of $esp now is 0xffffcd70. Just turn it into decimal and you will see it is divisible by 16.
 Note that $ecx - 4 is the value of $esp at the beginning of main(), it will be relevant in the next instruction.</p>
 
-<h4 id="third-instruction">Third instruction</h4>
+<h4 id="third-instruction"><i>Third instruction</i></h4>
 <div class="language-nasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">0</span><span class="nf">x0804854f</span> <span class="o">&lt;+</span><span class="mi">7</span><span class="o">&gt;</span><span class="p">:</span>     <span class="nv">push</span>   <span class="kt">DWORD</span> <span class="nv">PTR</span> <span class="p">[</span><span class="nb">ecx</span><span class="o">-</span><span class="mh">0x4</span><span class="p">]</span>  
 </code></pre></div></div>
 
@@ -167,7 +167,7 @@ This saves the original value of $esp at the beginning of main() to the stack.
 <span class="err">0</span><span class="nf">x8048553</span> <span class="o">&lt;</span><span class="nv">main</span><span class="o">+</span><span class="mi">11</span><span class="o">&gt;</span>    <span class="nv">mov</span>    <span class="nb">ebp</span><span class="p">,</span> <span class="nb">esp</span>
 </code></pre></div></div>
 
-<p>And what is always before the function prologue? Yep, the return address and that return address is $ecx-4 or __libc_start_main(). The EBP is created by the instruction at 0x8048552 and the ret is there by pushing [ecx-4], denoted below:</p>
+<p>And what is always before the function prologue? Yep, it’s the return address and that return address is $ecx-4 or __libc_start_main(). The EBP is created by the instruction at 0x8048552 and the ret is there by pushing [ecx-4], denoted below:</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ESP                                                                              │
                      ┌────────────────────────────────────────────────────┐       │
@@ -213,7 +213,62 @@ This saves the original value of $esp at the beginning of main() to the stack.
 
 </code></pre></div></div>
 
-<h3 id="section-2-header"><a id="section-2">Section 2</a> Header</h3>
+<h2 id="2-initial-analysis">2. <u id="initial-analysis">Initial Analysis</u></h2>
+<p>First we get the type of the file.</p>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>file orw                                           
+orw: ELF 32-bit LSB executable, Intel 80386, version 1 <span class="o">(</span>SYSV<span class="o">)</span>, dynamically linked, interpreter /lib/ld-linux.so.2, <span class="k">for </span>GNU/Linux 2.6.32, BuildID[sha1]<span class="o">=</span>e60ecccd9d01c8217387e8b77e9261a1f36b5030, not stripped
+</code></pre></div></div>
+<p>So it’s a 32-bit Little-endian ELF. So pop the binary into your Linux machine to analyze. Remember to chmod the binary:</p>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">chmod</span> +x ./orw
+</code></pre></div></div>
+<p>Open the binary in pwndbg:</p>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gdb <span class="nt">-q</span> ./orw
+pwndbg&gt; checksec
+ <span class="o">[</span><span class="k">*</span><span class="o">]</span> <span class="s1">'/home/dan09/CTF/Pwnable/orw'</span>
+    Arch:     i386-32-little
+    RELRO:    Partial RELRO
+    Stack:    Canary found       
+    NX:       NX disabled
+    PIE:      No PIE <span class="o">(</span>0x8048000<span class="o">)</span>
+    RWX:      Has RWX segments
+</code></pre></div></div>
+
+<p>So there is a canary. Stack canary is a secret value placed on the stack which changes every time the program is started. Prior to a function return, the stack canary is checked and if it appears to be modified, the program exits immediately.</p>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pwndbg&gt; disass
+Dump of assembler code <span class="k">for function </span>main:
+   0x08048548 &lt;+0&gt;:     lea    ecx,[esp+0x4]
+   0x0804854c &lt;+4&gt;:     and    esp,0xfffffff0
+   0x0804854f &lt;+7&gt;:     push   DWORD PTR <span class="o">[</span>ecx-0x4]
+   0x08048552 &lt;+10&gt;:    push   ebp
+   0x08048553 &lt;+11&gt;:    mov    ebp,esp
+   0x08048555 &lt;+13&gt;:    push   ecx
+   0x08048556 &lt;+14&gt;:    sub    esp,0x4
+   0x08048559 &lt;+17&gt;:    call   0x80484cb &lt;orw_seccomp&gt;     // This makes the binary only accept open, <span class="nb">read </span>and write syscall
+   0x0804855e &lt;+22&gt;:    sub    esp,0xc
+   0x08048561 &lt;+25&gt;:    push   0x80486a0                    // an array pointer containing  <span class="s1">'Give my your shellcode:'</span> string
+   0x08048566 &lt;+30&gt;:    call   0x8048380 &lt;<span class="nb">printf</span>@plt&gt;       // int <span class="nb">printf</span><span class="o">(</span>const char <span class="k">*</span>format, ...<span class="o">)</span> takes argument format <span class="o">(</span>a pointer<span class="o">)</span>
+   0x0804856b &lt;+35&gt;:    add    esp,0x10
+   0x0804856e &lt;+38&gt;:    sub    esp,0x4
+   0x08048571 &lt;+41&gt;:    push   0xc8
+   0x08048576 &lt;+46&gt;:    push   0x804a060
+   0x0804857b &lt;+51&gt;:    push   0x0
+   0x0804857d &lt;+53&gt;:    call   0x8048370 &lt;<span class="nb">read</span>@plt&gt;
+   0x08048582 &lt;+58&gt;:    add    esp,0x10
+   0x08048585 &lt;+61&gt;:    mov    eax,0x804a060
+   0x0804858a &lt;+66&gt;:    call   eax
+   0x0804858c &lt;+68&gt;:    mov    eax,0x0
+   0x08048591 &lt;+73&gt;:    mov    ecx,DWORD PTR <span class="o">[</span>ebp-0x4]
+   0x08048594 &lt;+76&gt;:    leave  
+   0x08048595 &lt;+77&gt;:    lea    esp,[ecx-0x4]
+   0x08048598 &lt;+80&gt;:    ret    
+End of assembler dump.                                 
+
+pwndbg&gt; da 0x80486a0
+80486a0 <span class="s1">'Give my your shellcode:'</span>      //dump string at address
+
+</code></pre></div></div>
+
+<p>Understand the code and you can move on to the next step.</p>
 
 
 

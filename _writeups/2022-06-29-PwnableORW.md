@@ -37,8 +37,8 @@ Follow the normal workflow and you have the following disassembly code from pwnd
 
 Let's try to understand the code first before exploiting.
 
-## 1. Stack alignment explained
-If you know about this already, [skip to section 2.](#section-2)
+## <u>1. Stack alignment explained</u>
+If you know about this already, [skip to the initial analysis.](#initial-analysis)
 The first 3 instructions is for aligning the stacks. I have read about this concept for a lifetime and everytime I encounter it I still find it confusing. Why aligning stack? To dumb it down: stack alignment helps read data in as few memory access cycles as possible, and that misalignment of stack pointers can lead to serious performance degradation.
 
 Requirement:
@@ -49,7 +49,7 @@ Not only are the parameters and local variables passed to satisfy byte alignment
 
 Want to understand deeper? Go [here.](https://developpaper.com/byte-alignment-of-x86_64-linux-runtime-stack/)
 
-#### First instruction
+#### <i>First instruction</i>
 ```nasm
 0x08048548 <+0>:     lea    ecx,[esp+0x4]         // Load $esp+4 into ecx
 ```
@@ -66,7 +66,7 @@ STACK AFTER THE INSTRUCTION:
 Notice that the value of $esp now is 0xffffcd7c. Which is not aligned to 16. 
 A memory address is said to be aligned to 16 if it is evenly divisible by 16 (or the last hex is 0)
 
-#### Second instruction
+#### <i>Second instruction</i>
 ```nasm
 0x804854c <main+4>     and    esp, 0xfffffff0   // and operation on $esp
 ```
@@ -81,7 +81,7 @@ STACK AFTER THIS INSTRUCTION:
 The value of $esp now is 0xffffcd70. Just turn it into decimal and you will see it is divisible by 16.
 Note that $ecx - 4 is the value of $esp at the beginning of main(), it will be relevant in the next instruction.
 
-#### Third instruction
+#### <i>Third instruction</i>
 ```nasm
 0x0804854f <+7>:     push   DWORD PTR [ecx-0x4]  
 ```
@@ -104,7 +104,7 @@ OK, so the first two is pure stack alignment. This one is a little more nuance. 
 0x8048553 <main+11>    mov    ebp, esp
 ```
 
-And what is always before the function prologue? Yep, the return address and that return address is $ecx-4 or __libc_start_main(). The EBP is created by the instruction at 0x8048552 and the ret is there by pushing [ecx-4], denoted below:
+And what is always before the function prologue? Yep, it's the return address and that return address is $ecx-4 or __libc_start_main(). The EBP is created by the instruction at 0x8048552 and the ret is there by pushing [ecx-4], denoted below:
 
 ```
 $ESP                                                                              │
@@ -151,4 +151,64 @@ $ESP                                                                            
 
 ```
 
-### <a id="section-2">Section 2</a> Header
+
+## 2. <u id="initial-analysis">Initial Analysis</u>
+First we get the type of the file.
+```sh
+$ file orw                                           
+orw: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux.so.2, for GNU/Linux 2.6.32, BuildID[sha1]=e60ecccd9d01c8217387e8b77e9261a1f36b5030, not stripped
+```
+So it's a 32-bit Little-endian ELF. So pop the binary into your Linux machine to analyze. Remember to chmod the binary:
+```sh
+$ chmod +x ./orw
+```
+Open the binary in pwndbg:
+```sh
+$ gdb -q ./orw
+pwndbg> checksec
+ [*] '/home/dan09/CTF/Pwnable/orw'
+    Arch:     i386-32-little
+    RELRO:    Partial RELRO
+    Stack:    Canary found       
+    NX:       NX disabled
+    PIE:      No PIE (0x8048000)
+    RWX:      Has RWX segments
+```
+
+So there is a canary. Stack canary is a secret value placed on the stack which changes every time the program is started. Prior to a function return, the stack canary is checked and if it appears to be modified, the program exits immediately.
+```sh
+pwndbg> disass
+Dump of assembler code for function main:
+   0x08048548 <+0>:     lea    ecx,[esp+0x4]
+   0x0804854c <+4>:     and    esp,0xfffffff0
+   0x0804854f <+7>:     push   DWORD PTR [ecx-0x4]
+   0x08048552 <+10>:    push   ebp
+   0x08048553 <+11>:    mov    ebp,esp
+   0x08048555 <+13>:    push   ecx
+   0x08048556 <+14>:    sub    esp,0x4
+   0x08048559 <+17>:    call   0x80484cb <orw_seccomp>     // This makes the binary only accept open, read and write syscall
+   0x0804855e <+22>:    sub    esp,0xc
+   0x08048561 <+25>:    push   0x80486a0                    // an array pointer containing  'Give my your shellcode:' string
+   0x08048566 <+30>:    call   0x8048380 <printf@plt>       // int printf(const char *format, ...) takes argument format (a pointer)
+   0x0804856b <+35>:    add    esp,0x10
+   0x0804856e <+38>:    sub    esp,0x4
+   0x08048571 <+41>:    push   0xc8
+   0x08048576 <+46>:    push   0x804a060
+   0x0804857b <+51>:    push   0x0
+   0x0804857d <+53>:    call   0x8048370 <read@plt>
+   0x08048582 <+58>:    add    esp,0x10
+   0x08048585 <+61>:    mov    eax,0x804a060
+   0x0804858a <+66>:    call   eax
+   0x0804858c <+68>:    mov    eax,0x0
+   0x08048591 <+73>:    mov    ecx,DWORD PTR [ebp-0x4]
+   0x08048594 <+76>:    leave  
+   0x08048595 <+77>:    lea    esp,[ecx-0x4]
+   0x08048598 <+80>:    ret    
+End of assembler dump.                                 
+
+pwndbg> da 0x80486a0
+80486a0 'Give my your shellcode:'      //dump string at address
+
+```
+
+Understand the code and you can move on to the next step.
