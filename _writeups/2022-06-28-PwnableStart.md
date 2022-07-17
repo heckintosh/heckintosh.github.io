@@ -9,6 +9,8 @@ description:  A 100-point challenge from Pwnable.tw
 
 <b>Points</b>: 100
 
+<b>You can also find my write-up at my blog</b>: <span style="color:#007bff">https://heckintosh.github.io/writeups/2022-06-28-pwnablestart</span>
+
 <b>Write-up by:</b><span style="color:#007bff"> https://twitter.com/heckintosh_ </span>
 
 A typical buffer overflow attack with a little twist. For these first few challenges, I like to write in details so that I (and the readers) can remember the basic and fundamentals well.
