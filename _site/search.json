@@ -3,7 +3,7 @@
     {
       "title"    : "Recreate and exploit the Log4j vulnerability",
       "category" : "",
-      "tags"     : "CVE, 0-day, Log4j",
+      "tags"     : "CVE, Log4j, PoC",
       "url"      : "/blog/log4j-log4shell",
       "date"     : "2022-07-11 00:00:00 +0700"
     } ,

@@ -1,6 +1,6 @@
 ---
 title: Recreate and exploit the Log4j vulnerability
-tags: [CVE, 0-day, Log4j]
+tags: [CVE, Log4j, PoC]
 style: border
 color: warning
 description: Log4j is a widely used logging library in Java. You use it to log all sort of things  such as network traffic, requests, responses, application operational logs, etc... Imagine any of those data this library processes can let hackers penetrate your system. That's what we are dealing with.  

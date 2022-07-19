@@ -2,7 +2,7 @@
 title: Bypass SSL Pinning in Flutter using IDA
 tags: [Android]
 style: border
-color: warning
+color: success
 description: Flutter is a free and open-source mobile UI framework. Hackers and penetration testers can bump into some problems with certificates and ssl pinning when testing applications built with Flutter.  This article is a detailed guide to solve all that bs.
 ---
 
