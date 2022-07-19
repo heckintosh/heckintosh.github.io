@@ -1,6 +1,14 @@
 [
   
     {
+      "title"    : "Recreate, detect and exploit the Log4j vulnerability",
+      "category" : "",
+      "tags"     : "CVE, Log4j, PoC",
+      "url"      : "/blog/log4j-log4shell",
+      "date"     : "2022-07-11 00:00:00 +0700"
+    } ,
+  
+    {
       "title"    : "Bypass SSL Pinning in Flutter using IDA",
       "category" : "",
       "tags"     : "Android",

