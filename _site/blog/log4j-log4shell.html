@@ -70,7 +70,7 @@
 
 <p class="post-metadata text-muted">
   11 July 2022 -  
-  <b>3 mins read time</b>
+  <b>4 mins read time</b>
 
   <br>Tags: 
     
@@ -137,7 +137,7 @@ Web Lookup
 
 <p><u>Note 1</u>: It’s <span style="color:#e5202a"><b>important</b></span> that you choose the <span style="color:#e5202a"><b>JDK</b></span>, not the JRE! Because JRE doesn’t have javac for compiling.</p>
 
-<p><u>Note 2</u>: remember to choose the right (old) version since the minecraft server might not be able to understand exploits that are compiled in newer Java version.</p>
+<p><u>Note 2</u>: remember to choose the right (old) version of JDK since the minecraft server might not be able to understand exploits that are compiled in newer Java version.</p>
 
 <p>What the POC does:</p>
 <ul>
@@ -179,9 +179,10 @@ java <span class="nt">-cp</span> target/marshalsec-0.0.3-SNAPSHOT-all.jar marsha
 </code></pre></div></div>
 
 <h5 id="step-5-run-the-minecraft-server-on-a-vm-i-set-it-to-bridged-mode">Step 5. Run the Minecraft server on a VM (I set it to bridged mode):</h5>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Remember to get the IP of the VM. Mine is 172.30.146.200.
-For the sake of POC, turn off the firewall so it will allow incoming connections to the server (normally the server administrators would set up firewall specifically for minecraft port).
-Go to the eula.txt and set eula=true.
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- Remember to get the IP of the VM. 
+- Mine is 172.30.146.200.
+- For the sake of POC, turn off the firewall so it will allow incoming connections to the server (normally the server administrators would set up firewall specifically for minecraft port).
+- Go to the eula.txt and set eula=true.
 </code></pre></div></div>
 
 <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>java <span class="nt">-jar</span> server.jar
@@ -193,6 +194,19 @@ Go to the eula.txt and set eula=true.
 
 <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>java <span class="nt">-jar</span> server.jar
 </code></pre></div></div>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center"><img src="https://raw.githubusercontent.com/heckintosh/heckintosh.github.io/main/assets/images/posts/log4shell/minecraft_server_online_mode_false.PNG" alt="Minecraft-server" /></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><em>Minecraft server cmdline output.</em></td>
+    </tr>
+  </tbody>
+</table>
 
 <h5 id="step-6-start-the-minecraft-client">Step 6. Start the Minecraft client:</h5>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Choose the 1.15.1 version
