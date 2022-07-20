@@ -74,6 +74,15 @@
 
   <br></p>
 
+<p>The following files are provided:</p>
+<ul>
+  <li>afp.conf</li>
+  <li>afpd</li>
+  <li>libatalk.so.18</li>
+  <li>libc-18292bd12d37bfaf58e8dded9db7f1f5da1192cb.so</li>
+</ul>
+
+<p>The main code flow that the vulnerability lies in is depicted below:</p>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
     +-----------------------------------+               +------------------------------------------+              +-------------------------------+
     |                                   |               |                                          |              |                               |
@@ -94,7 +103,7 @@
                                                            v                         |                            |                  DSI struct with data filled     |
                                         +------------------+--------------------+    |                            5                      |                           |
                                         |                                       |    |                            |                      |                           v
-            +---------------------------+           afp_over_dsi()              |    |           +----------------v---------------+      +--4--------+---------------+-------------+
+            +-----------9---------------+           afp_over_dsi()              |    |           +----------------v---------------+      +--4--------+---------------+-------------+
             |                           |                                       |    |           |                                |                  |                             |
             |                           +---------------------------------------+    |           |     dsi_opensession()          |                  |    dsi_tcp_open()           |
             v                           |                                       |    |           |                                |                  |                             |
@@ -116,7 +125,7 @@
          |                            |  When dsi_command is DSIFUNC_CMD             |
          |                            |  dsi_commands[0] will be used as index       |
          |                            |  for afp_switch table.                       |
-         +----------------------------+                                              |
+         +------------10--------------+                                              |
                                       |  the table element contains preauth and      |
                                       |  postauth switch                             |
                                       |                                              |
@@ -124,6 +133,11 @@
                                       +----------------------------------------------+
 
 </code></pre></div></div>
+
+<p>Focus on the dsi_opensession() function:
+`
+Everything after dsi-&gt;commands[2] is copied to var attn_quantum. 
+`</p>
 
 
 

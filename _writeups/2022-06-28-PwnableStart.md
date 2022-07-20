@@ -86,8 +86,6 @@ Understand the code and you can move on to the next step.
 ### <i>3.1 Locating the buffer</i>
 In order to overflow the buffer, we have to know where it is. As you can see the syscall write has ecx denoting the start of the buffer. The size of the buffer is 20 bytes.
 
-[Add image here]
-
 Let's focus on these instructions, which is where you can give input:
 
 

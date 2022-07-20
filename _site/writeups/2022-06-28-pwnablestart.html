@@ -78,6 +78,8 @@
 
 <p><b>Points</b>: 100</p>
 
+<p><b>You can also find my write-up at my blog</b>: <span style="color:#007bff">https://heckintosh.github.io/writeups/2022-06-28-pwnablestart</span></p>
+
 <p><b>Write-up by:</b><span style="color:#007bff"> https://twitter.com/heckintosh_ </span></p>
 
 <p>A typical buffer overflow attack with a little twist. For these first few challenges, I like to write in details so that I (and the readers) can remember the basic and fundamentals well.</p>
@@ -146,8 +148,6 @@ pwndbg&gt; disass
 
 <h3 id="31-locating-the-buffer"><i>3.1 Locating the buffer</i></h3>
 <p>In order to overflow the buffer, we have to know where it is. As you can see the syscall write has ecx denoting the start of the buffer. The size of the buffer is 20 bytes.</p>
-
-<p>[Add image here]</p>
 
 <p>Let’s focus on these instructions, which is where you can give input:</p>
 
