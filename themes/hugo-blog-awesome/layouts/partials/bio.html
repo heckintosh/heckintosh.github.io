@@ -1,0 +1,20 @@
+{{ $avatar_img := .Site.Params.author.avatar }}
+{{ $avatar_img_alt := .Site.Params.author.name }}
+{{ $image := resources.Get $avatar_img }}
+
+{{ $background_img := .Site.Params.author.background }}
+{{ $background_img_alt := "My Custom Image" }}
+{{ $background := resources.Get $background_img }}
+
+<div class="author" style="background-image: url({{ $background.RelPermalink }}); background-size: cover; background-position: center" />
+
+    {{ with $image }}
+    {{ $image := $image.Fill "529x529 webp" }}
+    <img class="author-avatar" src="{{ $image.RelPermalink }}" alt="{{ $avatar_img_alt }}" width="{{ .Width }}"
+        height="{{ .Height }}" />
+    {{ end }}
+    <h2 class="author-name">{{ .Site.Params.author.intro }}</h2>
+    <p class="author-bio">{{ .Site.Params.author.description }}</p>
+
+    
+</div>

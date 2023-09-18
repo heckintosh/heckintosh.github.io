@@ -1,0 +1,2 @@
+# heckintosh.github.io
+Blog.
