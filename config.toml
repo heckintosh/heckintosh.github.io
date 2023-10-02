@@ -30,7 +30,7 @@ disqusShortname = ''
 	[markup.tableOfContents]
 		startLevel = 2 # ToC starts from H2
 		endLevel = 4 # ToC ends at H4
-		ordered = true # generates <ul> instead of <ol>
+		ordered = false # generates <ul> instead of <ol>
 
 [menu]
   [[menu.main]]
