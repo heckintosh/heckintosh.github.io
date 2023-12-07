@@ -1,6 +1,5 @@
 title = "heckintosh"
 baseURL = 'https://heckintosh.github.io'
-
 # This is what goes in <html lang="">
 languageCode = 'en-us'
 
