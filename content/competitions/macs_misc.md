@@ -1,7 +1,7 @@
 ---
 toc: true
-title: MACS Misc Challenges
-description: MACS Misc Challenges
+title: MACS Misc
+description: MACS Misc
 date: 2023-11-04
 author: Duc Anh Nguyen
 ---

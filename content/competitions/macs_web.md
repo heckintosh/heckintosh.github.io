@@ -1,7 +1,7 @@
 ---
 toc: true
-title: MACS Web Challenges
-description: MACS Web Challenges
+title: MACS Web
+description: MACS Web
 date: 2023-11-25
 author: Duc Anh Nguyen
 ---
