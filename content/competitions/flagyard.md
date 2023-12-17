@@ -6,7 +6,7 @@ date: 2023-12-13
 author: Duc Anh Nguyen
 ---
 
-**Pwn: Babyauth
+### Pwn: Babyauth
 
 ```c
 #include <stdio.h>
