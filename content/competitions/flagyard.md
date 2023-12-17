@@ -73,3 +73,6 @@ int main() {
   return 0;
 }
 ```
+
+`Flag: FlagY{tYp3_c0nfUs10n_m4k3s_a_b4D_r3sULt}`
+ 
