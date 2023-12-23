@@ -1,6 +1,6 @@
 ---
 toc: true
-title: HACKMAC CTF 2023 (Top \#1 Postgrad)
+title: "HACKMAC CTF 2023 (Top #1 Postgrad)"
 description: Rank 8 overall, will try harder next year
 date: 2023-10-23
 author: Duc Anh Nguyen
