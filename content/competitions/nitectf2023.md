@@ -1,6 +1,6 @@
 ---
 toc: true
-title: "Nite CTF 2023"
+title: "NiteCTF 2023"
 description: NiteCTF
 date: 2023-12-18
 author: Duc Anh Nguyen
