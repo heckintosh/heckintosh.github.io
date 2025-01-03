@@ -1,20 +1,13 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>heckintosh</title>
-    <link>http://localhost:1313/</link>
-    <description>Recent content on heckintosh</description>
+    <title>Competitions on heckintosh</title>
+    <link>http://localhost:1313/competitions/</link>
+    <description>Recent content in Competitions on heckintosh</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 06 May 2024 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Handlebars Template Injection to RCE</title>
-      <link>http://localhost:1313/posts/handlebarsrce/</link>
-      <pubDate>Mon, 06 May 2024 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/handlebarsrce/</guid>
-      <description></description>
-    </item>
+    <lastBuildDate>Mon, 18 Dec 2023 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/competitions/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>NiteCTF 2023</title>
       <link>http://localhost:1313/competitions/nitectf2023/</link>
@@ -70,20 +63,6 @@
       <pubDate>Sat, 16 Sep 2023 00:00:00 +0000</pubDate>
       <guid>http://localhost:1313/competitions/seccon2023/</guid>
       <description>Did not have time to go in hard with this CTF, but I did try to touch on the pwnable challenges as much as possible. =====Challenge Sources=====&#xA;Pwnable Notes: This is how pwnable challenges should be made, just give the source code instead of making everyone turn on Ghidra.&#xA;1. ROP-2.35 Source For beginner this challenge has some annoying steps that will make you mentally ill. The gist of this one is to overwrite system argument.</description>
-    </item>
-    <item>
-      <title>HackTheBox</title>
-      <link>http://localhost:1313/posts/hackthebox/</link>
-      <pubDate>Tue, 07 Feb 2023 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/hackthebox/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Works</title>
-      <link>http://localhost:1313/whoami/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/whoami/</guid>
-      <description>DevOps </description>
     </item>
   </channel>
 </rss>
