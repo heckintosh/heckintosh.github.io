@@ -79,7 +79,7 @@ disqusShortname = ''
   # Note: image is not rendered if the resource(avatar image) is not found. No error is displayed.
   intro = "Duc Anh Nguyen"
   name = "D.A Nguyen"
-  description = "I'm a security whiz. My main gigs are web application security, OS security and reverse engineering. Originally from Vietnam now dabbling in the land down under."
+  description = "Breaking things"
 
 # Allow to override webmanifest options
 [params.webmanifest]
