@@ -6,14 +6,14 @@
     <description>Recent content on heckintosh</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 06 May 2024 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 26 Dec 2024 00:00:00 +0000</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Handlebars Template Injection to RCE</title>
-      <link>http://localhost:1313/posts/handlebarsrce/</link>
-      <pubDate>Mon, 06 May 2024 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/handlebarsrce/</guid>
-      <description></description>
+      <title>Malware Reversing: Malicious Word document</title>
+      <link>http://localhost:1313/posts/word_malwarereverse/</link>
+      <pubDate>Thu, 26 Dec 2024 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/word_malwarereverse/</guid>
+      <description>Static analysis We were given a zip: File. First unzip the file, the password is infected. Unzipping the file, there is a Word document. Throwing it into VirusTotal: Analyzing output of oleid: There exists a VBA Macro script in the file. I failed to extract the VBA using olevba (it outputs the whole pdf embedded in the docs for some reasons). Moving on to dynamic analysis now.&#xA;Dynamic Analysis Turn on Process Monitoring then view the doc file in Word.</description>
     </item>
     <item>
       <title>NiteCTF 2023</title>
@@ -70,13 +70,6 @@
       <pubDate>Sat, 16 Sep 2023 00:00:00 +0000</pubDate>
       <guid>http://localhost:1313/competitions/seccon2023/</guid>
       <description>Did not have time to go in hard with this CTF, but I did try to touch on the pwnable challenges as much as possible. =====Challenge Sources=====&#xA;Pwnable Notes: This is how pwnable challenges should be made, just give the source code instead of making everyone turn on Ghidra.&#xA;1. ROP-2.35 Source For beginner this challenge has some annoying steps that will make you mentally ill. The gist of this one is to overwrite system argument.</description>
-    </item>
-    <item>
-      <title>HackTheBox</title>
-      <link>http://localhost:1313/posts/hackthebox/</link>
-      <pubDate>Tue, 07 Feb 2023 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/hackthebox/</guid>
-      <description></description>
     </item>
     <item>
       <title>Works</title>
