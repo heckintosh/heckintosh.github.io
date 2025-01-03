@@ -9,11 +9,11 @@
     <lastBuildDate>Thu, 26 Dec 2024 00:00:00 +0000</lastBuildDate>
     <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Malware Reversing: Malicious Word document</title>
+      <title>Malware Reversing: A Malicious Word document</title>
       <link>http://localhost:1313/posts/word_malwarereverse/</link>
       <pubDate>Thu, 26 Dec 2024 00:00:00 +0000</pubDate>
       <guid>http://localhost:1313/posts/word_malwarereverse/</guid>
-      <description>Static analysis We were given a zip: File. First unzip the file, the password is infected. Unzipping the file, there is a Word document. Throwing it into VirusTotal: Analyzing output of oleid: There exists a VBA Macro script in the file. I failed to extract the VBA using olevba (it outputs the whole pdf embedded in the docs for some reasons). Moving on to dynamic analysis now.&#xA;Dynamic Analysis Turn on Process Monitoring then view the doc file in Word.</description>
+      <description>This was a challenge from GroupIB CTF.&#xA;Static analysis We were given a zip: File. First unzip the file, the password is infected. Unzipping the file, there is a Word document. Throwing it into VirusTotal: Analyzing output of oleid: There exists a VBA Macro script in the file. I failed to extract the VBA using olevba (it outputs the whole pdf embedded in the docs for some reasons). Moving on to dynamic analysis now.</description>
     </item>
   </channel>
 </rss>
