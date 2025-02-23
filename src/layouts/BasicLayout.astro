@@ -20,7 +20,7 @@ const schema =
     ? {
         "@context": "http://schema.org",
         "@type": "Person",
-        name: "Gianmarco",
+        name: "Anh",
         url: Astro.url.origin,
         sameAs: [LINKS.linkedin, LINKS.github],
         image: `${Astro.url.origin}/og-image.png`,
@@ -51,13 +51,13 @@ const schema =
         image: `${Astro.url.origin}/og-image.png`, //TODO: dynamic
         author: {
           "@type": "Person",
-          name: "Gianmarco",
-          url: Astro.url.origin,
+          name: "Anh",
+          url: Astro.origin,
           sameAs: [LINKS.linkedin, LINKS.github],
         },
         publisher: {
           "@type": "Organization",
-          name: "Gianmarco",
+          name: "Anh",
           logo: {
             "@type": "ImageObject",
             url: `${Astro.url.origin}/og-image.png`,
@@ -110,12 +110,37 @@ const schema =
     <script type="application/ld+json" set:html={JSON.stringify(schema)} />
   </head>
   <body
-    class="bg-darkslate-700 md:h-screen flex flex-col justify-center items-center"
+    class="bg-darkslate-700 md:h-screen flex flex-col justify-center items-center p-8 md:p-12"
   >
+    <div class="fixed top-8 left-8 z-50" id="logo-container">
+      <a href="/" title="Go to homepage">
+        <img 
+          src="/heckintosh-logo.svg" 
+          alt="Logo" 
+          class="w-36 h-36 brightness-96 hover:brightness-139 transition-all logo"
+        />
+      </a>
+    </div>
     <slot name="loader" />
     <slot />
   </body>
 </html>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const logo = document.querySelector('.logo');
+    const logoContainer = document.querySelector('#logo-container a');
+    
+    logoContainer?.addEventListener('click', (e) => {
+      e.preventDefault();
+      const href = (e.currentTarget as HTMLAnchorElement).href;
+      logo?.classList.add('spin');
+      setTimeout(() => {
+        window.location.href = href;
+      }, 300); // Reduced timeout to match faster animation
+    });
+  });
+</script>
 
 <style is:global>
   @font-face {
@@ -134,10 +159,18 @@ const schema =
     font-display: swap;
     font-weight: 100 1000;
   }
+  @font-face {
+    font-family: "JetBrains Mono";
+    src: url("/fonts/JetBrainsMono-Variable.ttf") format("truetype-variations");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+    font-weight: 100 1000;
+  }
 
   body {
     margin: 0;
-    font-family: "Satoshi", sans-serif;
+    font-family: "JetBrains Mono", "Satoshi", sans-serif;
     -webkit-font-smoothing: antialiased;
   }
 
@@ -147,7 +180,7 @@ const schema =
   h4,
   h5,
   h6 {
-    font-family: "Cabinet Grotesk", sans-serif;
+    font-family: "JetBrains Mono", "Cabinet Grotesk", sans-serif;
   }
   p {
     font-family: "Satoshi";
@@ -155,5 +188,14 @@ const schema =
 
   b {
     font-weight: 700 !important;
+  }
+
+  .logo {
+    transform-origin: center;
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .spin {
+    transform: rotate(360deg);
   }
 </style>

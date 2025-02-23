@@ -16,7 +16,7 @@ export default defineConfig({
       "custom-hover": `1px 1px 0`,
     },
     fontFamily: {
-      sans: ["CabinetGrotesk", "Satoshi"],
+      sans: ["JetBrains Mono", "CabinetGrotesk", "Satoshi"],
     },
     gridTemplateRows: {
       "auto-250": "repeat(auto-fill, 250px)",
@@ -50,15 +50,15 @@ export default defineConfig({
         900: "#0B0B0B" /* Deeper and darker */,
       },
       primary: {
-        100: "#F9CDD3",
-        200: "#F3A3AA",
-        300: "#EC7981",
-        400: "#E64F59",
-        500: "#E63946",
-        600: "#CF2F3D",
-        700: "#B82534",
-        800: "#A01B2B",
-        900: "#891321",
+        100: "#FFF7E6",
+        200: "#FFE5B2",
+        300: "#FFD480",
+        400: "#FFC14D",
+        500: "#FFB01A", // Main gold color
+        600: "#E69600",
+        700: "#B37400",
+        800: "#805300",
+        900: "#4D3200",
       },
     },
   },
@@ -67,7 +67,7 @@ export default defineConfig({
     presetWebFonts({
       provider: "fontshare",
       fonts: {
-        sans: ["Cabinet Grotesk", "Satoshi"],
+        sans: ["JetBrains Mono", "Cabinet Grotesk", "Satoshi"],
         serif: "Zodiak",
       },
     }),
