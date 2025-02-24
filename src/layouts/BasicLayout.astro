@@ -110,7 +110,7 @@ const schema =
     <script type="application/ld+json" set:html={JSON.stringify(schema)} />
   </head>
   <body
-    class="bg-darkslate-700 md:h-screen flex flex-col justify-center p-8 md:p-12"
+    class="bg-darkslate-700 md:h-screen flex flex-col justify-center p-4 md:p-12"
   >
     <slot name="loader" />
     <slot />
@@ -135,22 +135,6 @@ const schema =
 
 <style is:global>
   @font-face {
-    font-family: "CabinetGrotesk";
-    src: url("/fonts/CabinetGrotesk-Variable.ttf") format("truetype-variations");
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-    font-weight: 100 1000;
-  }
-  @font-face {
-    font-family: "Satoshi";
-    src: url("/fonts/Satoshi-Variable.ttf") format("truetype-variations");
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-    font-weight: 100 1000;
-  }
-  @font-face {
     font-family: "JetBrains Mono";
     src: url("/fonts/JetBrainsMono-Variable.ttf") format("truetype-variations");
     font-weight: normal;
@@ -161,7 +145,7 @@ const schema =
 
   body {
     margin: 0;
-    font-family: "JetBrains Mono", "Satoshi", sans-serif;
+    font-family: "JetBrains Mono", monospace;
     -webkit-font-smoothing: antialiased;
   }
 
@@ -171,10 +155,10 @@ const schema =
   h4,
   h5,
   h6 {
-    font-family: "JetBrains Mono", "Cabinet Grotesk", sans-serif;
+    font-family: "JetBrains Mono", monospace;
   }
   p {
-    font-family: "Satoshi";
+    font-family: "JetBrains Mono";
   }
 
   b {

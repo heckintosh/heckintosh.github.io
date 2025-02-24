@@ -16,7 +16,7 @@ export default defineConfig({
       "custom-hover": `1px 1px 0`,
     },
     fontFamily: {
-      sans: ["JetBrains Mono", "CabinetGrotesk", "Satoshi"],
+      sans: ["JetBrains Mono"],
     },
     gridTemplateRows: {
       "auto-250": "repeat(auto-fill, 250px)",
@@ -43,9 +43,9 @@ export default defineConfig({
         200: "#262626",
         300: "#202020",
         400: "#1A1A1A",
-        500: "#171717" /* Exactly your example for the background */,
+        500: "#1A1A1A" /* Exactly your example for the background */,
         600: "#141414",
-        700: "#111111",
+        700: "#0A0A0A",
         800: "#0E0E0E",
         900: "#0B0B0B" /* Deeper and darker */,
       },
@@ -67,8 +67,8 @@ export default defineConfig({
     presetWebFonts({
       provider: "fontshare",
       fonts: {
-        sans: ["JetBrains Mono", "Cabinet Grotesk", "Satoshi"],
-        serif: "Zodiak",
+        sans: ["JetBrains Mono"],
+        serif: "JetBrains Mono",
       },
     }),
   ],

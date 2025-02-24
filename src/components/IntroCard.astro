@@ -13,6 +13,7 @@ const artFiles = [
   './public/ascii-art-4.txt',
   './public/ascii-art-5.txt',
   './public/ascii-art-6.txt',
+  './public/ascii-art-7.txt',
 ];
 
 const randomIndex = Math.floor(Math.random() * artFiles.length);
@@ -75,32 +76,39 @@ const asciiArt = await readFile(artFiles[randomIndex], 'utf-8');
 
 <style>
   .ascii-art {
-    font-family: monospace;
+    /* Base styles */
+    font-family: "JetBrains Mono", monospace;
     white-space: pre;
     overflow: visible;
-    opacity: 0.63;
+    opacity: 0.5;
     position: absolute;
-    right: -35px;
-    top: 55%;
     z-index: -1;
     pointer-events: none;
-    font-size: 5px;
     line-height: 1;
-    transform-origin: center right;
     width: auto;
     height: auto;
     display: block;
-    transform: translateY(-50%) scale(1.4);
-    color: #1a75ff;
+    color: #1E90ff;
+
+    /* Mobile styles */
+    font-size: 2.5px;
+    right: -96px;
+    bottom: -25px;
+    opacity: 0.69;
+    top: auto;
+    transform: scale(3);
+    transform-origin: bottom right;
   }
 
   @media (min-width: 768px) {
     .ascii-art {
-      right: -45px;
-      transform: translateY(-50%) scale(1.6);
       font-size: 5.5px;
+      right: -45px;
+      top: 55%;
+      bottom: auto;
+      transform: translateY(-50%) scale(1.6);
+      transform-origin: center right;
       opacity: 0.69;
-      width: auto;
     }
   }
 
@@ -116,12 +124,13 @@ const asciiArt = await readFile(artFiles[randomIndex], 'utf-8');
     .ascii-art {
       right: -65px;
       transform: translateY(-50%) scale(2);
-      font-size: 6.5px;
+      font-size: 6.9px;
+      opacity: 0.63;
     }
   }
 
   p {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: "JetBrains Mono", monospace;
   }
   
   .logo-container {
