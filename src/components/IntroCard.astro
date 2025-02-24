@@ -19,7 +19,16 @@ const randomIndex = Math.floor(Math.random() * artFiles.length);
 const asciiArt = await readFile(artFiles[randomIndex], 'utf-8');
 ---
 
-<Card colSpan="md:col-span-3" rowSpan="md:row-span-4">
+<Card colSpan="md:col-span-3" rowSpan="md:row-span-5">
+  <div class="logo-container absolute -top-12 -left-12 z-10">
+    <a href="/" title="Go to homepage" id="logo-container">
+      <img 
+        src="/heckintosh-logo.svg" 
+        alt="Logo" 
+        class="w-28 h-28 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all duration-300 logo"
+      />
+    </a>
+  </div>
   
   <div class="flex w-full h-full relative">
     <div class="flex flex-col justify-between md:max-h-[300px] gap-4 md:w-1/2 relative">
@@ -73,7 +82,7 @@ const asciiArt = await readFile(artFiles[randomIndex], 'utf-8');
     position: absolute;
     right: -35px;
     top: 55%;
-    z-index: 0;
+    z-index: -1;
     pointer-events: none;
     font-size: 5px;
     line-height: 1;
@@ -113,5 +122,20 @@ const asciiArt = await readFile(artFiles[randomIndex], 'utf-8');
 
   p {
     font-family: 'JetBrains Mono', monospace;
+  }
+  
+  .logo-container {
+    /* No additional styles needed here */
+  }
+
+  .logo {
+    transform-origin: center;
+    transition: transform 0.3s ease-in-out, filter 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  }
+
+  .logo:hover {
+    transform: rotate(360deg);
+    filter: grayscale(0);
+    opacity: 1;
   }
 </style>
