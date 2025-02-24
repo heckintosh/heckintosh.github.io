@@ -20,13 +20,13 @@ const randomIndex = Math.floor(Math.random() * artFiles.length);
 const asciiArt = await readFile(artFiles[randomIndex], 'utf-8');
 ---
 
-<Card colSpan="md:col-span-3" rowSpan="md:row-span-5">
+<Card colSpan="md:col-span-3" rowSpan="md:row-span-4">
   <div class="logo-container absolute -top-12 -left-12 z-10">
     <a href="/" title="Go to homepage" id="logo-container">
       <img 
         src="/heckintosh-logo.svg" 
         alt="Logo" 
-        class="w-28 h-28 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all duration-300 logo"
+        class="w-28 h-28 grayscale opacity-10 transition-all duration-300 logo"
       />
     </a>
   </div>
@@ -35,10 +35,9 @@ const asciiArt = await readFile(artFiles[randomIndex], 'utf-8');
     <div class="flex flex-col justify-between md:max-h-[300px] gap-4 md:w-1/2 relative">
       <div class="flex flex-col h-full">
         <h6 class="text-sm font-light m-0 text-gray-500">welcome</h6>
-        <p class="m-0 font-light text-xl font-mono">
-          Hi, I'm <b class="font-bold">Anh</b>, a software
-          developer with strong focus on the user experience, animations and
-          micro interactions
+        <p class="m-0 font-light text-base font-mono">
+          Hi, I'm <b class="font-bold">Anh</b>, a security enthusiast
+          who loves to break stuff. I share things here.
         </p>
       </div>
       <div class="flex gap-4">
@@ -92,9 +91,9 @@ const asciiArt = await readFile(artFiles[randomIndex], 'utf-8');
 
     /* Mobile styles */
     font-size: 2.5px;
-    right: -96px;
+    right: -196px;
     bottom: -25px;
-    opacity: 0.69;
+    opacity: 0.33;
     top: auto;
     transform: scale(3);
     transform-origin: bottom right;
@@ -145,6 +144,6 @@ const asciiArt = await readFile(artFiles[randomIndex], 'utf-8');
   .logo:hover {
     transform: rotate(360deg);
     filter: grayscale(0);
-    opacity: 1;
+    opacity: 0.69;
   }
 </style>
