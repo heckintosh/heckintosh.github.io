@@ -28,7 +28,8 @@
     "motion": "^10.18.0",
     "reading-time": "^1.5.0",
     "solid-js": "^1.9.2",
-    "svelte": "^5.15.0"
+    "svelte": "^5.15.0",
+    "three": "^0.173.0"
   },
   "devDependencies": {
     "@types/d3": "^7.4.3",
