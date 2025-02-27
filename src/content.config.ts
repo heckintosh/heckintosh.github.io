@@ -14,4 +14,9 @@ const blog = defineCollection({
   //   }),
 });
 
-export const collections = { blog };
+const writeups = defineCollection({
+  loader: glob({ pattern: "**/[^_]*.md", base: "./src/data/writeups" }),
+  schema: rssSchema,
+});
+
+export const collections = { blog, writeups };

@@ -20,7 +20,7 @@ const randomIndex = Math.floor(Math.random() * artFiles.length);
 const asciiArt = await readFile(artFiles[randomIndex], 'utf-8');
 ---
 
-<Card colSpan="md:col-span-3" rowSpan="md:row-span-4">
+<Card colSpan="md:col-span-2" rowSpan="md:row-span-4">
   <div class="logo-container absolute -top-12 -left-12 z-10">
     <a href="/" title="Go to homepage" id="logo-container">
       <img 
@@ -31,13 +31,15 @@ const asciiArt = await readFile(artFiles[randomIndex], 'utf-8');
     </a>
   </div>
   
-  <div class="flex w-full h-full relative">
-    <div class="flex flex-col justify-between md:max-h-[300px] gap-4 md:w-1/2 relative">
+  <div class="flex w-full h-full min-h-[14rem] sm:min-h-auto relative">
+    <div class="flex flex-col justify-between gap-4 md:w-1/2 relative">
       <div class="flex flex-col h-full">
         <h6 class="text-sm font-light m-0 text-gray-500">welcome</h6>
         <p class="m-0 font-light text-base font-mono">
-          Hi, I'm <b class="font-bold">Anh</b>, a security enthusiast
-          who loves to break stuff. I share things here.
+          Hi, I'm <b class="font-bold">Anh</b>. </br />
+          I'm a security enthusiast</br />
+          who loves to break stuff. <br />
+          I share things here.
         </p>
       </div>
       <div class="flex gap-4">
@@ -53,15 +55,15 @@ const asciiArt = await readFile(artFiles[randomIndex], 'utf-8');
             <span class="sr-only">Linkedin Profile</span>
           </Button>
         </a>
-        <a href={LINKS.dribble} aria-label="dribble profile" target="_blank">
+        <a href={LINKS.x} aria-label="dribble profile" target="_blank">
           <Button aria-label="dribble profile">
-            <Icon name="ri:dribbble-fill" class="h-6" />
+            <Icon name="ri:twitter-x-fill" class="h-6" />
             <span class="sr-only">Dribble Profile</span>
           </Button>
         </a>
         <Tooltip client:visible>
           <Button aria-label="easter egg btn">
-            <Icon name="ri:emotion-laugh-line" class="h-6" />
+            <Icon name="ri:terminal-box-fill" class="h-6" />
             <span class="sr-only">Easter egg button</span>
           </Button>
         </Tooltip>
@@ -124,7 +126,7 @@ const asciiArt = await readFile(artFiles[randomIndex], 'utf-8');
       right: -65px;
       transform: translateY(-50%) scale(2);
       font-size: 6.9px;
-      opacity: 0.63;
+      opacity: 0.39;
     }
   }
 
