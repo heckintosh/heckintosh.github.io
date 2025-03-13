@@ -1,18 +1,20 @@
 ---
-import { LINKS } from "../lib/constants";
+import { LINKS } from "@lib/constants";
+
 
 interface Props {
   title: string;
   description: string;
-  page?: "travel" | "blog";
+  page?: "travel" | "blog" | "writeups";
   slug?: string | undefined;
   pubDate?: string;
+  titleImage?: string;
 }
 
-const { title, description, page, slug, pubDate } = Astro.props;
+const { title, description, page, slug, pubDate, titleImage } = Astro.props;
 const image =
   page === "travel"
-    ? `${Astro.url.origin}/globe_preview.webp"`
+    ? `${Astro.url.origin}/globe_preview.webp`
     : `${Astro.url.origin}/og-image.png`;
 
 const schema =
@@ -46,13 +48,13 @@ const schema =
           "@type": "WebPage",
           "@id": `${Astro.url.origin}/blog/${slug}`,
         },
-        headline: title || title,
-        description: description || title,
+        headline: title,
+        description: description,
         image: `${Astro.url.origin}/og-image.png`, //TODO: dynamic
         author: {
           "@type": "Person",
           name: "Anh",
-          url: Astro.url.origin,
+          url: `${Astro.url.origin}`,
           sameAs: [LINKS.linkedin, LINKS.github],
         },
         publisher: {
@@ -66,6 +68,8 @@ const schema =
         datePublished: pubDate || new Date().toISOString(),
         dateModified: pubDate || new Date().toISOString(),
       };
+
+// Show Header on all paths except root
 ---
 
 <!doctype html>
@@ -109,9 +113,7 @@ const schema =
     }
     <script type="application/ld+json" set:html={JSON.stringify(schema)} />
   </head>
-  <body
-    class="bg-darkslate-700 md:h-screen flex flex-col justify-center p-4 md:p-12"
-  >
+  <body class="bg-darkslate-700 md:h-screen flex flex-col justify-center p-4 md:p-12">
     <slot name="loader" />
     <slot />
   </body>
