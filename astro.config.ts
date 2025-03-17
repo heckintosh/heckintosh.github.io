@@ -22,7 +22,7 @@ import sectionize from '@hbsnow/rehype-sectionize'
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://gianmarcocavallo.com/",
+  site: "https://heckintosh.github.io",
   integrations: [
     sitemap(),
     robotsTxt({
