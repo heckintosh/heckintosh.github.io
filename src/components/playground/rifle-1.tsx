@@ -1,5 +1,5 @@
 import * as rive from "@rive-app/canvas";
-import rifleAnimation from "../../riveAnimations/rifle.riv";
+import rifleAnimation from "@riveAnimations/rifle.riv";
 import { createSignal, onCleanup, onMount } from "solid-js";
 
 const Illustrations = () => {
@@ -16,7 +16,6 @@ const Illustrations = () => {
     const screenWidth = window.innerWidth;
     // Assuming you want the canvas to take up most of the screen width but maintain its aspect ratio
     const newCanvasWidth = Math.min(screenWidth * 0.9, 950); // Cap at original width or 90% of screen width
-    console.log("TEST", screenWidth, newCanvasWidth);
     const aspectRatio = 950 / 540;
     const newCanvasHeight = newCanvasWidth / aspectRatio;
     setCanvasWidth(newCanvasWidth);

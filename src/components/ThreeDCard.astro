@@ -1,0 +1,82 @@
+---
+import Card from "./Card/index.astro";
+---
+
+<Card colSpan="md:col-span-2" rowSpan="md:row-span-4" style="padding: 0;">
+  <div id="scene-container" class="h-full w-full min-h-[136px]">
+  </div>
+</Card>
+<script>
+  import * as THREE from 'three';
+  import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+  import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+
+  const container = document.getElementById('scene-container');
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x000000);
+  
+  const camera = new THREE.PerspectiveCamera(
+    59,  // reduced FOV from 75 to 45 for more zoom
+    container.clientWidth / container.clientHeight,
+    0.1,
+    1000
+  );
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  container.appendChild(renderer.domElement);
+
+  const loader = new GLTFLoader();
+  loader.load('/arduino-gltf/scene.gltf', (gltf) => {
+    const model = gltf.scene;
+    
+    model.traverse((child) => {
+      if (child.isMesh) {
+        // Create dashed line material
+        const lineMaterial = new THREE.LineDashedMaterial({
+          color: 0x00ffff,
+          linewidth: 1,
+          scale: 1,
+          dashSize: 3,
+          gapSize: 1,
+        });
+
+        // Convert mesh geometry to edges
+        const edges = new THREE.EdgesGeometry(child.geometry);
+        const line = new THREE.LineSegments(edges, lineMaterial);
+        line.computeLineDistances(); // Required for dashed lines
+        scene.add(line);
+      }
+    });
+  });
+
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.autoRotate = true;
+  controls.autoRotateSpeed = 2;
+  camera.position.set(1.5, 0.75, 0.75);  // reduced Y from 1.5 to 0.75
+  controls.target.set(0, 0, 0);
+  controls.update();
+
+  function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
+    renderer.render(scene, camera);
+  }
+
+  animate();
+
+  window.addEventListener('resize', () => {
+    camera.aspect = container.clientWidth / container.clientHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(container.clientWidth, container.clientHeight);
+  });
+</script>
+</script>
+<style>
+  #scene-container {
+    font-family: monospace;
+    white-space: pre;
+    font-size: 8px;
+    line-height: 8px;
+  }
+</style>

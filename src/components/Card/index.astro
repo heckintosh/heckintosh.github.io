@@ -18,7 +18,7 @@ const { title, body, colSpan, rowSpan, href, colorText, height, style } = Astro.
 ---
 
 <div
-  class={`card flex flex-col group overflow-hidden bg-darkslate-500 shadow-lg rounded-lg p-6 border border-darkslate-100 hover:border-primary-500 align-start justify-start perspective-1200 w-full transition duration-75 ease-in-out col-span-1 ${
+  class={`card flex flex-col group overflow-hidden rounded-lg p-6 border border-accent hover:border-primary align-start justify-start perspective-1200 w-full transition duration-75 ease-in-out col-span-1 ${
     colSpan || "md:col-span-2"
   } ${rowSpan || ""}`}
   style={style}

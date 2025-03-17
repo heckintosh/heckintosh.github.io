@@ -1,0 +1,18 @@
+---
+import Layout from "@/layouts/Layout.astro";
+
+type Props = {
+  title: string;
+  description: string;
+  pubDate: Date;
+  minutesRead: string;
+  url: string;
+};
+
+const { title, description, pubDate, minutesRead, url } = Astro.props;
+
+---
+
+<Layout title={title} description={description}>
+      <slot />
+</Layout>

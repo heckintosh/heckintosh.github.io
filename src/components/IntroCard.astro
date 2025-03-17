@@ -1,7 +1,7 @@
 ---
 import Card from "./Card/index.astro";
 import Button from "./Button.astro";
-import { LINKS } from "../lib/constants";
+import { LINKS } from "@/lib/constants";
 import { Icon } from 'astro-icon/components'
 import Tooltip from "./Tooltip/index";
 import { readFile } from 'node:fs/promises';
@@ -20,11 +20,11 @@ const randomIndex = Math.floor(Math.random() * artFiles.length);
 const asciiArt = await readFile(artFiles[randomIndex], 'utf-8');
 ---
 
-<Card colSpan="md:col-span-2" rowSpan="md:row-span-4">
+<Card colSpan="md:col-span-3" rowSpan="md:row-span-4">
   <div class="logo-container absolute -top-12 -left-12 z-10">
     <a href="/" title="Go to homepage" id="logo-container">
       <img 
-        src="/heckintosh-logo.svg" 
+        src="/static/heckintosh.svg" 
         alt="Logo" 
         class="w-28 h-28 grayscale opacity-10 transition-all duration-300 logo"
       />
@@ -32,10 +32,10 @@ const asciiArt = await readFile(artFiles[randomIndex], 'utf-8');
   </div>
   
   <div class="flex w-full h-full min-h-[14rem] sm:min-h-auto relative">
-    <div class="flex flex-col justify-between gap-4 md:w-1/2 relative">
+    <div class="flex flex-col justify-between gap-4 relative">
       <div class="flex flex-col h-full">
-        <h6 class="text-sm font-light m-0 text-gray-500">welcome</h6>
-        <p class="m-0 font-light text-base font-mono">
+        <h6 class="text-sm font-light m-0 text-cyan">welcome</h6>
+        <p class="m-0 font-bold text-xl">
           Hi, I'm <b class="font-bold">Anh</b>. </br />
           I'm a security enthusiast</br />
           who loves to break stuff. <br />
@@ -69,19 +69,18 @@ const asciiArt = await readFile(artFiles[randomIndex], 'utf-8');
         </Tooltip>
       </div>
     </div>
-    <pre class="ascii-art">
+    <pre class="ascii-art text-cyan opacity-50">
       {asciiArt}
     </pre>
   </div>
 </Card>
 
 <style>
+
   .ascii-art {
     /* Base styles */
-    font-family: "JetBrains Mono", monospace;
     white-space: pre;
     overflow: visible;
-    opacity: 0.5;
     position: absolute;
     z-index: -1;
     pointer-events: none;
@@ -89,13 +88,10 @@ const asciiArt = await readFile(artFiles[randomIndex], 'utf-8');
     width: auto;
     height: auto;
     display: block;
-    color: #1E90ff;
-
     /* Mobile styles */
     font-size: 2.5px;
     right: -196px;
     bottom: -25px;
-    opacity: 0.33;
     top: auto;
     transform: scale(3);
     transform-origin: bottom right;
@@ -109,7 +105,6 @@ const asciiArt = await readFile(artFiles[randomIndex], 'utf-8');
       bottom: auto;
       transform: translateY(-50%) scale(1.6);
       transform-origin: center right;
-      opacity: 0.69;
     }
   }
 
@@ -126,13 +121,10 @@ const asciiArt = await readFile(artFiles[randomIndex], 'utf-8');
       right: -65px;
       transform: translateY(-50%) scale(2);
       font-size: 6.9px;
-      opacity: 0.39;
     }
   }
 
-  p {
-    font-family: "JetBrains Mono", monospace;
-  }
+
   
   .logo-container {
     /* No additional styles needed here */

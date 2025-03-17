@@ -1,0 +1,25 @@
+---
+import Card from "./Card/index.astro";
+---
+
+<Card colSpan="lg:col-span-1" rowSpan="md:row-span-1" title="Visitors">
+  <div class="flex flex-col items-center justify-center h-[calc(100%-28px)]">
+    <div class="text-2xl" id="visitorCount">0</div>
+    <div class="text-sm text-gray-500 mt-2">Total Views</div>
+  </div>
+</Card>
+
+<script>
+  const countElement = document.getElementById("visitorCount");
+  
+  // Using localStorage to persist count
+  let count = parseInt(localStorage.getItem("visitorCount") || "0");
+  
+  // Increment count on page load
+  count++;
+  localStorage.setItem("visitorCount", count.toString());
+  
+  if (countElement) {
+    countElement.textContent = count.toString();
+  }
+</script>

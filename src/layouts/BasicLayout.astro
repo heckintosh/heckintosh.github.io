@@ -1,6 +1,5 @@
 ---
-import { LINKS } from "@lib/constants";
-
+import { LINKS } from "../lib/constants";
 
 interface Props {
   title: string;
@@ -113,7 +112,7 @@ const schema =
     }
     <script type="application/ld+json" set:html={JSON.stringify(schema)} />
   </head>
-  <body class="bg-darkslate-700 md:h-screen flex flex-col justify-center p-4 md:p-12">
+  <body class="md:h-screen flex flex-col justify-center p-4 md:p-12">
     <slot name="loader" />
     <slot />
   </body>
@@ -135,41 +134,3 @@ const schema =
   });
 </script>
 
-<style is:global>
-  @font-face {
-    font-family: "JetBrains Mono";
-    src: url("/fonts/JetBrainsMono-Variable.ttf") format("truetype-variations");
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-    font-weight: 100 1000;
-  }
-
-  body {
-    margin: 0;
-    font-family: "JetBrains Mono", monospace;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    font-family: "JetBrains Mono", monospace;
-  }
-  p {
-    font-family: "JetBrains Mono";
-  }
-
-  b {
-    font-weight: 700 !important;
-  }
-
-  .spin {
-    transform: rotate(360deg) !important;
-    filter: grayscale(0) !important;
-    opacity: 1 !important;
-  }
-</style>

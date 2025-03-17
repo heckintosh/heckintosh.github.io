@@ -1,0 +1,52 @@
+---
+import { getCurrentTimeInVietnam, formatTimeForVietnam, isMorningTime } from "@/lib/helpers";
+import Card from "./Card/index.astro";
+---
+
+<Card colSpan="lg:col-span-1" rowSpan="md:row-span-2" title="My Time">
+  <div class="flex flex-col h-[calc(100%-28px)]">
+    <div class="flex items-center gap-3 py-1">
+      <time
+        datetime=""
+        id="timeDisplay"
+        class="text-2xl xl:text-xl xl:whitespace-nowrap transition-colors duration-200"
+      >
+        {formatTimeForVietnam(getCurrentTimeInVietnam())}
+      </time>
+    </div>
+    <div id="myTimezoneDisplay" class="text-sm text-gray-500"></div>
+  </div>
+</Card>
+
+<script>
+  import { onCleanup, onMount } from "solid-js";
+  import { formatTimeForVietnam, isMorningTime } from "@lib/helpers";
+
+  let interval: ReturnType<typeof setInterval>;
+
+  function updateClock() {
+    const timeDisplay = document.getElementById("timeDisplay");
+    const myTimezoneDisplay = document.getElementById("myTimezoneDisplay");
+    const now = new Date();
+
+    if (timeDisplay && myTimezoneDisplay) {
+      const timeString = formatTimeForVietnam(now);
+      const [time, period] = timeString.split(' ');
+      
+      const themeColor = period === 'AM' ? 'text-amber-400' : 'text-blue-400';
+      timeDisplay.innerHTML = `<span class="${themeColor}">${time}</span> <span class="text-gray-400">${period}</span>`;
+      timeDisplay.setAttribute("datetime", now.toISOString());
+
+      myTimezoneDisplay.textContent = "Asia/Ho_Chi_Minh";
+      myTimezoneDisplay.className = 'text-sm text-gray-500';
+    }
+  }
+
+  onMount(() => {
+    interval = setInterval(updateClock, 1000);
+  });
+
+  onCleanup(() => {
+    clearInterval(interval);
+  });
+</script>

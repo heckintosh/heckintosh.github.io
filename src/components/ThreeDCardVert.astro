@@ -1,0 +1,105 @@
+---
+import Card from "./Card/index.astro";
+---
+
+<Card colSpan="md:col-span-1" rowSpan="md:row-span-6" style="padding: 0;">
+  <div id="scene-container-vert" class="h-full w-full ascii-art min-h-[136px]">
+  </div>
+</Card>
+<script>
+  import * as THREE from 'three';
+  import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+  import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+  // Remove GUI import
+
+  const container = document.getElementById('scene-container-vert');
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x000000);
+  
+  const camera = new THREE.PerspectiveCamera(
+    69,  // reduced FOV from 75 to 45 for more zoom
+    container.clientWidth / container.clientHeight,
+    0.1,
+    10000
+  );
+  const renderer = new THREE.WebGLRenderer({ 
+    antialias: true,
+    logarithmicDepthBuffer: true  // Add this to improve depth buffer precision
+  });
+  renderer.setPixelRatio(window.devicePixelRatio);  // Add this for better rendering
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  container.appendChild(renderer.domElement);
+
+  const loader = new GLTFLoader();
+  loader.load('/tennis-racket-gltf/scene.gltf', (gltf) => {
+    const model = gltf.scene;
+    
+    model.traverse((child) => {
+      if (child.isMesh) {
+        const geometry = child.geometry;
+        const positions = geometry.attributes.position;
+        
+        // Create points geometry
+        const pointsGeometry = new THREE.BufferGeometry();
+        pointsGeometry.setAttribute('position', positions);
+
+        // Create point material
+        const pointsMaterial = new THREE.PointsMaterial({
+          size: 0.05,
+          color: 0xFFC017,
+          transparent: true,
+          opacity: 0.8
+        });
+
+        // Create points
+        const points = new THREE.Points(pointsGeometry, pointsMaterial);
+        scene.add(points);
+      }
+    });
+  });
+
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.autoRotate = true;
+  controls.autoRotateSpeed = 2;
+  camera.position.set(0, -20, 0);  // moved camera closer (was 0, -30, 0)
+  controls.target.set(0, -5, 0);
+  controls.update();
+
+  // Remove all GUI related code here
+
+  function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
+    renderer.render(scene, camera);
+  }
+
+  animate();
+
+  window.addEventListener('resize', () => {
+    camera.aspect = container.clientWidth / container.clientHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(container.clientWidth, container.clientHeight);
+  });
+</script>
+<style>
+  #scene-container-vert{
+    font-family: monospace;
+    white-space: pre;
+    font-size: 8px;
+    line-height: 8px;
+  }
+
+  .ascii-art {
+    font-family: 'Courier New', monospace;
+    font-size: 8px;
+    line-height: 8px;
+    background-color: black;
+    color: #FFC017;
+  }
+
+  canvas {
+    image-rendering: pixelated;
+  }
+
+</style>

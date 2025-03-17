@@ -1,7 +1,7 @@
 ---
 import { getEntry, render } from "astro:content";
 import { getCollection } from "astro:content";
-import LayoutBlogPost from "../../layouts/LayoutBlogPost.astro";
+import LayoutBlogPost from "@layouts/LayoutBlogPost.astro";
 
 export const prerender = true;
 
@@ -25,7 +25,6 @@ if (!entry) {
 
 const { Content, remarkPluginFrontmatter } = await render(entry);
 
-console.log("headings", entry, id);
 ---
 
 <LayoutBlogPost
@@ -38,7 +37,7 @@ console.log("headings", entry, id);
   <Content />
 </LayoutBlogPost>
 
-<style is:global>
+<!-- <style is:global>
   h1,
   h2,
   h3,
@@ -133,4 +132,4 @@ console.log("headings", entry, id);
     padding: 8px;
     border-bottom: 1px solid #ddd;
   }
-</style>
+</style> -->

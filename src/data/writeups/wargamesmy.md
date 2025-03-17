@@ -2,7 +2,7 @@
 toc: true
 title: "WGMY CTF"
 description: Wargames.my
-date: 2023-12-16
+pubDate: 2023-12-16
 author: Duc Anh Nguyen
 ---
 

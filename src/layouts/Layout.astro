@@ -1,21 +1,36 @@
 ---
-import BasicLayout from "./BasicLayout.astro";
+import Footer from '@/components/Footer.astro'
+import Head from '@/components/Head.astro'
+import Header from '@/components/Header.astro'
+import { SITE } from '@/consts'
 
-interface Props {
-  title: string;
-  description: string;
-  page?: "travel";
-  fullScreen?: string;
+type Props = {
+  title: string
+  description: string
+  image?: string
 }
 
-const { title, description } = Astro.props;
+const { title, description, image } = Astro.props
 ---
 
-<BasicLayout title={title} description={description}>
-  <div
-    slot="loader"
-    class="loader bg-darkslate-700 text-neutral-50 text-3xl font-black uppercase flex justify-center items-center w-screen h-screen z-50 fixed top-0 bottom-0 right-0 left-0"
-  >
-  </div>
-  <slot />
-</BasicLayout>
+<!doctype html>
+<html lang="en">
+  <head>
+    <Head
+      title={`${title} | ${SITE.TITLE}`}
+      description={description}
+      image={image}
+    />
+  </head>
+  <body>
+    <div
+      class="box-border flex h-fit min-h-screen flex-col gap-y-6 font-sans antialiased"
+    >
+      <Header />
+      <main class="flex-grow">
+        <slot />
+      </main>
+      <Footer />
+    </div>
+  </body>
+</html>

@@ -2,7 +2,7 @@
 toc: true
 title: SECCON 2023 Quals
 description: 'Did not have much time to go hard on this one, but I do solve a few challenges'
-date: 2023-09-16
+pubDate: 2023-09-16
 author: Duc Anh Nguyen
 ---
 *Did not have time to go in hard with this CTF, but I did try to touch on the **pwnable** challenges as much as possible.* \
