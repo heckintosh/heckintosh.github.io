@@ -68,8 +68,7 @@ export default defineConfig({
     ],
     remarkPlugins: [remarkToc, remarkMath, remarkEmoji],
   },
-  output: "server",
-  adapter: netlify({ edgeMiddleware: true }),
+  output: "static",
   vite: {
     assetsInclude: "**/*.riv",
     resolve: {
