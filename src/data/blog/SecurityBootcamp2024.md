@@ -68,7 +68,7 @@ The malware was written in C++, which I have never done reverse engineering agai
 
 I signed up for the Claude Pro plan and asked the AI to connect to the IDA database through MCP to automatically perform static code analysis. To help the AI analyze the decompiled code more accurately (since its initial attempts were pretty far off), I provided some context from my own manual analysis and the results from other tools. The AI did rename some functions and variables on its own, though there’s definitely room for improvement—like making the code look more like actual C++. I also realized I needed to brush up on proper C++ reverse engineering, since this process clarifies the code’s logic but doesn’t fully restore the original syntax.
 
-![](assets/uxcO6S0_bCUyHZ3nKYVBctnHbD8pUJQN7EzzxNsIp3o=.png "A snippet of the code that me and the AI reverses, as you can see there are still much to do like Add Type Information, Reconstruct class and structure and additional variables renaming")
+![](/assets/uxcO6S0_bCUyHZ3nKYVBctnHbD8pUJQN7EzzxNsIp3o=.png "A snippet of the code that me and the AI reverses, as you can see there are still much to do like Add Type Information, Reconstruct class and structure and additional variables renaming")
 
 
 
@@ -76,32 +76,32 @@ Digging into this would take a while, so I kicked things off with some dynamic a
 
 It’s super helpful to have Process Monitor running to see what the malware’s doing to the system, while also dropping breakpoints in the code. After poking around with some static analysis, I noticed the AES key and IV get passed to ProcessKeyFilesAndVerify, so I set a breakpoint there in the main encryption flow. Before that, the malware just scans directories and grabs all the files on the system, getting ready to encrypt them in the next step.
 
-![](assets/7naWDzV4AJFH78gvul5Hs9UnHHFT1SfTiFv6E-lUvwE=.png "Querying Directory and Files")
+![](/assets/7naWDzV4AJFH78gvul5Hs9UnHHFT1SfTiFv6E-lUvwE=.png "Querying Directory and Files")
 
 The AES key is loaded into rcx, while the IV is loaded into rdx. Noticed the AES key only has 31  while AES-256 require 32 bytes. Would have to pad the key later on.
 
-![](assets/ulX-Hgt6eg99E8uXS_fIlsh8HrbG5rIyOzydiz1E0NE=.png "ProcessKeyFileAndVerify")
+![](/assets/ulX-Hgt6eg99E8uXS_fIlsh8HrbG5rIyOzydiz1E0NE=.png "ProcessKeyFileAndVerify")
 
 I still have to verify if these are the actual keys that were used to encrypt the files because the malware has a bunch of other cryptographic mechanisms built in, e.g RSA cryptography which was a big distraction to me and led me to a rabbit hole. Set up a break point inside ProcessKeyFileAndVerify function:
 
 
-![](assets/jNktVHtJl6597ENk7PNvZZbZBlVzvI7vqn7p1nDo0pE=.png "Breakpoint in ProcessKeyFIlesAndVerify")
+![](/assets/jNktVHtJl6597ENk7PNvZZbZBlVzvI7vqn7p1nDo0pE=.png "Breakpoint in ProcessKeyFIlesAndVerify")
 
 Hit F9 and check Process Monitor. It is encrypting team06.pdf (I created this sample file) to team06.pdf.sbc.0yk. Hit F9 again and it will be encrypting another file. So definitely, this function is looping through a list of files it was collecting prior to this and then highly likely applying AES encryption afterwards.
 
-![](assets/pSt7STFRpudRLznJ4YRH9UmDfkh3P341lS-j3epPRA8=.png)
+![](/assets/pSt7STFRpudRLznJ4YRH9UmDfkh3P341lS-j3epPRA8=.png)
 
 So we know it was using AES, to decrypt files in the dump, we need to locate the keys in the dump. So we have to mirror things from our test environment, see which regions do the AES keys reside in. I'm using to deReferencing plugin to look at the values of the stacks (it would know if data pointed to is memory or some strings or some other values, way more helpful than IDA stack).
 
-![](assets/ESI--0ytqsz2TQMku4XacOqzt5RycEEMLV6MRls9sqY=.png "Stack at the breakpoint")
+![](/assets/ESI--0ytqsz2TQMku4XacOqzt5RycEEMLV6MRls9sqY=.png "Stack at the breakpoint")
 
 I noticed that every time I F9ed, the address which the string "Microsoft Strong Cryptographic Provider" resided at never changed its value, so I used the string as an anchor. At the lower memoery addresses were the key and the IV.
 
-![](assets/wNG0VSdGIfwcjkUmVgjl5YeoksvRerQF5gqCqNmJrZI=.png "AES key and IV found.")
+![](/assets/wNG0VSdGIfwcjkUmVgjl5YeoksvRerQF5gqCqNmJrZI=.png "AES key and IV found.")
 
 Applying this to the memory dump, I wrote a script (The AI actually wrote it) to scan for the string "Microsoft Strong Cryptographic Provider" and it previous and after bytes in the pid.7008.dump ( Gotta dump the malware process out of the whole system dump).
 
-![](assets/Xfd562OXa1v3Mzd8aG3me2OJ7icLHZyh_g6V6QO43dg=.png "Key and IV dumping.")
+![](/assets/Xfd562OXa1v3Mzd8aG3me2OJ7icLHZyh_g6V6QO43dg=.png "Key and IV dumping.")
 
 The AES key can be found easily above the string. But there are many potential IV (as denoted by the arrow). The IV has 16 bytes and highly likely it wouldn't have many 00 bytes inside it so I asked the AI to auto denote the potiential candidate for the IV. I'm lazy so I combine all of the bytes into a files, then ask the AI to try the sliding window method for all potential IV values. 
 
@@ -114,7 +114,7 @@ PS C:\1day\malware-analysis\bootcamp2024> cat .\iv.txt
 
 A succesful decryption happens when the original team06.pdf.sbc.0yk is recognized as a pdf after decryption. That took 69 attempts. The IV was 483EXX... The decryption code can be found [here](https://gdrives.ghtk.co/s/3SaEAwcHJn4WLBR?dir=undefined\&openfile=26767328). We have succesfully decrypted the file.
 
-![](assets/KbvqGwCyo7tspDdPMPsnVTQf4eapwOLkyLyEgfLlJuo=.png)
+![](/assets/KbvqGwCyo7tspDdPMPsnVTQf4eapwOLkyLyEgfLlJuo=.png)
 
 
 
