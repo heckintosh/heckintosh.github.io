@@ -1,7 +1,7 @@
 ---
 import { getCollection } from "astro:content";
-import Layout from "@layouts/Layout.astro";
-import PostRow from "@components/Blog/PostRow.astro";
+import Layout from "@/layouts/Layout.astro";
+import PostRow from "@/components/Blog/PostRow.astro";
 
 const posts = (await getCollection("blog"))?.sort(
   (blogEntryA, blogEntryB) =>
@@ -12,7 +12,7 @@ const posts = (await getCollection("blog"))?.sort(
 
 <script>
   import { timeline, type TimelineDefinition } from "motion";
-  import { loaderAnimation } from "@lib/constants";
+  import { loaderAnimation } from "@/lib/constants";
 
   const sequence = [loaderAnimation];
 
@@ -20,8 +20,8 @@ const posts = (await getCollection("blog"))?.sort(
 </script>
 
 <Layout
-  title="Anh - Blog"
-  description="Software developer with strong focus on the user experience animations and micro interactions"
+  title="Anh - Security Researcher"
+  description="Security Researcher"
 >
   <main
     class="w-screen h-screen flex flex-col justify-start items-start max-w-3xl mx-auto p-8"

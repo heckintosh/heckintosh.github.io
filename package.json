@@ -55,6 +55,7 @@
     "three": "^0.173.0"
   },
   "devDependencies": {
+    "@rehype-pretty/transformers": "latest",
     "@shikijs/transformers": "^3.2.1",
     "@types/d3": "^7.4.3",
     "@unocss/astro": "^0.63.4",

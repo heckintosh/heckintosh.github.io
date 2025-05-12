@@ -1,17 +1,42 @@
 ---
+import type { CollectionEntry } from "astro:content";
 import { getEntry, render } from "astro:content";
 import { getCollection } from "astro:content";
-import LayoutBlogPost from "@layouts/LayoutBlogPost.astro";
+import { Image } from "astro:assets";
+import Breadcrumbs from "@/components/Breadcrumbs.astro";
+import readingTime from "reading-time";
+import { formatDate } from "@/lib/utils";
+import { Icon } from "astro-icon/components";
+import { Separator } from "@/components/react/ui/separator";
+import { badgeVariants } from "@/components/react/ui/badge";
+import PostNavigation from "@/components/PostNavigation.astro";
+import TableOfContents from "@/components/TableOfContents.astro";
+import { Button } from '@/components/react/ui/button'
+import LayoutBlogPost from "@/layouts/LayoutBlogPost.astro";
 
 export const prerender = true;
-
+type Posts = CollectionEntry<"blog">;
 export async function getStaticPaths() {
-  return (await getCollection("blog")).map(({ id }) => ({
-    params: { id: id as string },
-  }));
+  return (await getCollection("blog", ({ data }) => !data.draft)).map(
+    ({ id }) => ({
+      params: { id: id as string },
+    }),
+  );
+}
+
+function getAdjacentPosts(currentId: string, postList: Posts[]) {
+  const index = postList.findIndex((post) => post.id === currentId);
+  return {
+    prev: index > 0 ? postList[index - 1] : null,
+    next:
+      index >= 0 && index < postList.length - 1
+        ? postList[index + 1]
+        : null,
+  };
 }
 
 const { id } = Astro.params;
+const allPosts = await getCollection("blog");
 
 if (!id) {
   throw new Error("id is missing");
@@ -23,113 +48,154 @@ if (!entry) {
   return Astro.redirect("/404");
 }
 
-const { Content, remarkPluginFrontmatter } = await render(entry);
+const isSubpost = !!entry.data.tableOfContents;
+const currentEntryId = Astro.params.id;
 
+// Get all subposts
+const visiblePosts = allPosts.filter((post) => !entry.data.draft);
+const stripCodeBlocks = (text: string) => text.replace(/```[\s\S]*?```/g, "");
+const totalBody = [entry.body!].map(stripCodeBlocks).join("");
+const readTime = readingTime(totalBody);
+const { prev: prevPost, next: nextPost } = getAdjacentPosts(
+  currentEntryId,
+  visiblePosts,
+);
+const { Content, headings } = await render(entry);
 ---
 
 <LayoutBlogPost
   url={`blog/${entry.id}`}
-  minutesRead={remarkPluginFrontmatter.minutesRead}
+  minutesRead={readTime.text}
   pubDate={entry.data.pubDate!}
-  title={`${entry.data.title} | Anh`}
+  title={`${entry.data.title}`}
   description={entry.data.description!}
 >
-  <Content />
+  <section
+    class="grid grid-cols-[minmax(0px,1fr)_min(768px,100%)_minmax(0px,1fr)] gap-y-6 px-4"
+  >
+    <Breadcrumbs
+      items={[
+        { href: "/blog", label: "Blog", icon: "lucide:archive" },
+        ...(isSubpost
+          ? [
+              {
+                label: entry.data.title.split(": ")[1] ?? entry.data.title,
+                icon: "lucide:pilcrow",
+              },
+            ]
+          : [{ label: entry.data.title, icon: "lucide:file-text" }]),
+      ]}
+      class="col-start-2"
+    />
+    <div class="col-span-full mx-auto w-full max-w-[1000px]">
+      {
+        entry.data.titleImage && (
+          <Image
+            src={entry.data.titleImage}
+            alt={entry.data.title}
+            width={1200}
+            height={630}
+            class="rounded-xl object-cover"
+          />
+        )
+      }
+    </div>
+    <section class="col-start-2 flex flex-col gap-y-6">
+      {
+        !isSubpost && (
+          <div class="flex flex-col gap-y-4 text-center">
+            <h1 class="text-pretty text-3xl font-bold tracking-tight sm:text-4xl">
+              {entry.data.title}
+            </h1>
+
+            <div class="flex flex-wrap items-center justify-center gap-2 text-sm text-muted-foreground">
+                  <div class="flex items-center gap-x-2">
+                      <div class="flex items-center gap-x-1.5">
+                        <Image
+                          src={"/static/heckintosh-avatar.webp"}
+                          alt="heckintosh"
+                          width={39}
+                          height={39}
+                          class="rounded-full"
+                        />
+                        <span class="text-foreground">{entry.data.author}</span>
+                      </div>
+                  </div>
+                <Separator
+                  orientation="vertical"
+                  className="h-4"
+                />
+              <div class="flex items-center gap-2">
+                <span>{formatDate(entry.data.pubDate)}</span>
+                <Separator orientation="vertical" className="h-4" />
+                <span>{readTime.text}</span>
+              </div>
+            </div>
+            <div class="flex flex-wrap justify-center gap-2">
+              {entry.data.tags?.length ? (
+                entry.data.tags.map((tag: string) => (
+                  <a
+                    href={`/tags/${tag}`}
+                    class={badgeVariants({ variant: "secondary" })}
+                  >
+                    <Icon name="lucide:hash" class="size-3 -translate-x-0.5" />
+                    {tag}
+                  </a>
+                ))
+              ) : (
+                <span class="text-sm text-muted-foreground">
+                  No tags available
+                </span>
+              )}
+            </div>
+          </div>
+        )
+      }
+      <PostNavigation prevPost={prevPost} nextPost={nextPost} />
+    </section>
+
+    {headings.length > 0 && <TableOfContents headings={headings} />}
+    <article class="overflow-auto [&>:first-child>*]:mt-0 prose col-start-2 max-w-none">
+      <Content />
+    </article>
+   
+
+    <PostNavigation prevPost={prevPost} nextPost={nextPost} />
+  </section>
+  <Button
+    variant="outline"
+    size="icon"
+    className="group fixed bottom-8 right-8 z-50 hidden"
+    id="scroll-to-top"
+    title="Scroll to top"
+    aria-label="Scroll to top"
+  >
+    <Icon
+      name="lucide:arrow-up"
+      class="mx-auto size-4 transition-all group-hover:-translate-y-0.5"
+    />
+  </Button>
+
+  <script>
+    document.addEventListener("astro:page-load", () => {
+      const scrollToTopButton = document.getElementById("scroll-to-top");
+      const footer = document.querySelector("footer");
+
+      if (scrollToTopButton && footer) {
+        scrollToTopButton.addEventListener("click", () => {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+
+        window.addEventListener("scroll", () => {
+          const footerRect = footer.getBoundingClientRect();
+          const isFooterVisible = footerRect.top <= window.innerHeight;
+
+          scrollToTopButton.classList.toggle(
+            "hidden",
+            window.scrollY <= 300 || isFooterVisible,
+          );
+        });
+      }
+    });
+  </script>
 </LayoutBlogPost>
-
-<!-- <style is:global>
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    margin-top: 20px;
-    margin-bottom: 10px;
-    font-weight: bold;
-  }
-
-  h1 {
-    font-size: 32px;
-  }
-
-  h2 {
-    font-size: 28px;
-  }
-
-  h3 {
-    font-size: 24px;
-  }
-
-  h4 {
-    font-size: 20px;
-  }
-
-  h5 {
-    font-size: 18px;
-  }
-
-  h6 {
-    font-size: 16px;
-  }
-
-  p {
-    margin: 0 0 10px 0;
-  }
-
-  a {
-    color: #1a0dab;
-    text-decoration: none;
-  }
-
-  a:hover {
-    text-decoration: underline;
-  }
-
-  ul,
-  ol {
-    margin-left: 20px;
-    margin-bottom: 10px;
-  }
-
-  blockquote {
-    margin: 20px 0;
-    padding-left: 15px;
-    border-left: 5px solid #ccc;
-  }
-
-  pre,
-  code {
-    font-family: "JetBrains Mono", monospace;
-    background-color: #f4f4f4;
-    border-radius: 5px;
-  }
-
-  pre {
-    padding: 10px;
-    overflow-x: auto;
-  }
-
-  code {
-    padding: 2px 4px;
-    font-size: 90%;
-    color: #d63384;
-  }
-
-  img {
-    max-width: 100%;
-    height: auto;
-  }
-
-  table {
-    border-collapse: collapse;
-    width: 100%;
-  }
-
-  th,
-  td {
-    text-align: left;
-    padding: 8px;
-    border-bottom: 1px solid #ddd;
-  }
-</style> -->

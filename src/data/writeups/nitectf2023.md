@@ -1,10 +1,9 @@
 ---
 toc: true
-title: "NiteCTF 2023"
+title: NiteCTF 2023
 description: NiteCTF
 pubDate: 2023-12-18
 author: Duc Anh Nguyen
-draft: true
 ---
 
 ## Web

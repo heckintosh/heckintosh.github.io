@@ -15,7 +15,7 @@ export type Link = {
 export const SITE: Site = {
   TITLE: 'heckintosh.github.com',
   DESCRIPTION:
-    'Freelance frontend web development and cybersecurity shenanigans.',
+    'sec researcher.',
   EMAIL: 'heckintosh@protonmail.com',
   NUM_POSTS_ON_HOMEPAGE: 2,
   POSTS_PER_PAGE: 4,

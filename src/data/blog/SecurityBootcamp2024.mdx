@@ -1,9 +1,9 @@
 ---
-title: "Security Bootcamp 2024: IDA, Votatility, ScyllaHide and how to restore a system encrypted by malware."
-description: "Security Bootcamp 2024"
-pubDate: 2025-11-5
-category: "intro"
-draft: false
+toc: true
+title: "Security Bootcamp 2024: Restoring encrypted files"
+description: Security Bootcamp 2024
+pubDate: 2025-05-11
+author: Nguyen Duc Anh
 ---
 
 This was written for a challenge in [Security Bootcamp 2024](http://securitybootcamp.org.vn/) in Vietnam. Although it is a competition, the challenge represented a realistic scenario in which ransomware attacks a corporation. We were given only a dump of an affected system whose files had been encrypted by malware. The goal was to decrypt the given file, team06.pdf.sbc.0yk (one of the files that had been encrypted), and retrieve the original content.
@@ -12,7 +12,7 @@ The sample files can be downloaded at: https://gdrives.ghtk.co/s/3SaEAwcHJn4WLBR
 
 We start with listing all processes running and find the SkypeApp.exe from the system by running `vol`:
 
-```powershell
+```powershell title="SkypeApp.exe dump"
 PS C:\1day\malware-analysis> vol -f .\WE-ARE-HOOMAN-20240927-151339.dmp windows.pslist.PsList | findstr "SkypeApp.exe"
 5520ress728100.0SkypeApp.exe    0xc503b4ddc080in52hed   -       1       False   2024-09-27 15:11:21.000000 UTC  N/A     Disabled
 7008    3932    SkypeApp.exe    0xc503b86c8080  1       -       1       False   2024-09-27 15:13:33.000000 UTC  N/A     Disabled
@@ -20,7 +20,7 @@ PS C:\1day\malware-analysis> vol -f .\WE-ARE-HOOMAN-20240927-151339.dmp windows.
 
 The PID is 7008. Dump the files to get the malware.
 
-```powershell
+```powershell caption="SkypeApp.exe dump" title="SkypeApp.exe dump"
 PS C:\1day\malware-analysis> vol -f .\WE-ARE-HOOMAN-20240927-151339.dmp windows.dumpfiles.DumpFiles --pid 7008
 Volatility 3 Framework 2.11.0
 Progress:  100.00               PDB scanning finished
@@ -105,7 +105,7 @@ Applying this to the memory dump, I wrote a script (The AI actually wrote it) to
 
 The AES key can be found easily above the string. But there are many potential IV (as denoted by the arrow). The IV has 16 bytes and highly likely it wouldn't have many 00 bytes inside it so I asked the AI to auto denote the potiential candidate for the IV. I'm lazy so I combine all of the bytes into a files, then ask the AI to try the sliding window method for all potential IV values. 
 
-```
+```text title="iv.txt"
 PS C:\1day\malware-analysis\bootcamp2024> cat .\iv.txt
   00 02 00 80 6B 51 66 50 78 5A 37 32 32 50 48 6F 76 72 6A 70 71 42 7A 4C 4D 63 51 4D 62 59 54 6F 00 00 00 00 1F 21 56 0F  31 A0 6F 4D A8 79 4D FA  15 6D 3E 0A 00 00 00 00  00 00 00 00 53 7B 87 AE
 00 16 00 90 48 3E 65 66  55 35 63 21 39 50 46 71  56 33 58 66 00 00 00 00  00 00 00 00 00 00 00 00 00 1D 00 80 6B 51 66 50  78 5A 37 6E 30 61 43 6B  72 2B 4C 70 34 42 44 53  4C 5A 42 51 66 39 48 33
@@ -118,5 +118,4 @@ A succesful decryption happens when the original team06.pdf.sbc.0yk is recognize
 
 
 
-With enough context, AI is now able to get to the root of reverse engineer problems easily. For C++, currently the MCP plugin hasn't supported class and struct reformat so the decompiled code looks more human-readable though.
-
+With enough context, AI is now able to get to the root of reverse engineer problems easily. For C++, currently the MCP plugin hasn't supported class and struct reformat so the decompiled code looks more human-readable though. In certain malware, like this one, the encryption mechanism does not involve the attacker generating a key and IV, but rather the malware itself generates the key and IV. So the key and IV will be in the memory dump. Therefore, it is possible to decrypt files without negotiating with the attacker.

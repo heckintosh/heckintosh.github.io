@@ -1,14 +1,20 @@
 import { defineConfig } from "astro/config";
 import { rehypeHeadingIds } from '@astrojs/markdown-remark'
 import sitemap from "@astrojs/sitemap";
-import netlify from "@astrojs/netlify";
 import robotsTxt from "astro-robots-txt";
 import UnoCSS from "@unocss/astro";
 import icon from "astro-icon";
 import solidJs from "@astrojs/solid-js";
 import svelte from "@astrojs/svelte";
 import mdx from '@astrojs/mdx';
+import rehypePrettyCode from 'rehype-pretty-code'
+
 import react from "@astrojs/react";
+import {
+  transformerNotationDiff,
+  transformerMetaHighlight,
+  transformerRenderWhitespace
+} from '@shikijs/transformers'
 
 import rehypeKatex from 'rehype-katex'
 import rehypeExternalLinks from 'rehype-external-links'
@@ -17,7 +23,8 @@ import remarkEmoji from 'remark-emoji'
 import remarkMath from 'remark-math'
 import remarkToc from 'remark-toc'
 import sectionize from '@hbsnow/rehype-sectionize'
-
+import { transformerNotationSkip } from './src/lib/transformerNotationSkip'
+import { transformerDiffHighlight } from './src/lib/transformerDiffHighlight'
 
 
 // https://astro.build/config
@@ -43,13 +50,34 @@ export default defineConfig({
     react(),
   ],
   markdown: {
-    syntaxHighlight: 'shiki',
-    shikiConfig: {
-      theme: 'kanagawa-lotus',
-      wrap: true,
-    },
+    syntaxHighlight: false,
+    // shikiConfig: {
+    //   theme: 'everforest-dark',
+    //   transformers: [
+    //     transformerNotationDiff(),
+    //     transformerNotationFocus(),
+    //     transformerMetaHighlight(),
+    //   ],
+    //   wrap: true,
+    // },
   
     rehypePlugins: [
+      [
+        rehypePrettyCode,
+        {
+          theme: {
+            light: 'everforest-dark',
+            dark: 'everforest-dark',
+          },
+          transformers: [
+            transformerNotationDiff(),
+            transformerMetaHighlight(),
+            transformerRenderWhitespace(),
+            transformerNotationSkip(),
+            transformerDiffHighlight(),
+          ],
+        },
+      ],
       [
         rehypeExternalLinks,
         {
