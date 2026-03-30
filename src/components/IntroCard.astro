@@ -4,20 +4,7 @@ import Button from "./Button.astro";
 import { LINKS } from "@/lib/constants";
 import { Icon } from 'astro-icon/components'
 import Tooltip from "./Tooltip/index";
-import { readFile } from 'node:fs/promises';
-
-const artFiles = [
-  './public/ascii-art-1.txt',
-  './public/ascii-art-2.txt',
-  './public/ascii-art-3.txt',
-  './public/ascii-art-4.txt',
-  './public/ascii-art-5.txt',
-  './public/ascii-art-6.txt',
-  './public/ascii-art-7.txt',
-];
-
-const randomIndex = Math.floor(Math.random() * artFiles.length);
-const asciiArt = await readFile(artFiles[randomIndex], 'utf-8');
+import AsciiArtCanvas from "./AsciiArtCanvas";
 ---
 
 <Card colSpan="md:col-span-3" rowSpan="md:row-span-4">
@@ -69,58 +56,51 @@ const asciiArt = await readFile(artFiles[randomIndex], 'utf-8');
         </Tooltip>
       </div>
     </div>
-    <pre class="ascii-art text-cyan opacity-50">
-      {asciiArt}
-    </pre>
+    <AsciiArtCanvas client:load />
   </div>
 </Card>
 
 <style>
 
+  /* Canvas rendered at 6px. Scale factors preserve the original visual character
+     sizes: new_scale = old_scale × old_font_size / 6px */
   .ascii-art {
-    /* Base styles */
-    white-space: pre;
-    overflow: visible;
     position: absolute;
     z-index: -1;
     pointer-events: none;
-    line-height: 1;
-    width: auto;
-    height: auto;
     display: block;
-    /* Mobile styles */
-    font-size: 2.5px;
+    /* Mobile: was 2.5px × scale(3) → keep visual size: scale(3 × 2.5/6) = 1.25 */
     right: -196px;
     bottom: -25px;
     top: auto;
-    transform: scale(3);
+    transform: scale(1.25);
     transform-origin: bottom right;
   }
 
   @media (min-width: 768px) {
     .ascii-art {
-      font-size: 5.5px;
+      /* md: was 5.5px × scale(1.6) → scale(1.6 × 5.5/6) ≈ 1.47 */
       right: -45px;
       top: 55%;
       bottom: auto;
-      transform: translateY(-50%) scale(1.6);
+      transform: translateY(-50%) scale(1.47);
       transform-origin: center right;
     }
   }
 
   @media (min-width: 1024px) {
     .ascii-art {
+      /* lg: was 6px × scale(1.8) → no change */
       right: -55px;
       transform: translateY(-50%) scale(1.8);
-      font-size: 6px;
     }
   }
 
   @media (min-width: 1280px) {
     .ascii-art {
+      /* xl: was 6.9px × scale(2) → scale(2 × 6.9/6) = 2.3 */
       right: -65px;
-      transform: translateY(-50%) scale(2);
-      font-size: 6.9px;
+      transform: translateY(-50%) scale(2.3);
     }
   }
 
