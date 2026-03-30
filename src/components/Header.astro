@@ -1,37 +1,40 @@
 ---
-import Container from '@/components/Container.astro'
-import Link from '@/components/Link.astro'
-import { NAV_LINKS } from '@/consts'
-import { Image } from 'astro:assets'
-import logo from '../../public/static/heckintosh.svg'
-import MobileMenu from './react/ui/mobile-menu'
+import Container from '@/components/Container.astro';
+import { NAV_LINKS } from '@/consts';
+import { Image } from 'astro:assets';
+import logo from '../../public/static/heckintosh.svg';
+import MobileMenu from './react/ui/mobile-menu';
 ---
 
 <header
-  class="sticky top-0 z-10 bg-background/50 backdrop-blur-md"
+  class="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-md"
   transition:persist
 >
   <Container>
-    <div class="flex flex-wrap items-center justify-between gap-4">
-      <Link href="/">
-        <Image src={logo} alt="Logo" class="size-16" />
-      </Link>
-      <div class="flex items-center gap-2 sm:gap-4">
-        <nav class="hidden items-center gap-4 text-sm sm:flex sm:gap-6">
-          {
-            NAV_LINKS.map((item) => (
-              <Link
-                href={item.href}
-                class="capitalize text-foreground/60 transition-colors hover:text-foreground/80"
-              >
-                {item.label}
-              </Link>
-            ))
-          }
-        </nav>
-        <MobileMenu client:load transition:persist />
-        <!-- <ModeToggle client:load transition:persist /> -->
-      </div>
+    <div class="flex items-center justify-between h-14 gap-6">
+      <a href="/" class="flex items-center gap-2 group" title="Home">
+        <Image
+          src={logo}
+          alt="heckintosh"
+          class="h-8 w-8 grayscale opacity-60 group-hover:opacity-100 group-hover:grayscale-0 transition-all duration-300"
+        />
+        <span class="text-sm font-mono text-muted-foreground group-hover:text-foreground transition-colors hidden sm:inline">
+          heckintosh
+        </span>
+      </a>
+
+      <nav class="hidden sm:flex items-center gap-6 text-xs font-mono">
+        {NAV_LINKS.map(item => (
+          <a
+            href={item.href}
+            class="text-muted-foreground hover:text-primary transition-colors duration-150 tracking-wider uppercase"
+          >
+            {item.label}
+          </a>
+        ))}
+      </nav>
+
+      <MobileMenu client:load transition:persist />
     </div>
   </Container>
 </header>

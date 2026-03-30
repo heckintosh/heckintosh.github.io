@@ -3,40 +3,30 @@ import Card from "@/components/Card/index.astro";
 import { getCollection } from "astro:content";
 import { formatDate } from "@/lib/helpers";
 
-
 const writeups = (await getCollection("writeups"))?.sort(
-  (blogEntryA, blogEntryB) =>
-    (blogEntryB.data.pubDate || new Date()).getTime() -
-    (blogEntryA.data.pubDate || new Date()).getTime(),
+  (a, b) => (b.data.pubDate ?? new Date()).getTime() - (a.data.pubDate ?? new Date()).getTime()
 );
 ---
 
-<Card colSpan="md:col-span-1" rowSpan="md:row-span-4" title="Writeups." style="background-image: url('ctf-bg.webp'); background-size: cover; background-position: center; background-repeat: no-repeat; "  
-href="/writeups">
-  <div class="flex flex-col sm:max-h-none gap-4 overflow-hidden">
-    {
-      writeups?.slice(0, 3).map((writeup, index) => (
-        <a
-          href={`/writeups/${writeup.id}`}
-          class={`${index >= 3 ? 'hidden sm:block' : ''}`}
-        >
-        <div class="w-full hover:text-primary-100 ease-in-out transition-colors  my-0 text-gray-200 shadow-custom shadow-gray-700 bg-gray-900 shadow-custom shadow-primary-500 border border-primary-500 pl-1 pr-2 flex justify-between items-center">
-          <p class="inline-block font-bold text-sm p-3">
-            {writeup.data.title}
-          </p>
-          {writeup.data.pubDate && (
-              <time
-                class="tabular-nums text-xs"
-                datetime={writeup.data.pubDate.toISOString()}
-                data-date={writeup.data.pubDate.toISOString()}
-              >
-                {formatDate(writeup.data.pubDate)}
-              </time>
-          )}
-        </div>
-        
-        </a>
-      ))
-    }
+<Card colSpan="md:col-span-1" rowSpan="md:row-span-2" title="writeups" href="/writeups">
+  <div class="flex flex-col gap-2 overflow-hidden">
+    {writeups?.slice(0, 4).map(w => (
+      <a
+        href={`/writeups/${w.id}`}
+        class="flex items-baseline justify-between gap-2 py-1 border-b border-border/60 last:border-0 hover:border-primary/30 transition-colors group"
+      >
+        <span class="text-xs text-foreground/70 font-mono group-hover:text-primary/80 truncate transition-colors">
+          {w.data.title}
+        </span>
+        {w.data.pubDate && (
+          <time
+            class="text-[10px] text-muted-foreground shrink-0 tabular-nums"
+            datetime={w.data.pubDate.toISOString()}
+          >
+            {formatDate(w.data.pubDate)}
+          </time>
+        )}
+      </a>
+    ))}
   </div>
 </Card>

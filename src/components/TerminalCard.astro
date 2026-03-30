@@ -1,0 +1,42 @@
+---
+import Card from "./Card/index.astro";
+---
+
+<Card colSpan="md:col-span-1" rowSpan="md:row-span-4 lg:row-span-4" class="scanlines">
+  <div class="font-mono text-xs leading-relaxed flex flex-col gap-0 flex-1 overflow-hidden">
+
+    <!-- title bar -->
+    <div class="flex items-center gap-1.5 mb-3 pb-2 border-b border-border">
+      <span class="w-2.5 h-2.5 rounded-full bg-red-500/60"></span>
+      <span class="w-2.5 h-2.5 rounded-full bg-yellow-500/60"></span>
+      <span class="w-2.5 h-2.5 rounded-full bg-green-500/60"></span>
+      <span class="ml-2 text-muted-foreground text-[10px]">bash — heckintosh</span>
+    </div>
+
+    <div class="flex flex-col gap-1 text-[11px] overflow-hidden">
+      <p class="m-0"><span class="text-primary/70">$</span> <span class="text-foreground/80">whoami</span></p>
+      <p class="m-0 text-foreground/50 pl-2">heckintosh</p>
+
+      <p class="m-0 mt-1"><span class="text-primary/70">$</span> <span class="text-foreground/80">cat focus.txt</span></p>
+      <p class="m-0 text-foreground/50 pl-2">web security</p>
+      <p class="m-0 text-foreground/50 pl-2">ctf competitions</p>
+      <p class="m-0 text-foreground/50 pl-2">binary exploitation</p>
+
+      <p class="m-0 mt-1"><span class="text-primary/70">$</span> <span class="text-foreground/80">ls writeups/</span></p>
+      <p class="m-0 text-foreground/50 pl-2 leading-relaxed">
+        flagyard&nbsp;&nbsp;hackmac2023<br />
+        macs_*&nbsp;&nbsp;&nbsp;nitectf2023<br />
+        seccon2023&nbsp;wargamesmy
+      </p>
+
+      <p class="m-0 mt-1"><span class="text-primary/70">$</span> <span class="text-foreground/80">echo $status</span></p>
+      <p class="m-0 text-foreground/50 pl-2">currently: hacking</p>
+
+      <p class="m-0 mt-1">
+        <span class="text-primary/70">$</span>
+        <span class="text-foreground/80"> </span>
+        <span class="cursor text-primary">█</span>
+      </p>
+    </div>
+  </div>
+</Card>

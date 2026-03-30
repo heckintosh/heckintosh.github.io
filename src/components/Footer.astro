@@ -1,20 +1,26 @@
 ---
-import Container from '@/components/Container.astro'
-import { SOCIAL_LINKS } from '@/consts'
-import SocialIcons from './SocialIcons.astro'
+import Container from '@/components/Container.astro';
+import { SOCIAL_LINKS } from '@/consts';
 ---
 
-<footer class="py-4">
+<footer class="py-6 border-t border-border/50">
   <Container>
-    <div
-      class="flex flex-col items-center justify-center gap-y-2 sm:flex-row sm:justify-between"
-    >
-      <div class="flex items-center">
-        <p class="text-center text-sm text-muted-foreground">
-          &copy; {new Date().getFullYear()} heckintosh
-        </p>
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+      <p class="text-xs font-mono text-muted-foreground/60">
+        © {new Date().getFullYear()} heckintosh — built with astro
+      </p>
+      <div class="flex items-center gap-4">
+        {SOCIAL_LINKS.map(link => (
+          <a
+            href={link.href}
+            target={link.href.startsWith('http') ? '_blank' : undefined}
+            rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+            class="text-xs font-mono text-muted-foreground/50 hover:text-primary/70 transition-colors"
+          >
+            {link.label}
+          </a>
+        ))}
       </div>
-      <SocialIcons links={SOCIAL_LINKS} />
     </div>
   </Container>
 </footer>

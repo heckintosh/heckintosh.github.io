@@ -2,54 +2,47 @@
 import Card from "./Card/index.astro";
 ---
 
-<Card colSpan="lg:col-span-1" rowSpan="md:row-span-1" title="Visitors">
-  <div class="flex flex-col items-center justify-center h-[calc(100%-28px)]">
-    <div class="text-2xl font-mono tabular-nums" id="visitorCount">—</div>
-    <div class="text-sm text-gray-500 mt-2" id="visitorLabel">Total Views</div>
+<Card colSpan="lg:col-span-1" rowSpan="md:row-span-2" title="visitors">
+  <div class="flex flex-col items-center justify-center flex-1 gap-1">
+    <div class="text-4xl font-mono font-light tabular-nums text-foreground" id="visitorCount">—</div>
+    <div class="text-xs text-muted-foreground font-mono" id="visitorLabel">total views</div>
   </div>
 </Card>
 
 <script>
-  const el = document.getElementById("visitorCount") as HTMLElement;
+  const el    = document.getElementById("visitorCount") as HTMLElement;
   const label = document.getElementById("visitorLabel") as HTMLElement;
 
   function animateTo(target: number) {
-    const start = performance.now();
-    const duration = 900;
+    const t0 = performance.now();
+    const dur = 900;
     function tick(now: number) {
-      const t = Math.min((now - start) / duration, 1);
-      // cubic ease-out
-      const eased = 1 - Math.pow(1 - t, 3);
-      el.textContent = Math.round(target * eased).toLocaleString();
-      if (t < 1) requestAnimationFrame(tick);
+      const p = Math.min((now - t0) / dur, 1);
+      const e = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(target * e).toLocaleString();
+      if (p < 1) requestAnimationFrame(tick);
     }
     requestAnimationFrame(tick);
   }
 
-  async function loadGlobalCount(): Promise<number | null> {
+  async function loadCount(): Promise<number | null> {
     try {
-      const res = await fetch(
-        "https://api.countapi.xyz/hit/heckintosh.github.io/visits",
-        { mode: "cors" }
-      );
+      const res = await fetch("https://api.countapi.xyz/hit/heckintosh.github.io/visits", { mode: "cors" });
       if (!res.ok) return null;
-      const data = await res.json() as { value?: number };
-      return typeof data.value === "number" ? data.value : null;
-    } catch {
-      return null;
-    }
+      const d = await res.json() as { value?: number };
+      return typeof d.value === "number" ? d.value : null;
+    } catch { return null; }
   }
 
   (async () => {
-    const global = await loadGlobalCount();
+    const global = await loadCount();
     if (global !== null) {
       animateTo(global);
     } else {
-      // Fallback: per-device localStorage count
       const n = parseInt(localStorage.getItem("visitorCount") ?? "0") + 1;
       localStorage.setItem("visitorCount", String(n));
       animateTo(n);
-      label.textContent = "Your visits";
+      label.textContent = "your visits";
     }
   })();
 </script>

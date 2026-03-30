@@ -1,62 +1,39 @@
 ---
 import Card from "@/components/Card/index.astro";
 import Pulse from "@/components/Pulse.astro";
-import { isMorningTime } from "@/lib/helpers";
 ---
 
-<Card colSpan="lg:col-span-1" rowSpan="md:row-span-2">
-  <div class="flex justify-between items-center">
-    <span class="text-xl font-bold">Your Time</span>
-    <Pulse />
-  </div>
-  <div class="flex flex-col h-[calc(100%-28px)]">
-    <div class="flex items-center gap-3 py-1">
-      <time
-        datetime=""
-        id="userTimeDisplay"
-        class="text-2xl xl:text-xl xl:whitespace-nowrap"
-      >
-        {new Date().toLocaleTimeString()}
-      </time>
-    </div>
-    <div id="timezoneDisplay" class="text-sm text-gray-500"></div>
+<Card colSpan="lg:col-span-1" rowSpan="md:row-span-2" title="your time">
+  <div class="flex flex-col gap-1 flex-1">
+    <time
+      id="yourTimeDisplay"
+      class="text-3xl font-mono font-light tabular-nums text-foreground"
+      datetime=""
+    >
+      --:--:-- --
+    </time>
+    <p id="yourTzDisplay" class="text-xs text-muted-foreground font-mono m-0">detecting...</p>
   </div>
 </Card>
 
 <script>
-  import { onCleanup, onMount } from "solid-js";
-
-  let interval: ReturnType<typeof setInterval>;
-
-  function updateClock() {
-    const timeDisplay = document.getElementById("userTimeDisplay");
-    const timezoneDisplay = document.getElementById("timezoneDisplay");
+  function updateYourTime() {
+    const el  = document.getElementById("yourTimeDisplay");
+    const tz  = document.getElementById("yourTzDisplay");
+    if (!el) return;
     const now = new Date();
-
-    if (timeDisplay && timezoneDisplay) {
-      const options = {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: true
-      };
-      const timeString = now.toLocaleTimeString(undefined, options);
-      const [time, period] = timeString.split(' ');
-      
-      const themeColor = period === 'AM' ? 'text-amber-400' : 'text-blue-400';
-      timeDisplay.innerHTML = `<span class="${themeColor}">${time}</span> <span class="text-gray-400">${period}</span>`;
-      timeDisplay.setAttribute("datetime", now.toISOString());
-      
-      timezoneDisplay.textContent = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      timezoneDisplay.className = 'text-sm text-gray-500';
-    }
+    const opts: Intl.DateTimeFormatOptions = {
+      hour: "numeric", minute: "2-digit", second: "2-digit", hour12: true,
+    };
+    const str = now.toLocaleTimeString(undefined, opts);
+    const [time, period] = str.split(" ");
+    const color = period === "AM" ? "#f59e0b" : "#60a5fa";
+    el.innerHTML = `<span style="color:${color}">${time}</span><span style="color:#4a4a5a;font-size:0.6em;margin-left:0.25em">${period}</span>`;
+    el.setAttribute("datetime", now.toISOString());
+    if (tz) tz.textContent = Intl.DateTimeFormat().resolvedOptions().timeZone;
   }
 
-  onMount(() => {
-    interval = setInterval(updateClock, 1000);
-  });
-
-  onCleanup(() => {
-    clearInterval(interval);
-  });
+  updateYourTime();
+  const iv = setInterval(updateYourTime, 1000);
+  document.addEventListener("astro:before-swap", () => clearInterval(iv), { once: true });
 </script>

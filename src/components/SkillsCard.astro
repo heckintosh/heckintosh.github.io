@@ -1,0 +1,38 @@
+---
+import Card from "./Card/index.astro";
+
+const skills = [
+  { label: "web hacking",  pct: 82 },
+  { label: "reverse eng.", pct: 65 },
+  { label: "binary expl.", pct: 52 },
+  { label: "cryptography", pct: 60 },
+  { label: "osint",        pct: 78 },
+  { label: "ctf overall",  pct: 75 },
+];
+---
+
+<Card colSpan="md:col-span-1" rowSpan="md:row-span-4 lg:row-span-4" title="skills">
+  <div class="flex flex-col gap-3 flex-1">
+    {skills.map(s => (
+      <div class="flex flex-col gap-1">
+        <div class="flex justify-between items-baseline">
+          <span class="text-xs text-muted-foreground font-mono">{s.label}</span>
+          <span class="text-xs text-primary/60 font-mono tabular-nums">{s.pct}%</span>
+        </div>
+        <div class="h-px w-full bg-border relative overflow-hidden rounded-full">
+          <div
+            class="h-full bg-primary/70 rounded-full transition-all duration-1000"
+            style={`width: ${s.pct}%; box-shadow: 0 0 6px hsl(186 100% 44% / 0.5);`}
+          />
+        </div>
+      </div>
+    ))}
+
+    <div class="mt-auto pt-3 border-t border-border">
+      <p class="text-xs text-muted-foreground font-mono leading-relaxed">
+        <span class="text-primary/60">$</span> cat ctf_categories.txt<br />
+        <span class="text-foreground/70">web  rev  pwn  cry  misc</span>
+      </p>
+    </div>
+  </div>
+</Card>

@@ -1,52 +1,39 @@
 ---
-import { getCurrentTimeInVietnam, formatTimeForVietnam, isMorningTime } from "@/lib/helpers";
 import Card from "./Card/index.astro";
+import { getCurrentTimeInVietnam, formatTimeForVietnam } from "@/lib/helpers";
 ---
 
-<Card colSpan="lg:col-span-1" rowSpan="md:row-span-2" title="My Time">
-  <div class="flex flex-col h-[calc(100%-28px)]">
-    <div class="flex items-center gap-3 py-1">
-      <time
-        datetime=""
-        id="timeDisplay"
-        class="text-2xl xl:text-xl xl:whitespace-nowrap transition-colors duration-200"
-      >
-        {formatTimeForVietnam(getCurrentTimeInVietnam())}
-      </time>
-    </div>
-    <div id="myTimezoneDisplay" class="text-sm text-gray-500"></div>
+<Card colSpan="lg:col-span-1" rowSpan="md:row-span-2" title="my time">
+  <div class="flex flex-col gap-1 flex-1">
+    <time
+      id="myTimeDisplay"
+      class="text-3xl font-mono font-light tabular-nums text-foreground"
+      datetime=""
+    >
+      {formatTimeForVietnam(getCurrentTimeInVietnam())}
+    </time>
+    <p class="text-xs text-muted-foreground font-mono m-0">Asia/Ho_Chi_Minh</p>
   </div>
 </Card>
 
 <script>
-  import { onCleanup, onMount } from "solid-js";
-  import { formatTimeForVietnam, isMorningTime } from "@lib/helpers";
-
-  let interval: ReturnType<typeof setInterval>;
-
-  function updateClock() {
-    const timeDisplay = document.getElementById("timeDisplay");
-    const myTimezoneDisplay = document.getElementById("myTimezoneDisplay");
+  function updateMyTime() {
+    const el = document.getElementById("myTimeDisplay");
+    if (!el) return;
     const now = new Date();
-
-    if (timeDisplay && myTimezoneDisplay) {
-      const timeString = formatTimeForVietnam(now);
-      const [time, period] = timeString.split(' ');
-      
-      const themeColor = period === 'AM' ? 'text-amber-400' : 'text-blue-400';
-      timeDisplay.innerHTML = `<span class="${themeColor}">${time}</span> <span class="text-gray-400">${period}</span>`;
-      timeDisplay.setAttribute("datetime", now.toISOString());
-
-      myTimezoneDisplay.textContent = "Asia/Ho_Chi_Minh";
-      myTimezoneDisplay.className = 'text-sm text-gray-500';
-    }
+    const opts: Intl.DateTimeFormatOptions = {
+      hour: "numeric", minute: "2-digit", second: "2-digit",
+      hour12: true, timeZone: "Asia/Ho_Chi_Minh",
+    };
+    const str = new Intl.DateTimeFormat("en-US", opts).format(now);
+    const [time, period] = str.split(" ");
+    const color = period === "AM" ? "#f59e0b" : "#60a5fa";
+    el.innerHTML = `<span style="color:${color}">${time}</span><span style="color:#4a4a5a;font-size:0.6em;margin-left:0.25em">${period}</span>`;
+    el.setAttribute("datetime", now.toISOString());
   }
 
-  onMount(() => {
-    interval = setInterval(updateClock, 1000);
-  });
-
-  onCleanup(() => {
-    clearInterval(interval);
-  });
+  updateMyTime();
+  const iv = setInterval(updateMyTime, 1000);
+  // Clean up on Astro page transitions
+  document.addEventListener("astro:before-swap", () => clearInterval(iv), { once: true });
 </script>
