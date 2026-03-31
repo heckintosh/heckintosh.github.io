@@ -1,29 +1,9 @@
 import { useEffect, useRef } from "react";
+import * as d3 from "d3";
+// @ts-ignore
+import worldData from "../lib/world.json";
 
-const LOCATIONS = [
-  { name: "Vietnam",   lon: 108, lat: 14  },
-  { name: "Australia", lon: 134, lat: -27 },
-  { name: "Taiwan",    lon: 121, lat: 24  },
-];
-
-function project(
-  lon: number, lat: number,
-  cLon: number, cLat: number,
-  r: number, cx: number, cy: number,
-) {
-  const λ  = (lon  * Math.PI) / 180;
-  const φ  = (lat  * Math.PI) / 180;
-  const λ0 = (cLon * Math.PI) / 180;
-  const φ0 = (cLat * Math.PI) / 180;
-  const cosc =
-    Math.sin(φ0) * Math.sin(φ) +
-    Math.cos(φ0) * Math.cos(φ) * Math.cos(λ - λ0);
-  return {
-    x: cx + r * Math.cos(φ) * Math.sin(λ - λ0),
-    y: cy - r * (Math.cos(φ0) * Math.sin(φ) - Math.sin(φ0) * Math.cos(φ) * Math.cos(λ - λ0)),
-    visible: cosc > 0,
-  };
-}
+const VISITED = ["Vietnam", "Australia"];
 
 export default function GlobeCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -31,33 +11,34 @@ export default function GlobeCanvas() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
 
-    // Size canvas to its CSS container
     const dpr    = window.devicePixelRatio || 1;
     const parent = canvas.parentElement!;
-    const pw     = parent.getBoundingClientRect().width  || parent.clientWidth  || 160;
-    const ph     = parent.getBoundingClientRect().height || parent.clientHeight || pw;
-    const size   = Math.max(Math.min(pw, ph) || 160, 80);
-    canvas.width  = size * dpr;
-    canvas.height = size * dpr;
+    const rect   = parent.getBoundingClientRect();
+    const pw     = rect.width  || parent.clientWidth  || 160;
+    const ph     = rect.height || parent.clientHeight || pw;
+    const size   = Math.max(Math.min(pw, ph) || 160, 60);
+
+    canvas.width        = size * dpr;
+    canvas.height       = size * dpr;
     canvas.style.width  = `${size}px`;
     canvas.style.height = `${size}px`;
+
+    const ctx = canvas.getContext("2d")!;
     ctx.scale(dpr, dpr);
 
     const cx = size / 2;
     const cy = size / 2;
-    const r  = size * 0.42;
 
-    // View state
-    let cLon = 115; // start Asia-Pacific centered
-    let cLat = -5;
+    const projection = d3
+      .geoOrthographic()
+      .scale(size * 0.46)
+      .translate([cx, cy])
+      .rotate([0, -20])
+      .clipAngle(90);
 
-    // Drag state
-    let dragging = false;
-    let dragStartX = 0, dragStartY = 0;
-    let dragLon = cLon, dragLat = cLat;
+    const path      = d3.geoPath().projection(projection).context(ctx);
+    const graticule = d3.geoGraticule()();
 
     let running  = true;
     let rafId    = 0;
@@ -67,111 +48,45 @@ export default function GlobeCanvas() {
       if (!running) return;
       const delta = lastTime ? now - lastTime : 16;
       lastTime = now;
-      if (!dragging) cLon += delta * 0.018; // ~6.5s per full rotation
+
+      const r = projection.rotate() as [number, number];
+      projection.rotate([r[0] + delta * 0.018, r[1]]);
 
       ctx.clearRect(0, 0, size, size);
 
-      // Globe fill
-      const bg = ctx.createRadialGradient(cx - r * 0.25, cy - r * 0.25, 0, cx, cy, r);
-      bg.addColorStop(0, "#16162a");
-      bg.addColorStop(1, "#0a0a14");
+      // Ocean
       ctx.beginPath();
-      ctx.arc(cx, cy, r, 0, Math.PI * 2);
-      ctx.fillStyle = bg;
+      ctx.arc(cx, cy, size * 0.46, 0, Math.PI * 2);
+      ctx.fillStyle = "#1a3a5c";
       ctx.fill();
 
-      // Globe rim
+      // Graticule
       ctx.beginPath();
-      ctx.arc(cx, cy, r, 0, Math.PI * 2);
-      ctx.strokeStyle = "rgba(250,204,21,0.15)";
-      ctx.lineWidth = 0.8;
+      path(graticule as any);
+      ctx.strokeStyle = "rgba(255,255,255,0.07)";
+      ctx.lineWidth   = 0.4;
       ctx.stroke();
 
-      // Grid lines
-      ctx.strokeStyle = "rgba(255,255,255,0.045)";
-      ctx.lineWidth   = 0.5;
-
-      for (let lat = -60; lat <= 60; lat += 30) {
+      // Countries
+      for (const feature of (worldData as any).features) {
+        const visited = VISITED.includes(feature.properties?.name);
         ctx.beginPath();
-        let gap = true;
-        for (let lon = -180; lon <= 181; lon += 3) {
-          const p = project(lon, lat, cLon, cLat, r, cx, cy);
-          if (p.visible) { gap ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y); gap = false; }
-          else gap = true;
-        }
-        ctx.stroke();
-      }
-      for (let lon = -180; lon < 180; lon += 30) {
-        ctx.beginPath();
-        let gap = true;
-        for (let lat = -90; lat <= 90; lat += 3) {
-          const p = project(lon, lat, cLon, cLat, r, cx, cy);
-          if (p.visible) { gap ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y); gap = false; }
-          else gap = true;
-        }
-        ctx.stroke();
-      }
-
-      // Location markers
-      for (const loc of LOCATIONS) {
-        const p = project(loc.lon, loc.lat, cLon, cLat, r, cx, cy);
-        if (!p.visible) continue;
-
-        // Glow halo
-        const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, 16);
-        glow.addColorStop(0, "rgba(250,204,21,0.35)");
-        glow.addColorStop(1, "rgba(250,204,21,0)");
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 16, 0, Math.PI * 2);
-        ctx.fillStyle = glow;
+        path(feature);
+        ctx.fillStyle   = visited ? "rgba(250,204,21,0.9)" : "rgba(45,106,79,0.85)";
+        ctx.strokeStyle = visited ? "rgba(250,204,21,1)"   : "rgba(255,255,255,0.12)";
+        ctx.lineWidth   = visited ? 0.8 : 0.3;
         ctx.fill();
-
-        // Dot
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
-        ctx.fillStyle = "#facc15";
-        ctx.fill();
-
-        // Label
-        ctx.font      = "8px 'JetBrains Mono', monospace";
-        ctx.fillStyle = "rgba(250,204,21,0.9)";
-        ctx.fillText(loc.name, p.x + 5, p.y - 3);
+        ctx.stroke();
       }
 
       rafId = requestAnimationFrame(draw);
     }
-
-    // Drag to rotate
-    function onDown(e: PointerEvent) {
-      dragging = true;
-      canvas!.setPointerCapture(e.pointerId);
-      dragStartX = e.clientX;
-      dragStartY = e.clientY;
-      dragLon    = cLon;
-      dragLat    = cLat;
-    }
-    function onPointerMove(e: PointerEvent) {
-      if (!dragging) return;
-      cLon = dragLon - (e.clientX - dragStartX) * 0.4;
-      cLat = Math.max(-60, Math.min(60, dragLat + (e.clientY - dragStartY) * 0.3));
-    }
-    function onUp() { dragging = false; }
-
-    canvas.style.cursor = "grab";
-    canvas.addEventListener("pointerdown", onDown);
-    canvas.addEventListener("pointermove", onPointerMove);
-    canvas.addEventListener("pointerup",   onUp);
-    canvas.addEventListener("pointerout",  onUp);
 
     rafId = requestAnimationFrame(draw);
 
     return () => {
       running = false;
       cancelAnimationFrame(rafId);
-      canvas.removeEventListener("pointerdown", onDown);
-      canvas.removeEventListener("pointermove", onPointerMove);
-      canvas.removeEventListener("pointerup",   onUp);
-      canvas.removeEventListener("pointerout",  onUp);
     };
   }, []);
 

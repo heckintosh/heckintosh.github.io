@@ -21,21 +21,21 @@
 @layer base {
   :root {
     /* ── Core palette — light/yellow theme ── */
-    --background: 0 0% 97%;            /* #f7f7f7 near-white */
-    --foreground: 240 10% 8%;          /* near-black */
+    --background: 220 14% 88%;         /* #dde1e9 cool light gray page bg */
+    --foreground: 220 20% 10%;         /* near-black text */
 
     /* yellow as primary accent */
-    --primary: 48 96% 45%;             /* #e6b800 slightly darkened for contrast */
-    --primary-foreground: 240 10% 5%;
+    --primary: 45 93% 47%;             /* #e6ac00 amber-yellow */
+    --primary-foreground: 220 20% 5%;
 
-    --secondary: 240 5% 93%;           /* light gray */
-    --secondary-foreground: 240 10% 8%;
+    --secondary: 220 10% 94%;          /* near-white secondary */
+    --secondary-foreground: 220 20% 10%;
 
-    --muted: 240 5% 93%;
-    --muted-foreground: 240 5% 42%;    /* medium gray */
+    --muted: 220 10% 92%;
+    --muted-foreground: 220 10% 40%;   /* medium gray labels */
 
-    --accent: 0 0% 100%;               /* card surface — white */
-    --accent-foreground: 240 10% 8%;
+    --accent: 0 0% 100%;               /* card surface — pure white */
+    --accent-foreground: 220 20% 10%;
 
     --additive: 112 50% 36%;
     --additive-foreground: 0 0% 9%;
@@ -43,8 +43,8 @@
     --destructive: 0 62.8% 45%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 6% 88%;              /* subtle light border */
-    --ring: 48 96% 45%;                /* yellow focus ring */
+    --border: 220 13% 80%;             /* visible card border */
+    --ring: 45 93% 47%;                /* yellow focus ring */
 
     /* amber secondary (dates / labels) */
     --amber: 38 92% 50%;
@@ -85,8 +85,8 @@
   transition: border-color 200ms ease, box-shadow 200ms ease;
 }
 .card-glow:hover {
-  border-color: hsl(48 96% 45% / 0.5) !important;
-  box-shadow: 0 0 20px hsl(48 96% 45% / 0.12), inset 0 0 0 1px hsl(48 96% 45% / 0.15);
+  border-color: hsl(45 93% 47% / 0.55) !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08), 0 0 0 1px hsl(45 93% 47% / 0.2);
 }
 
 /* ── Blinking cursor ─────────────────────────────────────────────────────── */
