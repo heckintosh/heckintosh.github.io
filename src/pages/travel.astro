@@ -1,5 +1,5 @@
 ---
-import Globe from "@/components/Globe";
+import GlobeFull from "@/components/GlobeFull";
 import BasicLayout from "@/layouts/BasicLayout.astro";
 ---
 
@@ -8,19 +8,18 @@ import BasicLayout from "@/layouts/BasicLayout.astro";
   description="Places I've been to: Vietnam, Australia, Taiwan"
   page="travel"
 >
-  <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#f7f7f7;padding:1rem;">
+  <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#f7f7f7;">
     <a
       href="/"
-      style="position:absolute;top:1.25rem;left:1.25rem;font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:#64748b;text-decoration:none;border:1px solid #e2e8f0;padding:0.375rem 0.75rem;border-radius:0.375rem;"
+      style="position:fixed;top:1.25rem;left:1.25rem;font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:#64748b;text-decoration:none;border:1px solid #e2e8f0;padding:0.375rem 0.75rem;border-radius:0.375rem;background:#fff;z-index:10;"
     >
       ← back
     </a>
 
-    <div style="text-align:center;margin-bottom:1rem;">
-      <p style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:#b45309;margin:0;">visited</p>
-      <p style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:#94a3b8;margin:0.25rem 0 0;">vietnam · australia · taiwan</p>
-    </div>
+    <p style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:#b45309;margin:0 0 1rem;">visited</p>
 
-    <Globe client:load />
+    <GlobeFull client:load />
+
+    <p style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:#94a3b8;margin:1rem 0 0;">vietnam · australia · taiwan</p>
   </div>
 </BasicLayout>
