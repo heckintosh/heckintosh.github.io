@@ -22,20 +22,20 @@
   :root {
     /* ── Core palette ── */
     --background: 240 10% 3%;          /* #070710  near-black */
-    --foreground: 220 15% 91%;         /* #e3e6f0  near-white */
+    --foreground: 0 0% 95%;            /* near-white */
 
-    /* cyan as primary accent */
-    --primary: 186 100% 44%;           /* #00d4d4 */
+    /* yellow as primary accent */
+    --primary: 48 96% 53%;             /* #facc15 */
     --primary-foreground: 240 10% 5%;
 
     --secondary: 240 6% 10%;           /* #161620 */
-    --secondary-foreground: 220 15% 91%;
+    --secondary-foreground: 0 0% 95%;
 
     --muted: 240 6% 10%;
     --muted-foreground: 240 5% 45%;    /* subdued */
 
     --accent: 240 8% 7%;               /* card surface */
-    --accent-foreground: 220 15% 91%;
+    --accent-foreground: 0 0% 95%;
 
     --additive: 112 50% 36%;
     --additive-foreground: 0 0% 9%;
@@ -44,19 +44,19 @@
     --destructive-foreground: 0 0% 98%;
 
     --border: 240 6% 13%;              /* subtle card border */
-    --ring: 186 100% 44%;              /* cyan focus ring */
+    --ring: 48 96% 53%;                /* yellow focus ring */
 
     /* amber secondary (dates / labels) */
     --amber: 38 92% 50%;
 
-    /* chart */
-    --chart-1: 186 100% 44%;
-    --chart-2: 186 80% 38%;
-    --chart-3: 186 60% 32%;
-    --chart-4: 186 40% 26%;
-    --chart-5: 186 20% 20%;
-    --chart-6: 186 10% 16%;
-    --chart-7: 186 5% 12%;
+    /* chart — yellow-to-dark ramp */
+    --chart-1: 48 96% 53%;
+    --chart-2: 45 90% 45%;
+    --chart-3: 38 85% 38%;
+    --chart-4: 30 75% 32%;
+    --chart-5: 24 60% 25%;
+    --chart-6: 20 40% 18%;
+    --chart-7: 15 20% 13%;
   }
 
   *,
@@ -85,8 +85,8 @@
   transition: border-color 200ms ease, box-shadow 200ms ease;
 }
 .card-glow:hover {
-  border-color: hsl(186 100% 44% / 0.35) !important;
-  box-shadow: 0 0 24px hsl(186 100% 44% / 0.07), inset 0 0 0 1px hsl(186 100% 44% / 0.1);
+  border-color: hsl(48 96% 53% / 0.35) !important;
+  box-shadow: 0 0 24px hsl(48 96% 53% / 0.07), inset 0 0 0 1px hsl(48 96% 53% / 0.1);
 }
 
 /* ── Blinking cursor ─────────────────────────────────────────────────────── */

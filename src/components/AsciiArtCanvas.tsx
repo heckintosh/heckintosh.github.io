@@ -20,6 +20,8 @@
 import { useEffect, useRef } from "react";
 import { prepareWithSegments } from "@chenglou/pretext";
 
+type MousePos = { x: number; y: number };
+
 // ── Grid & font ───────────────────────────────────────────────────────────────
 const COLS = 55;
 const ROWS = 28;
@@ -71,10 +73,12 @@ function makeStamp(rPx: number, fsx: number, fsy: number): Stamp {
 
 export default function AsciiArtCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const mouseRef = useRef<MousePos | null>(null);
 
   useEffect(() => {
     let running = true;
     let rafId = 0;
+    let removeListeners: (() => void) | null = null;
 
     async function start() {
       // Wait for JetBrains Mono to be available before measuring
@@ -154,6 +158,34 @@ export default function AsciiArtCanvas() {
 
       const field = new Float32Array(fieldCols * fieldRows);
 
+      // ── Mouse / touch tracking (document-level, canvas stays pointer-events:none) ──
+      function getCanvasPos(clientX: number, clientY: number): MousePos {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        return {
+          x: (clientX - rect.left) * scaleX,
+          y: (clientY - rect.top) * scaleY,
+        };
+      }
+      function onMouseMove(e: MouseEvent) { mouseRef.current = getCanvasPos(e.clientX, e.clientY); }
+      function onMouseLeave() { mouseRef.current = null; }
+      function onTouchMove(e: TouchEvent) {
+        const t = e.touches[0];
+        if (t) mouseRef.current = getCanvasPos(t.clientX, t.clientY);
+      }
+      function onTouchEnd() { mouseRef.current = null; }
+      document.addEventListener("mousemove", onMouseMove);
+      document.addEventListener("mouseleave", onMouseLeave);
+      document.addEventListener("touchmove", onTouchMove, { passive: true });
+      document.addEventListener("touchend", onTouchEnd);
+      removeListeners = () => {
+        document.removeEventListener("mousemove", onMouseMove);
+        document.removeEventListener("mouseleave", onMouseLeave);
+        document.removeEventListener("touchmove", onTouchMove);
+        document.removeEventListener("touchend", onTouchEnd);
+      };
+
       function splat(cx: number, cy: number, stamp: Stamp) {
         const gcx = Math.round(cx * fsx);
         const gcy = Math.round(cy * fsy);
@@ -185,6 +217,11 @@ export default function AsciiArtCanvas() {
         const a2y =
           Math.sin(now * 0.0009 + Math.PI) * canvasH * 0.25 + canvasH / 2;
 
+        // Mouse attractor (mapped through CSS scale via getBoundingClientRect)
+        const mouse = mouseRef.current;
+        const mx = mouse !== null ? Math.max(0, Math.min(canvasW, mouse.x)) : null;
+        const my = mouse !== null ? Math.max(0, Math.min(canvasH, mouse.y)) : null;
+
         // Update particle physics
         for (const p of particles) {
           const d1x = a1x - p.x,
@@ -200,6 +237,13 @@ export default function AsciiArtCanvas() {
           const force = c1 ? FORCE_1 : FORCE_2;
           p.vx += (ax / dist) * force + (Math.random() - 0.5) * 0.25;
           p.vy += (ay / dist) * force + (Math.random() - 0.5) * 0.25;
+          // Pull toward mouse cursor (stronger than auto-orbit attractors)
+          if (mx !== null && my !== null) {
+            const dmx = mx - p.x, dmy = my - p.y;
+            const md = Math.sqrt(dmx * dmx + dmy * dmy) + 1;
+            p.vx += (dmx / md) * 0.45;
+            p.vy += (dmy / md) * 0.45;
+          }
           p.vx *= 0.97;
           p.vy *= 0.97;
           p.x += p.vx;
@@ -216,11 +260,13 @@ export default function AsciiArtCanvas() {
         for (const p of particles) splat(p.x, p.y, pStamp);
         splat(a1x, a1y, laStamp);
         splat(a2x, a2y, saStamp);
+        // Extra bright stamp at cursor so characters cluster visibly there
+        if (mx !== null && my !== null) splat(mx, my, laStamp);
 
         // Draw: one fillText per row (monospace → all chars same advance width)
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.font = FONT;
-        ctx.fillStyle = "#06b6d4"; // cyan-500
+        ctx.fillStyle = "#facc15"; // yellow-400
         ctx.globalAlpha = 0.65;
         ctx.textBaseline = "top";
 
@@ -249,6 +295,8 @@ export default function AsciiArtCanvas() {
     return () => {
       running = false;
       cancelAnimationFrame(rafId);
+      mouseRef.current = null;
+      removeListeners?.();
     };
   }, []);
 
