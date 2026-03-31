@@ -2,10 +2,9 @@
  * Renders one of the hand-drawn Braille ASCII art files as a <pre> element
  * with a CSS spotlight mask that follows the cursor/touch.
  *
- * Why <pre> instead of canvas:
- *   - Native browser text rendering = crisp at any DPI, no pixelation
- *   - The user's actual artwork is preserved character-for-character
- *   - Interactive spotlight via CSS mask-image + CSS custom properties
+ * Note: the <style> in IntroCard.astro uses :global(.ascii-art) to bypass
+ * Astro's scoped-CSS hash — React-rendered elements don't receive the hash
+ * attribute so scoped rules would not match otherwise.
  */
 import { useEffect, useRef, useState } from "react";
 
@@ -13,6 +12,7 @@ export default function AsciiArtDisplay() {
   const ref = useRef<HTMLPreElement>(null);
   const [text, setText] = useState("");
 
+  // Fetch the hand-drawn art
   useEffect(() => {
     fetch("/ascii-art-1.txt")
       .then((r) => r.text())
@@ -20,27 +20,19 @@ export default function AsciiArtDisplay() {
       .catch(() => {});
   }, []);
 
+  // Mouse/touch spotlight — runs once on mount, independent of text
   useEffect(() => {
     const el = ref.current;
-    if (!el || !text) return;
+    if (!el) return;
 
     function setPos(clientX: number, clientY: number) {
       const rect = el!.getBoundingClientRect();
-      el!.style.setProperty(
-        "--mx",
-        `${((clientX - rect.left) / rect.width) * 100}%`
-      );
-      el!.style.setProperty(
-        "--my",
-        `${((clientY - rect.top) / rect.height) * 100}%`
-      );
+      el!.style.setProperty("--mx", `${((clientX - rect.left) / rect.width) * 100}%`);
+      el!.style.setProperty("--my", `${((clientY - rect.top) / rect.height) * 100}%`);
     }
 
-    function onMove(e: MouseEvent) { setPos(e.clientX, e.clientY); }
-    function onTouch(e: TouchEvent) {
-      const t = e.touches[0];
-      if (t) setPos(t.clientX, t.clientY);
-    }
+    const onMove  = (e: MouseEvent)  => setPos(e.clientX, e.clientY);
+    const onTouch = (e: TouchEvent)  => { const t = e.touches[0]; if (t) setPos(t.clientX, t.clientY); };
 
     document.addEventListener("mousemove", onMove);
     document.addEventListener("touchmove", onTouch, { passive: true });
@@ -48,13 +40,13 @@ export default function AsciiArtDisplay() {
       document.removeEventListener("mousemove", onMove);
       document.removeEventListener("touchmove", onTouch);
     };
-  }, [text]);
+  }, []);
 
   return (
     <pre
       ref={ref}
       className="ascii-art"
-      style={{ "--mx": "50%", "--my": "50%" } as React.CSSProperties}
+      style={{ "--mx": "70%", "--my": "50%" } as React.CSSProperties}
     >
       {text}
     </pre>

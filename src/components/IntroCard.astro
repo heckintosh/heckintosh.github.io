@@ -53,8 +53,12 @@ import AsciiArtCanvas from "./AsciiArtCanvas";
 </Card>
 
 <style>
-  /* Braille ASCII art — crisp native text, no canvas scaling */
-  .ascii-art {
+  /*
+   * :global() is required here because the <pre> is rendered by React —
+   * Astro's scoped-CSS hash is NOT added to React component output,
+   * so a plain .ascii-art rule would never match.
+   */
+  :global(.ascii-art) {
     position: absolute;
     z-index: 0;
     pointer-events: none;
@@ -62,51 +66,56 @@ import AsciiArtCanvas from "./AsciiArtCanvas";
     padding: 0;
     white-space: pre;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 7.5px;
-    line-height: 1.22;
+    line-height: 1.2;
     color: #facc15;
+    overflow: hidden;
 
-    /* Spotlight: bright at cursor, ghost-dim at edges */
+    /* Spotlight: 100% visible at cursor, 30% visible elsewhere */
     -webkit-mask-image: radial-gradient(
-      ellipse 48% 48% at var(--mx, 50%) var(--my, 50%),
-      rgba(0,0,0,1)    0%,
-      rgba(0,0,0,0.07) 100%
+      ellipse 55% 55% at var(--mx, 70%) var(--my, 50%),
+      rgba(0,0,0,1)   0%,
+      rgba(0,0,0,0.3) 100%
     );
     mask-image: radial-gradient(
-      ellipse 48% 48% at var(--mx, 50%) var(--my, 50%),
-      rgba(0,0,0,1)    0%,
-      rgba(0,0,0,0.07) 100%
+      ellipse 55% 55% at var(--mx, 70%) var(--my, 50%),
+      rgba(0,0,0,1)   0%,
+      rgba(0,0,0,0.3) 100%
     );
 
-    /* Mobile: sit in the bottom-right corner */
-    right: -60px;
+    /* Mobile: scaled down, anchored bottom-right */
+    font-size: 6px;
+    right: -10px;
     bottom: -10px;
     top: auto;
+    max-width: 70%;
+    max-height: calc(100% + 20px);
     transform-origin: bottom right;
-    transform: scale(0.85);
   }
 
   @media (min-width: 768px) {
-    .ascii-art {
-      right: -30px;
+    :global(.ascii-art) {
+      font-size: 7px;
+      right: -15px;
       top: 50%;
       bottom: auto;
+      max-width: 60%;
+      max-height: none;
       transform: translateY(-50%);
       transform-origin: center right;
     }
   }
 
   @media (min-width: 1024px) {
-    .ascii-art {
-      right: -40px;
+    :global(.ascii-art) {
       font-size: 8px;
+      right: -20px;
     }
   }
 
   @media (min-width: 1280px) {
-    .ascii-art {
-      right: -50px;
+    :global(.ascii-art) {
       font-size: 9px;
+      right: -25px;
     }
   }
 </style>
