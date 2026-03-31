@@ -5,12 +5,13 @@ interface Props {
   colSpan?: string;
   rowSpan?: string;
   href?: string;
+  titleHref?: string;
   colorText?: string;
   style?: string;
   class?: string;
 }
 
-const { title, body, colSpan, rowSpan, href, colorText, style, class: extraClass } = Astro.props;
+const { title, body, colSpan, rowSpan, href, titleHref, colorText, style, class: extraClass } = Astro.props;
 ---
 
 <div
@@ -33,7 +34,20 @@ const { title, body, colSpan, rowSpan, href, colorText, style, class: extraClass
     </a>
   ) : (
     <div class="flex flex-col h-full gap-3">
-      {title && <h2 class="text-sm font-semibold tracking-widest uppercase text-primary/80 m-0">{title}</h2>}
+      {title && (
+        <div class="flex items-start justify-between gap-2">
+          {titleHref ? (
+            <a href={titleHref} class="group/th flex items-center gap-1.5">
+              <h2 class="text-sm font-semibold tracking-widest uppercase text-primary/80 m-0 group-hover/th:text-primary transition-colors">{title}</h2>
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="opacity-30 shrink-0 group-hover/th:opacity-80 group-hover/th:translate-x-0.5 group-hover/th:-translate-y-0.5 transition-all">
+                <path d="M7 17L17 7"/><path d="M7 7h10v10"/>
+              </svg>
+            </a>
+          ) : (
+            <h2 class="text-sm font-semibold tracking-widest uppercase text-primary/80 m-0">{title}</h2>
+          )}
+        </div>
+      )}
       {body && <p class="m-0 text-sm text-muted-foreground">{body}</p>}
       <slot />
     </div>

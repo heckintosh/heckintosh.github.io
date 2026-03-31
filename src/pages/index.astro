@@ -84,7 +84,7 @@ const posts = (await getCollection("blog"))?.sort(
 
     <!-- Blog: cols 1-2, rows 5-8 -->
     <div class="md:col-span-2 lg:col-span-2 lg:row-span-4 lg:col-start-1 lg:row-start-5">
-      <Card title="blog" href="/blog">
+      <Card title="blog" titleHref="/blog">
         <div class="flex flex-col gap-0.5 overflow-hidden flex-1">
           {posts?.slice(0, 5).map(post => (
             <a
