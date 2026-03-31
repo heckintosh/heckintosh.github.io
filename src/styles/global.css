@@ -20,43 +20,43 @@
 
 @layer base {
   :root {
-    /* ── Core palette ── */
-    --background: 240 10% 3%;          /* #070710  near-black */
-    --foreground: 0 0% 95%;            /* near-white */
+    /* ── Core palette — light/yellow theme ── */
+    --background: 0 0% 97%;            /* #f7f7f7 near-white */
+    --foreground: 240 10% 8%;          /* near-black */
 
     /* yellow as primary accent */
-    --primary: 48 96% 53%;             /* #facc15 */
+    --primary: 48 96% 45%;             /* #e6b800 slightly darkened for contrast */
     --primary-foreground: 240 10% 5%;
 
-    --secondary: 240 6% 10%;           /* #161620 */
-    --secondary-foreground: 0 0% 95%;
+    --secondary: 240 5% 93%;           /* light gray */
+    --secondary-foreground: 240 10% 8%;
 
-    --muted: 240 6% 10%;
-    --muted-foreground: 240 5% 45%;    /* subdued */
+    --muted: 240 5% 93%;
+    --muted-foreground: 240 5% 42%;    /* medium gray */
 
-    --accent: 240 8% 7%;               /* card surface */
-    --accent-foreground: 0 0% 95%;
+    --accent: 0 0% 100%;               /* card surface — white */
+    --accent-foreground: 240 10% 8%;
 
     --additive: 112 50% 36%;
     --additive-foreground: 0 0% 9%;
 
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 62.8% 45%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 6% 13%;              /* subtle card border */
-    --ring: 48 96% 53%;                /* yellow focus ring */
+    --border: 240 6% 88%;              /* subtle light border */
+    --ring: 48 96% 45%;                /* yellow focus ring */
 
     /* amber secondary (dates / labels) */
     --amber: 38 92% 50%;
 
-    /* chart — yellow-to-dark ramp */
-    --chart-1: 48 96% 53%;
-    --chart-2: 45 90% 45%;
-    --chart-3: 38 85% 38%;
-    --chart-4: 30 75% 32%;
-    --chart-5: 24 60% 25%;
-    --chart-6: 20 40% 18%;
-    --chart-7: 15 20% 13%;
+    /* chart — yellow-to-light ramp */
+    --chart-1: 48 96% 45%;
+    --chart-2: 45 90% 50%;
+    --chart-3: 38 85% 55%;
+    --chart-4: 30 75% 60%;
+    --chart-5: 24 60% 65%;
+    --chart-6: 20 40% 70%;
+    --chart-7: 15 20% 75%;
   }
 
   *,
@@ -66,7 +66,7 @@
   }
 
   html {
-    color-scheme: dark;
+    color-scheme: light;
     @apply forced-color-adjust-none bg-background text-foreground;
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { @apply bg-transparent; }
@@ -85,8 +85,8 @@
   transition: border-color 200ms ease, box-shadow 200ms ease;
 }
 .card-glow:hover {
-  border-color: hsl(48 96% 53% / 0.35) !important;
-  box-shadow: 0 0 24px hsl(48 96% 53% / 0.07), inset 0 0 0 1px hsl(48 96% 53% / 0.1);
+  border-color: hsl(48 96% 45% / 0.5) !important;
+  box-shadow: 0 0 20px hsl(48 96% 45% / 0.12), inset 0 0 0 1px hsl(48 96% 45% / 0.15);
 }
 
 /* ── Blinking cursor ─────────────────────────────────────────────────────── */
@@ -116,7 +116,6 @@
 }
 
 /* ── Code / pre blocks in blog posts ─────────────────────────────────────── */
-@media (prefers-color-scheme: dark) {
   :not(pre)>code {
     @apply relative rounded bg-muted/50 px-[0.3rem] py-[0.2rem] font-mono text-sm font-medium before:!content-none after:!content-none;
   }
@@ -175,4 +174,3 @@
       }
     }
   }
-}

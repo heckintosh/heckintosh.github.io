@@ -35,11 +35,11 @@ export default function GlobeCanvas() {
     if (!ctx) return;
 
     // Size canvas to its CSS container
-    const dpr  = window.devicePixelRatio || 1;
-    const size = Math.min(
-      canvas.parentElement?.clientWidth  ?? 160,
-      canvas.parentElement?.clientHeight ?? 160,
-    );
+    const dpr    = window.devicePixelRatio || 1;
+    const parent = canvas.parentElement!;
+    const pw     = parent.getBoundingClientRect().width  || parent.clientWidth  || 160;
+    const ph     = parent.getBoundingClientRect().height || parent.clientHeight || pw;
+    const size   = Math.max(Math.min(pw, ph) || 160, 80);
     canvas.width  = size * dpr;
     canvas.height = size * dpr;
     canvas.style.width  = `${size}px`;
@@ -59,12 +59,15 @@ export default function GlobeCanvas() {
     let dragStartX = 0, dragStartY = 0;
     let dragLon = cLon, dragLat = cLat;
 
-    let running = true;
-    let rafId   = 0;
+    let running  = true;
+    let rafId    = 0;
+    let lastTime = 0;
 
     function draw(now: number) {
       if (!running) return;
-      if (!dragging) cLon = 115 + now * 0.004; // slow east-to-west rotation
+      const delta = lastTime ? now - lastTime : 16;
+      lastTime = now;
+      if (!dragging) cLon += delta * 0.018; // ~6.5s per full rotation
 
       ctx.clearRect(0, 0, size, size);
 

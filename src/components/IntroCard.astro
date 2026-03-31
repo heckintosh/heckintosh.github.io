@@ -159,8 +159,12 @@ import AsciiArtCanvas from "./AsciiArtCanvas";
     white-space: pre;
     font-family: 'JetBrains Mono', monospace;
     line-height: 1.2;
-    color: #facc15;
     font-size: 6px;
+    /* per-character color from gradient — each char takes the color at its position */
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    background-image: radial-gradient(ellipse 130px 100px at -9999px -9999px, #facc15 0%, #f59e0b 30%, #94a3b8 65%, #cbd5e1 100%);
   }
 
   @media (min-width: 768px) {
