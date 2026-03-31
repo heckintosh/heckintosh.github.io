@@ -12,9 +12,10 @@ export default function AsciiArtDisplay() {
   const ref = useRef<HTMLPreElement>(null);
   const [text, setText] = useState("");
 
-  // Fetch the hand-drawn art
+  // Fetch a random hand-drawn art file (ascii-art-1.txt … ascii-art-9.txt)
   useEffect(() => {
-    fetch("/ascii-art-1.txt")
+    const n = Math.floor(Math.random() * 9) + 1;
+    fetch(`/ascii-art-${n}.txt`)
       .then((r) => r.text())
       .then(setText)
       .catch(() => {});

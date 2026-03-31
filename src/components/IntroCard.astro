@@ -12,7 +12,7 @@ import AsciiArtCanvas from "./AsciiArtCanvas";
     <div class="flex flex-col justify-between gap-4 relative z-10">
       <div class="flex flex-col gap-2">
         <span class="text-xs text-primary/60 font-mono tracking-widest uppercase">welcome</span>
-        <h1 class="m-0 font-bold text-2xl leading-tight text-foreground">
+        <h1 id="intro-title" class="m-0 font-bold text-2xl leading-tight text-foreground cursor-pointer select-none">
           Hi, I'm <span class="text-primary">Anh</span>.
         </h1>
         <p class="m-0 text-sm text-muted-foreground leading-relaxed max-w-[280px]">
@@ -51,6 +51,49 @@ import AsciiArtCanvas from "./AsciiArtCanvas";
     <AsciiArtCanvas client:load />
   </div>
 </Card>
+
+<script>
+  const CHARS = "!<>-_\\/[]{}—=+*^?#|@$%&";
+  const FULL  = "Hi, I'm Anh.";
+
+  function scramble(el: HTMLElement) {
+    let frame = 0;
+    const totalFrames = 22;
+    let rafId = 0;
+
+    function tick() {
+      frame++;
+      const revealedCount = Math.floor((frame / totalFrames) * FULL.length);
+      let out = "";
+      for (let i = 0; i < FULL.length; i++) {
+        if (FULL[i] === " " || FULL[i] === "'") {
+          out += FULL[i];
+        } else if (i < revealedCount) {
+          out += FULL[i];
+        } else {
+          out += CHARS[Math.floor(Math.random() * CHARS.length)];
+        }
+      }
+      el.textContent = out;
+      if (frame < totalFrames) {
+        rafId = requestAnimationFrame(tick);
+      } else {
+        // Restore HTML with the coloured span
+        el.innerHTML = "Hi, I'm <span class=\"text-primary\">Anh</span>.";
+      }
+    }
+
+    cancelAnimationFrame(rafId);
+    frame = 0;
+    rafId = requestAnimationFrame(tick);
+  }
+
+  const title = document.getElementById("intro-title");
+  if (title) {
+    title.addEventListener("mouseenter", () => scramble(title));
+    title.addEventListener("click",      () => scramble(title));
+  }
+</script>
 
 <style>
   /*
