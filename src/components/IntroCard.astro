@@ -15,7 +15,7 @@ import AsciiArtCanvas from "./AsciiArtCanvas";
         <h1 id="intro-title" class="m-0 font-bold text-2xl leading-tight text-foreground cursor-pointer select-none">
           Hi, I'm <span class="text-primary">Anh</span>.
         </h1>
-        <p class="m-0 text-sm text-muted-foreground leading-relaxed max-w-[280px]">
+        <p id="intro-desc" class="m-0 text-sm text-muted-foreground leading-relaxed max-w-[280px] cursor-pointer select-none">
           Security enthusiast who loves to break stuff.<br />
           I share things here.
         </p>
@@ -88,10 +88,48 @@ import AsciiArtCanvas from "./AsciiArtCanvas";
     rafId = requestAnimationFrame(tick);
   }
 
+  const DESC = "Security enthusiast who loves to break stuff.\nI share things here.";
+
+  function scrambleFlat(el: HTMLElement, original: string) {
+    let frame = 0;
+    const totalFrames = 28;
+    let rafId = 0;
+
+    function tick() {
+      frame++;
+      const revealedCount = Math.floor((frame / totalFrames) * original.length);
+      let out = "";
+      for (let i = 0; i < original.length; i++) {
+        if (original[i] === " " || original[i] === "\n" || original[i] === ".") {
+          out += original[i];
+        } else if (i < revealedCount) {
+          out += original[i];
+        } else {
+          out += CHARS[Math.floor(Math.random() * CHARS.length)];
+        }
+      }
+      // Convert newline back to <br>
+      el.innerHTML = out.replace("\n", "<br />");
+      if (frame < totalFrames) {
+        rafId = requestAnimationFrame(tick);
+      }
+    }
+
+    cancelAnimationFrame(rafId);
+    frame = 0;
+    rafId = requestAnimationFrame(tick);
+  }
+
   const title = document.getElementById("intro-title");
   if (title) {
     title.addEventListener("mouseenter", () => scramble(title));
     title.addEventListener("click",      () => scramble(title));
+  }
+
+  const desc = document.getElementById("intro-desc");
+  if (desc) {
+    desc.addEventListener("mouseenter", () => scrambleFlat(desc, DESC));
+    desc.addEventListener("click",      () => scrambleFlat(desc, DESC));
   }
 </script>
 
