@@ -8,17 +8,17 @@ import BasicLayout from "@/layouts/BasicLayout.astro";
   description="Places I've been to: Vietnam, Australia, Taiwan"
   page="travel"
 >
-  <div class="relative flex flex-col items-center justify-center min-h-screen bg-background">
+  <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#f7f7f7;padding:1rem;">
     <a
       href="/"
-      class="absolute top-5 left-5 flex items-center gap-1.5 px-3 py-1.5 text-xs border border-border rounded font-mono text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors z-10"
+      style="position:absolute;top:1.25rem;left:1.25rem;font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:#64748b;text-decoration:none;border:1px solid #e2e8f0;padding:0.375rem 0.75rem;border-radius:0.375rem;"
     >
       ← back
     </a>
 
-    <div class="text-center mb-4">
-      <h1 class="text-sm font-mono font-semibold tracking-widest uppercase text-primary/80 m-0">visited</h1>
-      <p class="text-xs text-muted-foreground font-mono mt-1">vietnam · australia · taiwan</p>
+    <div style="text-align:center;margin-bottom:1rem;">
+      <p style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:#b45309;margin:0;">visited</p>
+      <p style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:#94a3b8;margin:0.25rem 0 0;">vietnam · australia · taiwan</p>
     </div>
 
     <Globe client:load />
