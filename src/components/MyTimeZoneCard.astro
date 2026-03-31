@@ -32,8 +32,11 @@ import { getCurrentTimeInVietnam, formatTimeForVietnam } from "@/lib/helpers";
     el.setAttribute("datetime", now.toISOString());
   }
 
-  updateMyTime();
-  const iv = setInterval(updateMyTime, 1000);
-  // Clean up on Astro page transitions
-  document.addEventListener("astro:before-swap", () => clearInterval(iv), { once: true });
+  // astro:page-load fires on every navigation (including back/forward),
+  // so the interval restarts each time this page is shown.
+  document.addEventListener("astro:page-load", () => {
+    updateMyTime();
+    const iv = setInterval(updateMyTime, 1000);
+    document.addEventListener("astro:before-swap", () => clearInterval(iv), { once: true });
+  });
 </script>
