@@ -1,18 +1,10 @@
-/**
- * Renders one of the hand-drawn Braille ASCII art files as a <pre> element
- * with a CSS spotlight mask that follows the cursor/touch.
- *
- * Note: the <style> in IntroCard.astro uses :global(.ascii-art) to bypass
- * Astro's scoped-CSS hash — React-rendered elements don't receive the hash
- * attribute so scoped rules would not match otherwise.
- */
 import { useEffect, useRef, useState } from "react";
 
 export default function AsciiArtDisplay() {
-  const ref = useRef<HTMLPreElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
   const [text, setText] = useState("");
 
-  // Fetch a random hand-drawn art file (ascii-art-1.txt … ascii-art-9.txt)
   useEffect(() => {
     const n = Math.floor(Math.random() * 9) + 1;
     fetch(`/ascii-art-${n}.txt`)
@@ -21,36 +13,46 @@ export default function AsciiArtDisplay() {
       .catch(() => {});
   }, []);
 
-  // Spotlight: write mask-image directly — avoids React clobbering CSS vars on re-render
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
+    const wrapper  = wrapperRef.current;
+    const overlay  = overlayRef.current;
+    if (!wrapper || !overlay) return;
 
-    function applyMask(x: string, y: string) {
-      const v = `radial-gradient(ellipse 55% 55% at ${x} ${y}, rgba(0,0,0,1) 0%, rgba(0,0,0,0.3) 100%)`;
-      el!.style.setProperty("-webkit-mask-image", v);
-      el!.style.setProperty("mask-image", v);
+    function update(clientX: number, clientY: number) {
+      const rect = wrapper!.getBoundingClientRect();
+      // cursor in wrapper-local px — no CSS-transform coordinate mismatch
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
+      overlay!.style.background =
+        `radial-gradient(ellipse 160px 120px at ${x}px ${y}px, transparent 0%, rgba(0,0,0,0.78) 65%)`;
     }
 
-    applyMask("70%", "50%"); // initial
-
-    function setPos(clientX: number, clientY: number) {
-      const rect = el!.getBoundingClientRect();
-      if (rect.width === 0 || rect.height === 0) return; // not laid out yet
-      applyMask(
-        `${((clientX - rect.left) / rect.width) * 100}%`,
-        `${((clientY - rect.top) / rect.height) * 100}%`,
-      );
+    function onLeave() {
+      overlay!.style.background = "rgba(0,0,0,0.78)";
     }
 
-    const onPointer = (e: PointerEvent) => setPos(e.clientX, e.clientY);
+    const onPointer = (e: PointerEvent) => update(e.clientX, e.clientY);
     document.addEventListener("pointermove", onPointer);
-    return () => document.removeEventListener("pointermove", onPointer);
+    document.addEventListener("pointerleave", onLeave);
+    return () => {
+      document.removeEventListener("pointermove", onPointer);
+      document.removeEventListener("pointerleave", onLeave);
+    };
   }, []);
 
   return (
-    <pre ref={ref} className="ascii-art">
-      {text}
-    </pre>
+    <div ref={wrapperRef} className="ascii-art">
+      <pre className="ascii-pre">{text}</pre>
+      {/* dark overlay with radial hole at cursor — no mask-image, no CSS vars */}
+      <div
+        ref={overlayRef}
+        style={{
+          position: "absolute",
+          inset: 0,
+          pointerEvents: "none",
+          background: "rgba(0,0,0,0.78)",
+        }}
+      />
+    </div>
   );
 }

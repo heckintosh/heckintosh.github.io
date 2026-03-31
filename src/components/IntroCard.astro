@@ -142,17 +142,9 @@ import AsciiArtCanvas from "./AsciiArtCanvas";
     position: absolute;
     z-index: 0;
     pointer-events: none;
-    margin: 0;
-    padding: 0;
-    white-space: pre;
-    font-family: 'JetBrains Mono', monospace;
-    line-height: 1.2;
-    color: #facc15;
     overflow: hidden;
 
-    /* Spotlight mask is applied directly by JS (avoids CSS-var/React conflict) */
     /* Mobile: scaled down, anchored bottom-right */
-    font-size: 6px;
     right: -10px;
     bottom: -10px;
     top: auto;
@@ -161,9 +153,18 @@ import AsciiArtCanvas from "./AsciiArtCanvas";
     transform-origin: bottom right;
   }
 
+  :global(.ascii-pre) {
+    margin: 0;
+    padding: 0;
+    white-space: pre;
+    font-family: 'JetBrains Mono', monospace;
+    line-height: 1.2;
+    color: #facc15;
+    font-size: 6px;
+  }
+
   @media (min-width: 768px) {
     :global(.ascii-art) {
-      font-size: 7px;
       right: -15px;
       top: 50%;
       bottom: auto;
@@ -172,19 +173,26 @@ import AsciiArtCanvas from "./AsciiArtCanvas";
       transform: translateY(-50%);
       transform-origin: center right;
     }
+    :global(.ascii-pre) {
+      font-size: 7px;
+    }
   }
 
   @media (min-width: 1024px) {
     :global(.ascii-art) {
-      font-size: 8px;
       right: -20px;
+    }
+    :global(.ascii-pre) {
+      font-size: 8px;
     }
   }
 
   @media (min-width: 1280px) {
     :global(.ascii-art) {
-      font-size: 9px;
       right: -25px;
+    }
+    :global(.ascii-pre) {
+      font-size: 9px;
     }
   }
 </style>
