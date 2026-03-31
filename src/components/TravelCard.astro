@@ -1,27 +1,18 @@
 ---
 import Card from "./Card/index.astro";
-
-const countries = [
-  { flag: "🇫🇷", name: "France" },
-  { flag: "🇨🇳", name: "China" },
-  { flag: "🇮🇹", name: "Italy" },
-  { flag: "🇱🇰", name: "Sri Lanka" },
-  { flag: "🇹🇷", name: "Turkey" },
-  { flag: "🇬🇷", name: "Greece" },
-  { flag: "🇲🇹", name: "Malta" },
-  { flag: "🇭🇺", name: "Hungary" },
-  { flag: "🇵🇹", name: "Portugal" },
-  { flag: "🇲🇦", name: "Morocco" },
-];
+import GlobeCanvas from "./GlobeCanvas";
 ---
 
 <Card colSpan="md:col-span-1" rowSpan="md:row-span-2" title="visited">
-  <div class="flex flex-wrap gap-x-3 gap-y-1">
-    {countries.map(c => (
-      <span class="flex items-center gap-1 text-xs text-muted-foreground font-mono">
-        <span>{c.flag}</span>
-        <span>{c.name}</span>
-      </span>
-    ))}
+  <div class="flex items-center justify-center flex-1 overflow-hidden">
+    <GlobeCanvas client:load />
   </div>
 </Card>
+
+<style>
+  :global(.globe-canvas) {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+  }
+</style>

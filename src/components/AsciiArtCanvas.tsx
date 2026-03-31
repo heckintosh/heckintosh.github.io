@@ -32,14 +32,12 @@ export default function AsciiArtDisplay() {
       el!.style.setProperty("--my", `${((clientY - rect.top) / rect.height) * 100}%`);
     }
 
-    const onMove  = (e: MouseEvent)  => setPos(e.clientX, e.clientY);
-    const onTouch = (e: TouchEvent)  => { const t = e.touches[0]; if (t) setPos(t.clientX, t.clientY); };
+    // pointermove covers mouse, touch, and stylus — fires during drag too
+    const onPointer = (e: PointerEvent) => setPos(e.clientX, e.clientY);
 
-    document.addEventListener("mousemove", onMove);
-    document.addEventListener("touchmove", onTouch, { passive: true });
+    document.addEventListener("pointermove", onPointer);
     return () => {
-      document.removeEventListener("mousemove", onMove);
-      document.removeEventListener("touchmove", onTouch);
+      document.removeEventListener("pointermove", onPointer);
     };
   }, []);
 
