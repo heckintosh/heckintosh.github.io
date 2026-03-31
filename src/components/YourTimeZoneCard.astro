@@ -27,7 +27,7 @@ import Pulse from "@/components/Pulse.astro";
     };
     const str = now.toLocaleTimeString(undefined, opts);
     const [time, period] = str.split(" ");
-    const color = period === "AM" ? "#f59e0b" : "#60a5fa";
+    const color = period === "AM" ? "#facc15" : "#f1f5f9";
     el.innerHTML = `<span style="color:${color}">${time}</span><span style="color:#4a4a5a;font-size:0.6em;margin-left:0.25em">${period}</span>`;
     el.setAttribute("datetime", now.toISOString());
     if (tz) tz.textContent = Intl.DateTimeFormat().resolvedOptions().timeZone;

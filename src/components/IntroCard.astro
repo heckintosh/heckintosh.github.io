@@ -150,18 +150,7 @@ import AsciiArtCanvas from "./AsciiArtCanvas";
     color: #facc15;
     overflow: hidden;
 
-    /* Spotlight: 100% visible at cursor, 30% visible elsewhere */
-    -webkit-mask-image: radial-gradient(
-      ellipse 55% 55% at var(--mx, 70%) var(--my, 50%),
-      rgba(0,0,0,1)   0%,
-      rgba(0,0,0,0.3) 100%
-    );
-    mask-image: radial-gradient(
-      ellipse 55% 55% at var(--mx, 70%) var(--my, 50%),
-      rgba(0,0,0,1)   0%,
-      rgba(0,0,0,0.3) 100%
-    );
-
+    /* Spotlight mask is applied directly by JS (avoids CSS-var/React conflict) */
     /* Mobile: scaled down, anchored bottom-right */
     font-size: 6px;
     right: -10px;

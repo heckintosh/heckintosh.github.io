@@ -21,32 +21,35 @@ export default function AsciiArtDisplay() {
       .catch(() => {});
   }, []);
 
-  // Mouse/touch spotlight — runs once on mount, independent of text
+  // Spotlight: write mask-image directly — avoids React clobbering CSS vars on re-render
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
 
-    function setPos(clientX: number, clientY: number) {
-      const rect = el!.getBoundingClientRect();
-      el!.style.setProperty("--mx", `${((clientX - rect.left) / rect.width) * 100}%`);
-      el!.style.setProperty("--my", `${((clientY - rect.top) / rect.height) * 100}%`);
+    function applyMask(x: string, y: string) {
+      const v = `radial-gradient(ellipse 55% 55% at ${x} ${y}, rgba(0,0,0,1) 0%, rgba(0,0,0,0.3) 100%)`;
+      el!.style.setProperty("-webkit-mask-image", v);
+      el!.style.setProperty("mask-image", v);
     }
 
-    // pointermove covers mouse, touch, and stylus — fires during drag too
-    const onPointer = (e: PointerEvent) => setPos(e.clientX, e.clientY);
+    applyMask("70%", "50%"); // initial
 
+    function setPos(clientX: number, clientY: number) {
+      const rect = el!.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) return; // not laid out yet
+      applyMask(
+        `${((clientX - rect.left) / rect.width) * 100}%`,
+        `${((clientY - rect.top) / rect.height) * 100}%`,
+      );
+    }
+
+    const onPointer = (e: PointerEvent) => setPos(e.clientX, e.clientY);
     document.addEventListener("pointermove", onPointer);
-    return () => {
-      document.removeEventListener("pointermove", onPointer);
-    };
+    return () => document.removeEventListener("pointermove", onPointer);
   }, []);
 
   return (
-    <pre
-      ref={ref}
-      className="ascii-art"
-      style={{ "--mx": "70%", "--my": "50%" } as React.CSSProperties}
-    >
+    <pre ref={ref} className="ascii-art">
       {text}
     </pre>
   );
