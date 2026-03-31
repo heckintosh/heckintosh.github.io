@@ -27,8 +27,8 @@ import { getCurrentTimeInVietnam, formatTimeForVietnam } from "@/lib/helpers";
     };
     const str = new Intl.DateTimeFormat("en-US", opts).format(now);
     const [time, period] = str.split(" ");
-    const color = period === "AM" ? "#facc15" : "#f1f5f9";
-    el.innerHTML = `<span style="color:${color}">${time}</span><span style="color:#4a4a5a;font-size:0.6em;margin-left:0.25em">${period}</span>`;
+    const color = period === "AM" ? "#b45309" : "#1e293b";
+    el.innerHTML = `<span style="color:${color}">${time}</span><span style="color:#94a3b8;font-size:0.6em;margin-left:0.25em">${period}</span>`;
     el.setAttribute("datetime", now.toISOString());
   }
 
