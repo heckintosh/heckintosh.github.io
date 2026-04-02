@@ -19,6 +19,16 @@ const { title, description, image = '/static/twitter-card.png' } = Astro.props
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <meta name="generator" content={Astro.generator} />
 <meta name="google" content="notranslate" />
+<script is:inline>
+  (() => {
+    try {
+      const saved = localStorage.getItem("theme");
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      const dark = saved ? saved === "dark" : prefersDark;
+      document.documentElement.classList.toggle("dark", dark);
+    } catch {}
+  })();
+</script>
 
 <link rel="canonical" href={canonicalURL} />
 <link rel="sitemap" href="/sitemap-index.xml" />
@@ -34,7 +44,7 @@ const { title, description, image = '/static/twitter-card.png' } = Astro.props
 <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#121212" />
 <meta name="msapplication-TileColor" content="#121212" />
 <meta name="theme-color" content="#E9D3B6" />
-<meta name="color-scheme" content="light">
+<meta name="color-scheme" content="light dark">
 
 <meta property="og:type" content="website" />
 <meta property="og:url" content={Astro.url} />

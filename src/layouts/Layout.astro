@@ -22,6 +22,15 @@ const { title, description, image } = Astro.props
     />
   </head>
   <body>
+    <button
+      id="theme-toggle"
+      type="button"
+      aria-label="Toggle dark mode"
+      class="fixed right-4 top-4 z-[60] inline-flex items-center gap-2 rounded-md border border-border/80 bg-accent/90 px-2.5 py-1.5 font-mono text-[11px] text-muted-foreground backdrop-blur-sm transition-colors hover:border-primary/40 hover:text-primary"
+    >
+      <span id="theme-toggle-icon" aria-hidden="true">◐</span>
+      <span id="theme-toggle-label">theme</span>
+    </button>
     <div
       class="box-border flex h-fit min-h-screen flex-col gap-y-6 font-sans antialiased"
     >
@@ -30,5 +39,29 @@ const { title, description, image } = Astro.props
       </main>
       <Footer />
     </div>
+    <script>
+      (() => {
+        const root = document.documentElement;
+        const btn = document.getElementById("theme-toggle");
+        const icon = document.getElementById("theme-toggle-icon");
+        const label = document.getElementById("theme-toggle-label");
+        if (!btn || !icon || !label) return;
+
+        const sync = () => {
+          const dark = root.classList.contains("dark");
+          icon.textContent = dark ? "☀" : "☾";
+          label.textContent = dark ? "light" : "dark";
+        };
+
+        btn.addEventListener("click", () => {
+          const nextDark = !root.classList.contains("dark");
+          root.classList.toggle("dark", nextDark);
+          try { localStorage.setItem("theme", nextDark ? "dark" : "light"); } catch {}
+          sync();
+        });
+
+        sync();
+      })();
+    </script>
   </body>
 </html>

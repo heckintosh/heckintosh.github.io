@@ -59,6 +59,42 @@
     --chart-7: 15 20% 75%;
   }
 
+  :root.dark {
+    --background: 220 24% 8%;
+    --foreground: 210 24% 92%;
+
+    --primary: 46 95% 62%;
+    --primary-foreground: 220 30% 10%;
+
+    --secondary: 220 20% 12%;
+    --secondary-foreground: 210 24% 92%;
+
+    --muted: 220 20% 13%;
+    --muted-foreground: 220 12% 66%;
+
+    --accent: 220 19% 11%;
+    --accent-foreground: 210 24% 92%;
+
+    --additive: 112 45% 38%;
+    --additive-foreground: 210 24% 92%;
+
+    --destructive: 0 62% 52%;
+    --destructive-foreground: 210 24% 92%;
+
+    --border: 220 15% 24%;
+    --ring: 46 95% 62%;
+
+    --amber: 42 86% 57%;
+
+    --chart-1: 46 95% 62%;
+    --chart-2: 40 85% 58%;
+    --chart-3: 30 74% 54%;
+    --chart-4: 220 50% 62%;
+    --chart-5: 210 45% 56%;
+    --chart-6: 160 40% 50%;
+    --chart-7: 140 36% 46%;
+  }
+
   *,
   *::before,
   *::after {
@@ -74,6 +110,10 @@
     ::-webkit-scrollbar-corner { @apply bg-transparent; }
   }
 
+  html.dark {
+    color-scheme: dark;
+  }
+
   .disable-transitions,
   .disable-transitions * {
     @apply !transition-none;
@@ -83,6 +123,13 @@
     background:
       radial-gradient(1200px 500px at 12% -10%, hsl(45 95% 72% / 0.35), transparent 62%),
       radial-gradient(900px 460px at 88% -12%, hsl(210 55% 70% / 0.2), transparent 60%),
+      hsl(var(--background));
+  }
+
+  html.dark body {
+    background:
+      radial-gradient(1200px 520px at 12% -10%, hsl(46 95% 62% / 0.14), transparent 62%),
+      radial-gradient(980px 500px at 88% -12%, hsl(214 56% 56% / 0.16), transparent 60%),
       hsl(var(--background));
   }
 }
