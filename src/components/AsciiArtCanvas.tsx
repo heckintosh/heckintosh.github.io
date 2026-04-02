@@ -14,6 +14,7 @@ const SPRING    = 0.10;
 const DAMP      = 0.72;
 const REPEL_R   = 55;
 const REPEL_F   = 5.5;
+const FRAME_MS  = 33;
 
 // Color lerp: slate-gray at rest → yellow when displaced
 function charColor(disp: number): string {
@@ -72,18 +73,25 @@ export default function AsciiArtCanvas() {
     let mx = -9999, my = -9999;
     let running = true;
     let rafId   = 0;
+    let lastTs  = 0;
 
-    function frame() {
+    function frame(ts: number) {
       if (!running) return;
+      if (ts - lastTs < FRAME_MS) {
+        rafId = requestAnimationFrame(frame);
+        return;
+      }
+      lastTs = ts;
+
       ctx.clearRect(0, 0, canvasW, canvasH);
-      ctx.font = FONT;
 
       for (const p of particles) {
         const dx   = p.x - mx;
         const dy   = p.y - my;
-        const dist = Math.sqrt(dx * dx + dy * dy);
+        const distSq = dx * dx + dy * dy;
 
-        if (dist < REPEL_R && dist > 0.5) {
+        if (distSq < REPEL_R * REPEL_R && distSq > 0.25) {
+          const dist = Math.sqrt(distSq);
           const strength = ((REPEL_R - dist) / REPEL_R) ** 2 * REPEL_F;
           p.vx += (dx / dist) * strength;
           p.vy += (dy / dist) * strength;
@@ -111,15 +119,16 @@ export default function AsciiArtCanvas() {
     }
     function onLeave() { mx = -9999; my = -9999; }
 
-    document.addEventListener("pointermove", onMove);
-    document.addEventListener("pointerleave", onLeave);
+    ctx.font = FONT;
+    canvas.addEventListener("pointermove", onMove, { passive: true });
+    canvas.addEventListener("pointerleave", onLeave, { passive: true });
     rafId = requestAnimationFrame(frame);
 
     return () => {
       running = false;
       cancelAnimationFrame(rafId);
-      document.removeEventListener("pointermove", onMove);
-      document.removeEventListener("pointerleave", onLeave);
+      canvas.removeEventListener("pointermove", onMove);
+      canvas.removeEventListener("pointerleave", onLeave);
     };
   }, [text]);
 

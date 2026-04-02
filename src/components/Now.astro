@@ -1,24 +1,43 @@
 ---
 import Card from "./Card/index.astro";
 import Pulse from "./Pulse.astro";
+
+interface Props {
+  title?: string;
+  status?: string;
+  description?: string;
+  linkHref?: string;
+  linkLabel?: string;
+  externalLink?: boolean;
+}
+
+const {
+  title = "now",
+  status = "freelancing",
+  description = "currently doing security research, writing ctf writeups, and building things.",
+  linkHref = "https://sive.rs/nowff",
+  linkLabel = "what's a /now page?",
+  externalLink = true,
+} = Astro.props as Props;
 ---
 
 <Card colSpan="md:col-span-1" rowSpan="md:row-span-2">
   <div class="flex justify-between items-start mb-3">
-    <h2 class="text-sm font-semibold tracking-widest uppercase text-primary/80 m-0">now</h2>
+    <h2 class="text-sm font-semibold tracking-widest uppercase text-primary/80 m-0">{title}</h2>
     <Pulse />
   </div>
   <div class="flex flex-col gap-2 flex-1">
-    <p class="text-sm text-foreground/70 font-mono m-0">freelancing</p>
+    <p class="text-sm text-foreground/70 font-mono m-0">{status}</p>
     <p class="text-xs text-muted-foreground m-0 leading-relaxed">
-      currently doing security research, writing ctf writeups, and building things.
+      {description}
     </p>
     <a
-      href="https://sive.rs/nowff"
-      target="_blank"
+      href={linkHref}
+      target={externalLink ? "_blank" : undefined}
+      rel={externalLink ? "noopener noreferrer" : undefined}
       class="text-[10px] text-muted-foreground/50 hover:text-primary/60 transition-colors font-mono mt-auto"
     >
-      what's a /now page?
+      {linkLabel}
     </a>
   </div>
 </Card>

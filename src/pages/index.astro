@@ -3,7 +3,6 @@ import Layout from "@/layouts/Layout.astro";
 import IntroCard from "@/components/IntroCard.astro";
 import Writeups from "@/components/Writeups.astro";
 import Now from "@/components/Now.astro";
-import SkillsCard from "@/components/SkillsCard.astro";
 import TerminalCard from "@/components/TerminalCard.astro";
 import TravelCard from "@/components/TravelCard.astro";
 import MyTimeZoneCard from "@/components/MyTimeZoneCard.astro";
@@ -16,6 +15,10 @@ import Card from "@/components/Card/index.astro";
 const posts = (await getCollection("blog"))?.sort(
   (a, b) => (b.data.pubDate ?? new Date()).getTime() - (a.data.pubDate ?? new Date()).getTime()
 );
+const latestPost = posts?.[0];
+const latestSnippet = latestPost?.data.description
+  ? latestPost.data.description.slice(0, 180)
+  : "fresh writeups and security notes are in progress.";
 ---
 
 <script>
@@ -53,7 +56,7 @@ const posts = (await getCollection("blog"))?.sort(
       Cols 1-3  rows 1-4 → IntroCard
       Col  4    rows 1-2 → Writeups
       Col  4    rows 3-4 → Now
-      Col  5    rows 1-4 → SkillsCard
+      Col  5    rows 1-4 → Latest
       Cols 1-2  rows 5-8 → Blog
       Col  3    rows 5-6 → YourTime
       Col  3    rows 7-8 → MyTime
@@ -87,9 +90,16 @@ const posts = (await getCollection("blog"))?.sort(
       <Now />
     </div>
 
-    <!-- SkillsCard: col 5, rows 1-4 -->
+    <!-- Latest: col 5, rows 1-4 -->
     <div class="md:col-span-1 lg:col-span-1 lg:row-span-4 lg:col-start-5 lg:row-start-1">
-      <SkillsCard />
+      <Now
+        title="now"
+        status={latestPost?.data.title ?? "latest post"}
+        description={latestSnippet}
+        linkHref={latestPost ? `/blog/${latestPost.id}` : "/blog"}
+        linkLabel={latestPost ? "read latest post →" : "browse posts →"}
+        externalLink={false}
+      />
     </div>
 
     <!-- Blog: cols 1-2, rows 5-8 -->
