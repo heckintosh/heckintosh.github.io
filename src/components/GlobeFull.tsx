@@ -3,7 +3,7 @@ import * as d3 from "d3";
 // @ts-ignore
 import worldData from "../lib/world.json";
 
-const VISITED = ["Vietnam", "Australia"];
+const VISITED = ["Vietnam", "Australia", "Taiwan"];
 
 export default function GlobeFull() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -48,13 +48,24 @@ export default function GlobeFull() {
       // Ocean sphere
       ctx.beginPath();
       ctx.arc(W / 2, H / 2, radius, 0, Math.PI * 2);
-      ctx.fillStyle = "#1a3a5c";
+      const ocean = ctx.createRadialGradient(
+        W / 2 - radius * 0.35,
+        H / 2 - radius * 0.35,
+        radius * 0.15,
+        W / 2,
+        H / 2,
+        radius * 1.05,
+      );
+      ocean.addColorStop(0, "#4d7db5");
+      ocean.addColorStop(0.45, "#1f4f84");
+      ocean.addColorStop(1, "#12273f");
+      ctx.fillStyle = ocean;
       ctx.fill();
 
       // Graticule
       ctx.beginPath();
       path(graticule as any);
-      ctx.strokeStyle = "rgba(255,255,255,0.07)";
+      ctx.strokeStyle = "rgba(255,255,255,0.09)";
       ctx.lineWidth = 0.5;
       ctx.stroke();
 
@@ -63,9 +74,9 @@ export default function GlobeFull() {
         const isVisited = VISITED.includes(feature.properties?.name);
         ctx.beginPath();
         path(feature);
-        ctx.fillStyle   = isVisited ? "rgba(250,204,21,0.85)" : "rgba(45,106,79,0.9)";
-        ctx.strokeStyle = isVisited ? "rgba(250,204,21,0.9)"  : "rgba(255,255,255,0.15)";
-        ctx.lineWidth   = isVisited ? 1 : 0.3;
+        ctx.fillStyle   = isVisited ? "rgba(248,209,82,0.94)" : "rgba(38,86,120,0.8)";
+        ctx.strokeStyle = isVisited ? "rgba(248,209,82,0.96)" : "rgba(255,255,255,0.2)";
+        ctx.lineWidth   = isVisited ? 1.2 : 0.35;
         ctx.fill();
         ctx.stroke();
       }
@@ -73,10 +84,26 @@ export default function GlobeFull() {
       // Atmosphere rim
       const atmos = ctx.createRadialGradient(W/2, H/2, radius * 0.96, W/2, H/2, radius * 1.06);
       atmos.addColorStop(0, "rgba(100,160,255,0)");
-      atmos.addColorStop(1, "rgba(100,160,255,0.22)");
+      atmos.addColorStop(1, "rgba(120,178,255,0.26)");
       ctx.beginPath();
       ctx.arc(W / 2, H / 2, radius * 1.06, 0, Math.PI * 2);
       ctx.fillStyle = atmos;
+      ctx.fill();
+
+      // subtle specular highlight
+      const spec = ctx.createRadialGradient(
+        W / 2 - radius * 0.28,
+        H / 2 - radius * 0.3,
+        radius * 0.02,
+        W / 2 - radius * 0.2,
+        H / 2 - radius * 0.22,
+        radius * 0.48,
+      );
+      spec.addColorStop(0, "rgba(255,255,255,0.24)");
+      spec.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.beginPath();
+      ctx.arc(W / 2, H / 2, radius, 0, Math.PI * 2);
+      ctx.fillStyle = spec;
       ctx.fill();
     }
 
@@ -135,9 +162,5 @@ export default function GlobeFull() {
     };
   }, []);
 
-  return (
-    <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
-      <canvas ref={canvasRef} />
-    </div>
-  );
+  return <canvas ref={canvasRef} />;
 }
