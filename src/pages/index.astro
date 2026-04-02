@@ -54,8 +54,7 @@ const latestSnippet = latestPost?.data.description
 
     Layout (lg):
       Cols 1-3  rows 1-4 → IntroCard
-      Col  4    rows 1-2 → Writeups
-      Col  4    rows 3-4 → Now
+      Col  4    rows 1-4 → Writeups
       Col  5    rows 1-4 → Latest
       Cols 1-2  rows 5-8 → Blog
       Col  3    rows 5-6 → YourTime
@@ -80,14 +79,9 @@ const latestSnippet = latestPost?.data.description
       <IntroCard />
     </div>
 
-    <!-- Writeups: col 4, rows 1-2 -->
-    <div class="md:col-span-1 lg:col-span-1 lg:row-span-2 lg:col-start-4 lg:row-start-1">
+    <!-- Writeups: col 4, rows 1-4 -->
+    <div class="md:col-span-1 lg:col-span-1 lg:row-span-4 lg:col-start-4 lg:row-start-1">
       <Writeups />
-    </div>
-
-    <!-- Now: col 4, rows 3-4 -->
-    <div class="md:col-span-1 lg:col-span-1 lg:row-span-2 lg:col-start-4 lg:row-start-3">
-      <Now />
     </div>
 
     <!-- Latest: col 5, rows 1-4 -->

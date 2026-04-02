@@ -14,7 +14,7 @@ const SPRING    = 0.10;
 const DAMP      = 0.72;
 const REPEL_R   = 55;
 const REPEL_F   = 5.5;
-const FRAME_MS  = 33;
+const FRAME_MS  = 40;
 
 // Color lerp: slate-gray at rest → yellow when displaced
 function charColor(disp: number): string {
@@ -69,11 +69,34 @@ export default function AsciiArtCanvas() {
     canvas.style.width  = `${canvasW}px`;
     canvas.style.height = `${canvasH}px`;
     ctx.scale(dpr, dpr);
+    ctx.font = FONT;
+
+    // Pre-render static state once; we'll only redraw moved particles each frame.
+    const baseCanvas = document.createElement("canvas");
+    baseCanvas.width = canvas.width;
+    baseCanvas.height = canvas.height;
+    const bctx = baseCanvas.getContext("2d");
+    if (!bctx) return;
+    bctx.scale(dpr, dpr);
+    bctx.font = FONT;
+    bctx.fillStyle = charColor(0);
+    for (const p of particles) bctx.fillText(p.ch, p.hx, p.hy);
 
     let mx = -9999, my = -9999;
-    let running = true;
+    let running = false;
     let rafId   = 0;
     let lastTs  = 0;
+
+    function startLoop() {
+      if (running) return;
+      running = true;
+      rafId = requestAnimationFrame(frame);
+    }
+
+    function stopLoop() {
+      running = false;
+      cancelAnimationFrame(rafId);
+    }
 
     function frame(ts: number) {
       if (!running) return;
@@ -84,13 +107,25 @@ export default function AsciiArtCanvas() {
       lastTs = ts;
 
       ctx.clearRect(0, 0, canvasW, canvasH);
+      ctx.drawImage(baseCanvas, 0, 0, canvasW, canvasH);
+      const pointerActive = mx > -9000 && my > -9000;
+      let anyMoving = false;
 
       for (const p of particles) {
         const dx   = p.x - mx;
         const dy   = p.y - my;
         const distSq = dx * dx + dy * dy;
+        const nearHome =
+          Math.abs(p.x - p.hx) < 0.08 &&
+          Math.abs(p.y - p.hy) < 0.08 &&
+          Math.abs(p.vx) < 0.02 &&
+          Math.abs(p.vy) < 0.02;
 
-        if (distSq < REPEL_R * REPEL_R && distSq > 0.25) {
+        if (!pointerActive && nearHome) {
+          continue;
+        }
+
+        if (pointerActive && distSq < REPEL_R * REPEL_R && distSq > 0.25) {
           const dist = Math.sqrt(distSq);
           const strength = ((REPEL_R - dist) / REPEL_R) ** 2 * REPEL_F;
           p.vx += (dx / dist) * strength;
@@ -103,10 +138,16 @@ export default function AsciiArtCanvas() {
         p.vy *= DAMP;
         p.x  += p.vx;
         p.y  += p.vy;
+        anyMoving = true;
 
         const disp = Math.sqrt((p.x - p.hx) ** 2 + (p.y - p.hy) ** 2);
         ctx.fillStyle = charColor(disp);
         ctx.fillText(p.ch, p.x, p.y);
+      }
+
+      if (!pointerActive && !anyMoving) {
+        stopLoop();
+        return;
       }
 
       rafId = requestAnimationFrame(frame);
@@ -116,17 +157,23 @@ export default function AsciiArtCanvas() {
       const rect = canvas.getBoundingClientRect();
       mx = e.clientX - rect.left;
       my = e.clientY - rect.top;
+      startLoop();
+    }
+
+    function onEnter(e: PointerEvent) {
+      onMove(e);
     }
     function onLeave() { mx = -9999; my = -9999; }
 
-    ctx.font = FONT;
+    // Initial static paint
+    ctx.drawImage(baseCanvas, 0, 0, canvasW, canvasH);
+    canvas.addEventListener("pointerenter", onEnter, { passive: true });
     canvas.addEventListener("pointermove", onMove, { passive: true });
     canvas.addEventListener("pointerleave", onLeave, { passive: true });
-    rafId = requestAnimationFrame(frame);
 
     return () => {
-      running = false;
-      cancelAnimationFrame(rafId);
+      stopLoop();
+      canvas.removeEventListener("pointerenter", onEnter);
       canvas.removeEventListener("pointermove", onMove);
       canvas.removeEventListener("pointerleave", onLeave);
     };
