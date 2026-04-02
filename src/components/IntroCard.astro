@@ -2,8 +2,6 @@
 import Card from "./Card/index.astro";
 import { LINKS } from "@/lib/constants";
 import { Icon } from 'astro-icon/components';
-import Tooltip from "./Tooltip/index";
-import AsciiArtCanvas from "./AsciiArtCanvas";
 ---
 
 <Card colSpan="md:col-span-3" rowSpan="md:row-span-4">
@@ -36,18 +34,18 @@ import AsciiArtCanvas from "./AsciiArtCanvas";
           <Icon name="ri:twitter-x-fill" class="h-3.5 w-3.5" />
           twitter
         </a>
-        <Tooltip client:visible>
-          <button class="flex items-center gap-1.5 px-3 py-1.5 text-xs border border-border rounded font-mono text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors duration-150" aria-label="Easter egg">
-            <Icon name="ri:terminal-box-fill" class="h-3.5 w-3.5" />
-            <span class="sr-only">Easter egg</span>
-            <span aria-hidden>~</span>
-          </button>
-        </Tooltip>
+        <button class="flex items-center gap-1.5 px-3 py-1.5 text-xs border border-border rounded font-mono text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors duration-150" aria-label="Easter egg" title="~">
+          <Icon name="ri:terminal-box-fill" class="h-3.5 w-3.5" />
+          <span class="sr-only">Easter egg</span>
+          <span aria-hidden>~</span>
+        </button>
       </div>
     </div>
 
     <!-- ASCII particle art, positioned as bg decoration -->
-    <AsciiArtCanvas client:visible />
+    <div class="ascii-art">
+      <canvas id="ascii-canvas" class="ascii-canvas"></canvas>
+    </div>
   </div>
 </Card>
 
@@ -129,6 +127,167 @@ import AsciiArtCanvas from "./AsciiArtCanvas";
   if (desc) {
     desc.addEventListener("mouseenter", () => scrambleFlat(desc, DESC));
     desc.addEventListener("click",      () => scrambleFlat(desc, DESC));
+  }
+
+  function initAscii() {
+    const canvas = document.getElementById("ascii-canvas") as HTMLCanvasElement | null;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const FONT_SIZE = 7;
+    const LINE_H = FONT_SIZE * 1.2;
+    const FONT = `${FONT_SIZE}px 'JetBrains Mono', monospace`;
+    const SPRING = 0.1;
+    const DAMP = 0.72;
+    const REPEL_R = 55;
+    const REPEL_F = 5.5;
+    const FRAME_MS = 40;
+
+    const charColor = (disp: number) => {
+      const t = Math.min(disp / 28, 1);
+      const r = Math.round(148 + t * 102);
+      const g = Math.round(163 + t * 41);
+      const b = Math.round(184 - t * 163);
+      return `rgb(${r},${g},${b})`;
+    };
+
+    const n = Math.floor(Math.random() * 9) + 1;
+    fetch(`/ascii-art-${n}.txt`)
+      .then(r => r.text())
+      .then(text => {
+        const mc = document.createElement("canvas").getContext("2d");
+        if (!mc) return;
+        mc.font = FONT;
+        const charW = mc.measureText("M").width;
+
+        const lines = text.split("\n");
+        const particles: Array<{ ch: string; hx: number; hy: number; x: number; y: number; vx: number; vy: number; }> = [];
+        let canvasW = 0;
+        let canvasH = 0;
+
+        lines.forEach((line, row) => {
+          const hy = row * LINE_H + FONT_SIZE;
+          [...line].forEach((ch, col) => {
+            if (ch === " ") return;
+            const hx = col * charW;
+            particles.push({ ch, hx, hy, x: hx, y: hy, vx: 0, vy: 0 });
+            if (hx + charW > canvasW) canvasW = hx + charW;
+          });
+          if (hy > canvasH) canvasH = hy;
+        });
+        canvasH += FONT_SIZE;
+
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = Math.ceil(canvasW * dpr);
+        canvas.height = Math.ceil(canvasH * dpr);
+        canvas.style.width = `${canvasW}px`;
+        canvas.style.height = `${canvasH}px`;
+        ctx.scale(dpr, dpr);
+        ctx.font = FONT;
+
+        const baseCanvas = document.createElement("canvas");
+        baseCanvas.width = canvas.width;
+        baseCanvas.height = canvas.height;
+        const bctx = baseCanvas.getContext("2d");
+        if (!bctx) return;
+        bctx.scale(dpr, dpr);
+        bctx.font = FONT;
+        bctx.fillStyle = charColor(0);
+        for (const p of particles) bctx.fillText(p.ch, p.hx, p.hy);
+
+        let mx = -9999;
+        let my = -9999;
+        let running = false;
+        let rafId = 0;
+        let lastTs = 0;
+
+        const stopLoop = () => {
+          running = false;
+          cancelAnimationFrame(rafId);
+        };
+
+        const frame = (ts: number) => {
+          if (!running) return;
+          if (ts - lastTs < FRAME_MS) {
+            rafId = requestAnimationFrame(frame);
+            return;
+          }
+          lastTs = ts;
+
+          ctx.clearRect(0, 0, canvasW, canvasH);
+          ctx.drawImage(baseCanvas, 0, 0, canvasW, canvasH);
+          const pointerActive = mx > -9000 && my > -9000;
+          let anyMoving = false;
+
+          for (const p of particles) {
+            const dx = p.x - mx;
+            const dy = p.y - my;
+            const distSq = dx * dx + dy * dy;
+            const nearHome =
+              Math.abs(p.x - p.hx) < 0.08 &&
+              Math.abs(p.y - p.hy) < 0.08 &&
+              Math.abs(p.vx) < 0.02 &&
+              Math.abs(p.vy) < 0.02;
+
+            if (!pointerActive && nearHome) continue;
+
+            if (pointerActive && distSq < REPEL_R * REPEL_R && distSq > 0.25) {
+              const dist = Math.sqrt(distSq);
+              const strength = ((REPEL_R - dist) / REPEL_R) ** 2 * REPEL_F;
+              p.vx += (dx / dist) * strength;
+              p.vy += (dy / dist) * strength;
+            }
+
+            p.vx += (p.hx - p.x) * SPRING;
+            p.vy += (p.hy - p.y) * SPRING;
+            p.vx *= DAMP;
+            p.vy *= DAMP;
+            p.x += p.vx;
+            p.y += p.vy;
+            anyMoving = true;
+
+            const disp = Math.sqrt((p.x - p.hx) ** 2 + (p.y - p.hy) ** 2);
+            ctx.fillStyle = charColor(disp);
+            ctx.fillText(p.ch, p.x, p.y);
+          }
+
+          if (!pointerActive && !anyMoving) {
+            stopLoop();
+            return;
+          }
+
+          rafId = requestAnimationFrame(frame);
+        };
+
+        const startLoop = () => {
+          if (running) return;
+          running = true;
+          rafId = requestAnimationFrame(frame);
+        };
+
+        const onMove = (e: PointerEvent) => {
+          const rect = canvas.getBoundingClientRect();
+          mx = e.clientX - rect.left;
+          my = e.clientY - rect.top;
+          startLoop();
+        };
+        const onLeave = () => {
+          mx = -9999;
+          my = -9999;
+        };
+
+        ctx.drawImage(baseCanvas, 0, 0, canvasW, canvasH);
+        canvas.addEventListener("pointermove", onMove, { passive: true });
+        canvas.addEventListener("pointerleave", onLeave, { passive: true });
+      })
+      .catch(() => {});
+  }
+
+  if ("requestIdleCallback" in window) {
+    (window as any).requestIdleCallback(initAscii, { timeout: 1200 });
+  } else {
+    setTimeout(initAscii, 600);
   }
 </script>
 
