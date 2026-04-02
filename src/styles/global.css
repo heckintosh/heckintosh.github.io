@@ -78,15 +78,23 @@
   .disable-transitions * {
     @apply !transition-none;
   }
+
+  body {
+    background:
+      radial-gradient(1200px 500px at 12% -10%, hsl(45 95% 72% / 0.35), transparent 62%),
+      radial-gradient(900px 460px at 88% -12%, hsl(210 55% 70% / 0.2), transparent 60%),
+      hsl(var(--background));
+  }
 }
 
 /* ── Hacker card glow on hover ───────────────────────────────────────────── */
 .card-glow {
-  transition: border-color 200ms ease, box-shadow 200ms ease;
+  transition: border-color 200ms ease, box-shadow 220ms ease, transform 220ms ease;
 }
 .card-glow:hover {
   border-color: hsl(45 93% 47% / 0.55) !important;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08), 0 0 0 1px hsl(45 93% 47% / 0.2);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.1), 0 0 0 1px hsl(45 93% 47% / 0.2);
+  transform: translateY(-2px);
 }
 
 /* ── Blinking cursor ─────────────────────────────────────────────────────── */
@@ -108,8 +116,8 @@
     to bottom,
     transparent,
     transparent 2px,
-    rgba(0,0,0,0.04) 2px,
-    rgba(0,0,0,0.04) 4px
+    rgba(0,0,0,0.03) 2px,
+    rgba(0,0,0,0.03) 4px
   );
   pointer-events: none;
   z-index: 1;

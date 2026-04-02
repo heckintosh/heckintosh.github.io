@@ -8,16 +8,19 @@ const writeups = (await getCollection("writeups"))?.sort(
 );
 ---
 
-<Card colSpan="md:col-span-1" rowSpan="md:row-span-2" title="writeups" href="/writeups">
-  <div class="flex flex-col gap-2 overflow-hidden">
-    {writeups?.slice(0, 4).map(w => (
+<Card colSpan="md:col-span-1" rowSpan="md:row-span-4" title="writeups" titleHref="/writeups">
+  <div class="flex flex-col gap-1.5 overflow-auto pr-1 flex-1">
+    {writeups?.slice(0, 8).map((w, idx) => (
       <a
         href={`/writeups/${w.id}`}
-        class="flex items-baseline justify-between gap-2 py-1 border-b border-border/60 last:border-0 hover:border-primary/30 transition-colors group"
+        class="flex items-start justify-between gap-2 py-1.5 border-b border-border/60 last:border-0 hover:border-primary/30 transition-colors group"
       >
-        <span class="text-xs text-foreground/70 font-mono group-hover:text-primary/80 truncate transition-colors">
-          {w.data.title}
-        </span>
+        <div class="min-w-0 flex items-start gap-2">
+          <span class="text-[10px] font-mono text-muted-foreground/60 tabular-nums mt-0.5">{String(idx + 1).padStart(2, "0")}</span>
+          <span class="text-xs text-foreground/75 font-mono group-hover:text-primary/80 transition-colors leading-relaxed max-h-[2.5rem] overflow-hidden">
+            {w.data.title}
+          </span>
+        </div>
         {w.data.pubDate && (
           <time
             class="text-[10px] text-muted-foreground shrink-0 tabular-nums"

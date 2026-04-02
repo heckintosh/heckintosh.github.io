@@ -65,7 +65,7 @@ const latestSnippet = latestPost?.data.description
   -->
   <main class="
     mx-auto px-4 py-4 grid gap-3 w-full
-    max-w-6xl
+    max-w-7xl
     md:grid-cols-2
     lg:grid-cols-5
     lg:grid-rows-8
@@ -99,13 +99,13 @@ const latestSnippet = latestPost?.data.description
     <!-- Blog: cols 1-2, rows 5-8 -->
     <div class="md:col-span-2 lg:col-span-2 lg:row-span-4 lg:col-start-1 lg:row-start-5">
       <Card title="blog" titleHref="/blog">
-        <div class="flex flex-col gap-0.5 overflow-hidden flex-1">
-          {posts?.slice(0, 5).map(post => (
+        <div class="flex flex-col gap-0.5 overflow-auto pr-1 flex-1">
+          {posts?.slice(0, 6).map(post => (
             <a
               href={`/blog/${post.id}`}
               class="flex items-baseline justify-between gap-2 py-1.5 border-b border-border/60 last:border-0 hover:border-primary/30 transition-colors group"
             >
-              <span class="text-xs text-foreground/70 font-mono group-hover:text-primary/80 truncate transition-colors">
+              <span class="text-xs text-foreground/75 font-mono group-hover:text-primary/80 transition-colors max-h-[2.5rem] overflow-hidden">
                 {post.data.title}
               </span>
               {post.data.pubDate && (
