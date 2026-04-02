@@ -135,7 +135,7 @@ import { Icon } from 'astro-icon/components';
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const FONT_SIZE = 9;
+    const FONT_SIZE = 8;
     const LINE_H = FONT_SIZE * 1.2;
     const FONT = `${FONT_SIZE}px 'JetBrains Mono', monospace`;
     const SPRING = 0.1;
@@ -145,14 +145,15 @@ import { Icon } from 'astro-icon/components';
     const FRAME_MS = 40;
 
     const charColor = (disp: number) => {
-      const t = Math.min(disp / 28, 1);
-      const r = Math.round(148 + t * 102);
-      const g = Math.round(163 + t * 41);
-      const b = Math.round(184 - t * 163);
+      const t = Math.min(disp / 24, 1);
+      const r = Math.round(136 + t * 104);
+      const g = Math.round(146 + t * 62);
+      const b = Math.round(160 - t * 80);
       return `rgb(${r},${g},${b})`;
     };
 
-    const n = Math.floor(Math.random() * 9) + 1;
+    const curated = [2, 3, 4, 6, 7, 9];
+    const n = curated[Math.floor(Math.random() * curated.length)];
     fetch(`/ascii-art-${n}.txt`)
       .then(r => r.text())
       .then(text => {
@@ -184,6 +185,7 @@ import { Icon } from 'astro-icon/components';
         canvas.style.width = `${canvasW}px`;
         canvas.style.height = `${canvasH}px`;
         ctx.scale(dpr, dpr);
+        ctx.imageSmoothingEnabled = true;
         ctx.font = FONT;
 
         const baseCanvas = document.createElement("canvas");
@@ -302,12 +304,14 @@ import { Icon } from 'astro-icon/components';
     z-index: 0;
     pointer-events: auto;
     overflow: hidden;
+    opacity: 0.88;
+    filter: saturate(0.9) contrast(0.98);
 
     /* Mobile: scaled down, anchored bottom-right */
     right: -10px;
     bottom: -10px;
     top: auto;
-    max-width: 82%;
+    max-width: 78%;
     max-height: calc(100% + 20px);
     transform-origin: bottom right;
   }
@@ -321,7 +325,7 @@ import { Icon } from 'astro-icon/components';
       right: -15px;
       top: 50%;
       bottom: auto;
-      max-width: 74%;
+      max-width: 70%;
       max-height: none;
       transform: translateY(-50%);
       transform-origin: center right;
