@@ -2,11 +2,8 @@
 import Layout from "@/layouts/Layout.astro";
 import IntroCard from "@/components/IntroCard.astro";
 import Writeups from "@/components/Writeups.astro";
-import Now from "@/components/Now.astro";
 import TerminalCard from "@/components/TerminalCard.astro";
 import TravelCard from "@/components/TravelCard.astro";
-import MyTimeZoneCard from "@/components/MyTimeZoneCard.astro";
-import YourTimeZoneCard from "@/components/YourTimeZoneCard.astro";
 import VisitorCounterCard from "@/components/VisitorCounterCard.astro";
 import { getCollection } from "astro:content";
 import { formatDate } from "@/lib/helpers";
@@ -15,10 +12,34 @@ import Card from "@/components/Card/index.astro";
 const posts = (await getCollection("blog"))?.sort(
   (a, b) => (b.data.pubDate ?? new Date()).getTime() - (a.data.pubDate ?? new Date()).getTime()
 );
-const latestPost = posts?.[0];
-const latestSnippet = latestPost?.data.description
-  ? latestPost.data.description.slice(0, 180)
-  : "fresh writeups and security notes are in progress.";
+
+const cveShowcase = [
+  {
+    id: "CVE-20XX-XXXX",
+    title: "Stored XSS in enterprise dashboard",
+    severity: "high",
+    href: "/writeups",
+  },
+  {
+    id: "CVE-20XX-YYYY",
+    title: "Auth bypass via misconfigured token check",
+    severity: "critical",
+    href: "/writeups",
+  },
+];
+
+const bountyShowcase = [
+  {
+    target: "Program A",
+    impact: "Account takeover on admin panel",
+    href: "/writeups",
+  },
+  {
+    target: "Program B",
+    impact: "IDOR leaking sensitive customer data",
+    href: "/writeups",
+  },
+];
 ---
 
 <script>
@@ -55,10 +76,9 @@ const latestSnippet = latestPost?.data.description
     Layout (lg):
       Cols 1-3  rows 1-4 → IntroCard
       Col  4    rows 1-4 → Writeups
-      Col  5    rows 1-4 → Latest
+      Col  5    rows 1-4 → CVE
       Cols 1-2  rows 5-8 → Blog
-      Col  3    rows 5-6 → YourTime
-      Col  3    rows 7-8 → MyTime
+      Col  3    rows 5-8 → BugBounty
       Col  4    rows 5-6 → VisitorCounter
       Col  4    rows 7-8 → TravelCard
       Col  5    rows 5-8 → TerminalCard
@@ -84,16 +104,24 @@ const latestSnippet = latestPost?.data.description
       <Writeups />
     </div>
 
-    <!-- Latest: col 5, rows 1-4 -->
+    <!-- CVE Showcase: col 5, rows 1-4 -->
     <div class="md:col-span-1 lg:col-span-1 lg:row-span-4 lg:col-start-5 lg:row-start-1">
-      <Now
-        title="now"
-        status={latestPost?.data.title ?? "latest post"}
-        description={latestSnippet}
-        linkHref={latestPost ? `/blog/${latestPost.id}` : "/blog"}
-        linkLabel={latestPost ? "read latest post →" : "browse posts →"}
-        externalLink={false}
-      />
+      <Card title="cve" titleHref="/writeups">
+        <div class="flex flex-col gap-2 overflow-auto pr-1 flex-1">
+          {cveShowcase.map((item) => (
+            <a
+              href={item.href}
+              class="border border-border/60 rounded-lg p-2.5 hover:border-primary/40 transition-colors group"
+            >
+              <p class="m-0 text-[10px] text-primary/80 font-mono tracking-wide">{item.id}</p>
+              <p class="m-0 mt-1 text-xs text-foreground/80 leading-relaxed group-hover:text-primary/80 transition-colors">
+                {item.title}
+              </p>
+              <p class="m-0 mt-1 text-[10px] text-muted-foreground font-mono uppercase">{item.severity}</p>
+            </a>
+          ))}
+        </div>
+      </Card>
     </div>
 
     <!-- Blog: cols 1-2, rows 5-8 -->
@@ -122,14 +150,24 @@ const latestSnippet = latestPost?.data.description
       </Card>
     </div>
 
-    <!-- YourTime: col 3, rows 5-6 -->
-    <div class="md:col-span-1 lg:col-span-1 lg:row-span-2 lg:col-start-3 lg:row-start-5">
-      <YourTimeZoneCard />
-    </div>
-
-    <!-- MyTime: col 3, rows 7-8 -->
-    <div class="md:col-span-1 lg:col-span-1 lg:row-span-2 lg:col-start-3 lg:row-start-7">
-      <MyTimeZoneCard />
+    <!-- Bug Bounty Showcase: col 3, rows 5-8 -->
+    <div class="md:col-span-1 lg:col-span-1 lg:row-span-4 lg:col-start-3 lg:row-start-5">
+      <Card title="bug bounty" titleHref="/writeups">
+        <div class="flex flex-col gap-2 overflow-auto pr-1 flex-1">
+          {bountyShowcase.map((item, idx) => (
+            <a
+              href={item.href}
+              class="border border-border/60 rounded-lg p-2.5 hover:border-primary/40 transition-colors group"
+            >
+              <p class="m-0 text-[10px] text-muted-foreground font-mono tracking-wide">report #{String(idx + 1).padStart(2, "0")}</p>
+              <p class="m-0 mt-1 text-xs text-foreground/80 leading-relaxed group-hover:text-primary/80 transition-colors">
+                {item.impact}
+              </p>
+              <p class="m-0 mt-1 text-[10px] text-primary/80 font-mono uppercase">{item.target}</p>
+            </a>
+          ))}
+        </div>
+      </Card>
     </div>
 
     <!-- VisitorCounter: col 4, rows 5-6 -->
