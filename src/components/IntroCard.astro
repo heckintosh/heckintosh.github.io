@@ -55,7 +55,7 @@ import { Icon } from 'astro-icon/components';
 
   function scramble(el: HTMLElement) {
     let frame = 0;
-    const totalFrames = 22;
+    const totalFrames = 14;
     let rafId = 0;
 
     function tick() {
@@ -89,7 +89,7 @@ import { Icon } from 'astro-icon/components';
 
   function scrambleFlat(el: HTMLElement, original: string) {
     let frame = 0;
-    const totalFrames = 28;
+    const totalFrames = 18;
     let rafId = 0;
 
     function tick() {
@@ -138,11 +138,11 @@ import { Icon } from 'astro-icon/components';
     const FONT_SIZE = 9;
     const LINE_H = FONT_SIZE * 1.2;
     const FONT = `${FONT_SIZE}px 'JetBrains Mono', monospace`;
-    const SPRING = 0.1;
-    const DAMP = 0.72;
+    const SPRING = 0.16;
+    const DAMP = 0.68;
     const REPEL_R = 55;
     const REPEL_F = 5.5;
-    const FRAME_MS = 40;
+    const FRAME_MS = 20;
 
     const charColor = (disp: number) => {
       const t = Math.min(disp / 24, 1);
@@ -303,9 +303,9 @@ import { Icon } from 'astro-icon/components';
   }
 
   if ("requestIdleCallback" in window) {
-    (window as any).requestIdleCallback(initAscii, { timeout: 1200 });
+    (window as any).requestIdleCallback(initAscii, { timeout: 300 });
   } else {
-    setTimeout(initAscii, 600);
+    setTimeout(initAscii, 200);
   }
 </script>
 
