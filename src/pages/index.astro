@@ -19,19 +19,29 @@ const posts = (await getCollection("blog"))?.sort(
 ---
 
 <script>
-  import { stagger, spring, timeline, type TimelineDefinition } from "motion";
-  import { loaderAnimation } from "../lib/constants";
-
   const cards = document.querySelectorAll(".card");
-  const sequence: TimelineDefinition = [
-    loaderAnimation,
-    [
-      cards,
-      { y: ["30%", "0%"], opacity: [0, 1] },
-      { at: "-0.1", duration: 0.4, delay: stagger(0.05), easing: spring({ velocity: 80, stiffness: 60, damping: 12 }) },
-    ],
-  ];
-  timeline(sequence);
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  cards.forEach((card, index) => {
+    if (prefersReducedMotion) {
+      card.style.opacity = "1";
+      return;
+    }
+
+    const delay = index * 45;
+    card.animate(
+      [
+        { opacity: 0, transform: "translateY(24px)" },
+        { opacity: 1, transform: "translateY(0)" },
+      ],
+      {
+        duration: 360,
+        delay,
+        easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+        fill: "both",
+      }
+    );
+  });
 </script>
 
 <Layout title="Heckintosh's Blog" description="Security researcher & CTF player">

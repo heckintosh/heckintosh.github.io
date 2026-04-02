@@ -3,12 +3,10 @@ import Container from '@/components/Container.astro';
 import { NAV_LINKS } from '@/consts';
 import { Image } from 'astro:assets';
 import logo from '../../public/static/heckintosh.svg';
-import MobileMenu from './react/ui/mobile-menu';
 ---
 
 <header
   class="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-md"
-  transition:persist
 >
   <Container>
     <div class="flex items-center justify-between h-14 gap-6">
@@ -34,7 +32,28 @@ import MobileMenu from './react/ui/mobile-menu';
         ))}
       </nav>
 
-      <MobileMenu client:load transition:persist />
+      <details class="sm:hidden relative">
+        <summary
+          class="list-none inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-md border border-input bg-background text-muted-foreground hover:bg-secondary/50 hover:text-foreground transition-colors"
+          aria-label="Toggle menu"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="4" x2="20" y1="12" y2="12"></line>
+            <line x1="4" x2="20" y1="6" y2="6"></line>
+            <line x1="4" x2="20" y1="18" y2="18"></line>
+          </svg>
+        </summary>
+        <div class="absolute right-0 mt-2 min-w-[10rem] rounded-md border border-border bg-background p-1 shadow-lg">
+          {NAV_LINKS.map(item => (
+            <a
+              href={item.href}
+              class="block rounded px-3 py-2 text-sm capitalize text-foreground/90 hover:bg-secondary/50"
+            >
+              {item.label}
+            </a>
+          ))}
+        </div>
+      </details>
     </div>
   </Container>
 </header>

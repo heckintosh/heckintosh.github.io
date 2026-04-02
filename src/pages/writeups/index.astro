@@ -10,15 +10,6 @@ const writeups = (await getCollection("writeups"))?.sort(
 );
 ---
 
-<script>
-  import { timeline, type TimelineDefinition } from "motion";
-  import { loaderAnimation } from "@/lib/constants";
-
-  const sequence = [loaderAnimation];
-
-  timeline(sequence as TimelineDefinition);
-</script>
-
 <Layout
   title="Anh - Blog"
   description="Security Researcher"
