@@ -12,36 +12,80 @@ import Card from "./Card/index.astro";
 <script>
   const el    = document.getElementById("visitorCount") as HTMLElement;
   const label = document.getElementById("visitorLabel") as HTMLElement;
+  const GLOBAL_CACHE_KEY = "visitorCountGlobalCache";
+  const LOCAL_KEY = "visitorCount";
 
-  function animateTo(target: number) {
+  function getCurrentRenderedValue(): number {
+    const raw = (el.textContent ?? "").replace(/,/g, "").trim();
+    const n = Number.parseInt(raw, 10);
+    return Number.isFinite(n) ? n : 0;
+  }
+
+  function animateTo(target: number, from = getCurrentRenderedValue()) {
+    const start = Math.max(0, from);
+    const end = Math.max(0, target);
+    if (start === end) {
+      el.textContent = end.toLocaleString();
+      return;
+    }
     const t0 = performance.now();
     const dur = 900;
     function tick(now: number) {
       const p = Math.min((now - t0) / dur, 1);
       const e = 1 - Math.pow(1 - p, 3);
-      el.textContent = Math.round(target * e).toLocaleString();
+      const value = Math.round(start + (end - start) * e);
+      el.textContent = value.toLocaleString();
       if (p < 1) requestAnimationFrame(tick);
     }
     requestAnimationFrame(tick);
   }
 
   async function loadCount(): Promise<number | null> {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 4000);
     try {
-      const res = await fetch("https://api.countapi.xyz/hit/heckintosh.github.io/visits", { mode: "cors" });
+      const res = await fetch("https://api.countapi.xyz/hit/heckintosh.github.io/visits", {
+        mode: "cors",
+        signal: controller.signal,
+      });
       if (!res.ok) return null;
       const d = await res.json() as { value?: number };
       return typeof d.value === "number" ? d.value : null;
-    } catch { return null; }
+    } catch {
+      return null;
+    } finally {
+      clearTimeout(timeout);
+    }
   }
 
   (async () => {
+    // Paint quickly from last-known global value so hard refresh doesn't "start from zero".
+    try {
+      const cachedGlobal = Number.parseInt(localStorage.getItem(GLOBAL_CACHE_KEY) ?? "", 10);
+      if (Number.isFinite(cachedGlobal) && cachedGlobal > 0) {
+        el.textContent = cachedGlobal.toLocaleString();
+      }
+    } catch {}
+
     const global = await loadCount();
     if (global !== null) {
-      animateTo(global);
+      const start = getCurrentRenderedValue();
+      animateTo(global, start > 0 ? start : global);
+      try { localStorage.setItem(GLOBAL_CACHE_KEY, String(global)); } catch {}
+      label.textContent = "total views";
     } else {
-      const n = parseInt(localStorage.getItem("visitorCount") ?? "0") + 1;
-      localStorage.setItem("visitorCount", String(n));
-      animateTo(n);
+      try {
+        const cachedGlobal = Number.parseInt(localStorage.getItem(GLOBAL_CACHE_KEY) ?? "", 10);
+        if (Number.isFinite(cachedGlobal) && cachedGlobal > 0) {
+          el.textContent = cachedGlobal.toLocaleString();
+          label.textContent = "total views (cached)";
+          return;
+        }
+      } catch {}
+
+      const n = Number.parseInt(localStorage.getItem(LOCAL_KEY) ?? "0", 10) + 1;
+      localStorage.setItem(LOCAL_KEY, String(n));
+      animateTo(n, getCurrentRenderedValue());
       label.textContent = "your visits";
     }
   })();
