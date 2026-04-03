@@ -34,6 +34,15 @@ import { Icon } from 'astro-icon/components';
           <Icon name="ri:twitter-x-fill" class="h-3.5 w-3.5" />
           twitter
         </a>
+        <button
+          id="theme-toggle-inline"
+          type="button"
+          class="flex items-center gap-1.5 px-3 py-1.5 text-xs border border-border rounded font-mono text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors duration-150"
+          aria-label="Toggle dark mode"
+        >
+          <span id="theme-toggle-inline-icon" aria-hidden="true">☾</span>
+          <span id="theme-toggle-inline-label">dark</span>
+        </button>
         <button class="flex items-center gap-1.5 px-3 py-1.5 text-xs border border-border rounded font-mono text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors duration-150" aria-label="Easter egg" title="~">
           <Icon name="ri:terminal-box-fill" class="h-3.5 w-3.5" />
           <span class="sr-only">Easter egg</span>
@@ -128,6 +137,29 @@ import { Icon } from 'astro-icon/components';
     desc.addEventListener("mouseenter", () => scrambleFlat(desc, DESC));
     desc.addEventListener("click",      () => scrambleFlat(desc, DESC));
   }
+
+  (() => {
+    const root = document.documentElement;
+    const btn = document.getElementById("theme-toggle-inline");
+    const icon = document.getElementById("theme-toggle-inline-icon");
+    const label = document.getElementById("theme-toggle-inline-label");
+    if (!btn || !icon || !label) return;
+
+    const syncThemeLabel = () => {
+      const dark = root.classList.contains("dark");
+      icon.textContent = dark ? "☀" : "☾";
+      label.textContent = dark ? "light" : "dark";
+    };
+
+    btn.addEventListener("click", () => {
+      const dark = !root.classList.contains("dark");
+      root.classList.toggle("dark", dark);
+      try { localStorage.setItem("theme", dark ? "dark" : "light"); } catch {}
+      syncThemeLabel();
+    });
+
+    syncThemeLabel();
+  })();
 
   function initAscii() {
     const canvas = document.getElementById("ascii-canvas") as HTMLCanvasElement | null;

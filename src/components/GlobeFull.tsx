@@ -48,23 +48,23 @@ const DARK_PALETTE: Palette = {
 
 export default function GlobeFull() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const isDarkRef = useRef(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const dpr    = window.devicePixelRatio || 1;
-    const W      = canvas.parentElement!.clientWidth  || window.innerWidth  || 800;
-    const H      = Math.min(window.innerHeight * 0.72, 560);
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.3);
+    const W = canvas.parentElement?.clientWidth || window.innerWidth || 800;
+    const H = Math.min(window.innerHeight * 0.72, 560);
     const radius = Math.min(W, H) * 0.42;
 
-    canvas.width        = W   * dpr;
-    canvas.height       = H   * dpr;
-    canvas.style.width  = `${W}px`;
+    canvas.width = Math.ceil(W * dpr);
+    canvas.height = Math.ceil(H * dpr);
+    canvas.style.width = `${W}px`;
     canvas.style.height = `${H}px`;
 
-    const ctx = canvas.getContext("2d")!;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
     ctx.scale(dpr, dpr);
 
     const projection = d3
@@ -76,29 +76,20 @@ export default function GlobeFull() {
 
     const path = d3.geoPath().projection(projection).context(ctx);
     const graticule = d3.geoGraticule()();
-
-    let rotate   = 0;
-    let dragging = false;
-    let lastX    = 0;
-    let lastY    = 0;
-    let running  = true;
-    let rafId    = 0;
+    const features = (worldData as any).features as any[];
 
     const root = document.documentElement;
-    isDarkRef.current = root.classList.contains("dark");
-    const observer = new MutationObserver(() => {
-      isDarkRef.current = root.classList.contains("dark");
-    });
-    observer.observe(root, { attributes: true, attributeFilter: ["class"] });
+    let isDark = root.classList.contains("dark");
+    let palette = isDark ? DARK_PALETTE : LIGHT_PALETTE;
 
-    function draw() {
-      const palette = isDarkRef.current ? DARK_PALETTE : LIGHT_PALETTE;
-      ctx.clearRect(0, 0, W, H);
+    let ocean = ctx.createRadialGradient(0, 0, 0, 0, 0, 0);
+    let atmos = ctx.createRadialGradient(0, 0, 0, 0, 0, 0);
+    let spec = ctx.createRadialGradient(0, 0, 0, 0, 0, 0);
 
-      // Ocean sphere
-      ctx.beginPath();
-      ctx.arc(W / 2, H / 2, radius, 0, Math.PI * 2);
-      const ocean = ctx.createRadialGradient(
+    const rebuildGradients = () => {
+      palette = isDark ? DARK_PALETTE : LIGHT_PALETTE;
+
+      ocean = ctx.createRadialGradient(
         W / 2 - radius * 0.35,
         H / 2 - radius * 0.35,
         radius * 0.15,
@@ -106,42 +97,13 @@ export default function GlobeFull() {
         H / 2,
         radius * 1.05,
       );
-      for (const [stop, color] of palette.oceanStops) {
-        ocean.addColorStop(stop, color);
-      }
-      ctx.fillStyle = ocean;
-      ctx.fill();
+      for (const [stop, color] of palette.oceanStops) ocean.addColorStop(stop, color);
 
-      // Graticule
-      ctx.beginPath();
-      path(graticule as any);
-      ctx.strokeStyle = palette.graticule;
-      ctx.lineWidth = 0.5;
-      ctx.stroke();
-
-      // Countries
-      for (const feature of (worldData as any).features) {
-        const isVisited = VISITED.includes(feature.properties?.name);
-        ctx.beginPath();
-        path(feature);
-        ctx.fillStyle   = isVisited ? palette.visitedFill : palette.countryFill;
-        ctx.strokeStyle = isVisited ? palette.visitedStroke : palette.countryStroke;
-        ctx.lineWidth   = isVisited ? 1.2 : 0.35;
-        ctx.fill();
-        ctx.stroke();
-      }
-
-      // Atmosphere rim
-      const atmos = ctx.createRadialGradient(W/2, H/2, radius * 0.96, W/2, H/2, radius * 1.06);
+      atmos = ctx.createRadialGradient(W / 2, H / 2, radius * 0.96, W / 2, H / 2, radius * 1.06);
       atmos.addColorStop(0, "rgba(100,160,255,0)");
       atmos.addColorStop(1, palette.atmosEdge);
-      ctx.beginPath();
-      ctx.arc(W / 2, H / 2, radius * 1.06, 0, Math.PI * 2);
-      ctx.fillStyle = atmos;
-      ctx.fill();
 
-      // subtle specular highlight
-      const spec = ctx.createRadialGradient(
+      spec = ctx.createRadialGradient(
         W / 2 - radius * 0.28,
         H / 2 - radius * 0.3,
         radius * 0.02,
@@ -151,27 +113,84 @@ export default function GlobeFull() {
       );
       spec.addColorStop(0, palette.specular);
       spec.addColorStop(1, "rgba(255,255,255,0)");
+    };
+
+    rebuildGradients();
+
+    const observer = new MutationObserver(() => {
+      const nextDark = root.classList.contains("dark");
+      if (nextDark !== isDark) {
+        isDark = nextDark;
+        rebuildGradients();
+      }
+    });
+    observer.observe(root, { attributes: true, attributeFilter: ["class"] });
+
+    let dragging = false;
+    let lastX = 0;
+    let lastY = 0;
+    let running = true;
+    let rafId = 0;
+    let lastFrameTs = 0;
+    const FRAME_MS = 1000 / 28;
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+
+      ctx.beginPath();
+      ctx.arc(W / 2, H / 2, radius, 0, Math.PI * 2);
+      ctx.fillStyle = ocean;
+      ctx.fill();
+
+      ctx.beginPath();
+      path(graticule as any);
+      ctx.strokeStyle = palette.graticule;
+      ctx.lineWidth = 0.38;
+      ctx.stroke();
+
+      for (const feature of features) {
+        const visited = VISITED.includes(feature.properties?.name);
+        ctx.beginPath();
+        path(feature);
+        ctx.fillStyle = visited ? palette.visitedFill : palette.countryFill;
+        ctx.strokeStyle = visited ? palette.visitedStroke : palette.countryStroke;
+        ctx.lineWidth = visited ? 0.95 : 0.25;
+        ctx.fill();
+        ctx.stroke();
+      }
+
+      ctx.beginPath();
+      ctx.arc(W / 2, H / 2, radius * 1.06, 0, Math.PI * 2);
+      ctx.fillStyle = atmos;
+      ctx.fill();
+
       ctx.beginPath();
       ctx.arc(W / 2, H / 2, radius, 0, Math.PI * 2);
       ctx.fillStyle = spec;
       ctx.fill();
     }
 
-    function frame() {
+    function frame(ts: number) {
       if (!running) return;
-      if (!dragging) {
-        rotate += 0.15;
-        const r = projection.rotate() as [number, number];
-        projection.rotate([r[0] + 0.15, r[1]]);
+      if (ts - lastFrameTs < FRAME_MS) {
+        rafId = requestAnimationFrame(frame);
+        return;
       }
+      lastFrameTs = ts;
+
+      if (!dragging) {
+        const r = projection.rotate() as [number, number];
+        projection.rotate([r[0] + 0.11, r[1]]);
+      }
+
       draw();
       rafId = requestAnimationFrame(frame);
     }
 
     function onDown(e: PointerEvent) {
       dragging = true;
-      lastX    = e.clientX;
-      lastY    = e.clientY;
+      lastX = e.clientX;
+      lastY = e.clientY;
       canvas.setPointerCapture(e.pointerId);
       canvas.style.cursor = "grabbing";
     }
@@ -180,25 +199,38 @@ export default function GlobeFull() {
       if (!dragging) return;
       const dx = e.clientX - lastX;
       const dy = e.clientY - lastY;
-      lastX    = e.clientX;
-      lastY    = e.clientY;
-      const r  = projection.rotate() as [number, number];
+      lastX = e.clientX;
+      lastY = e.clientY;
+      const r = projection.rotate() as [number, number];
       projection.rotate([
-        r[0] + dx * 0.4,
-        Math.max(-70, Math.min(70, r[1] - dy * 0.4)),
+        r[0] + dx * 0.33,
+        Math.max(-70, Math.min(70, r[1] - dy * 0.33)),
       ]);
     }
 
     function onUp() {
-      dragging            = false;
+      dragging = false;
       canvas.style.cursor = "grab";
+    }
+
+    function onVisibility() {
+      if (document.hidden) {
+        running = false;
+        cancelAnimationFrame(rafId);
+      } else {
+        if (!running) {
+          running = true;
+          rafId = requestAnimationFrame(frame);
+        }
+      }
     }
 
     canvas.style.cursor = "grab";
     canvas.addEventListener("pointerdown", onDown);
     canvas.addEventListener("pointermove", onMove);
-    canvas.addEventListener("pointerup",   onUp);
+    canvas.addEventListener("pointerup", onUp);
     canvas.addEventListener("pointercancel", onUp);
+    document.addEventListener("visibilitychange", onVisibility);
 
     rafId = requestAnimationFrame(frame);
 
@@ -206,9 +238,10 @@ export default function GlobeFull() {
       running = false;
       cancelAnimationFrame(rafId);
       observer.disconnect();
+      document.removeEventListener("visibilitychange", onVisibility);
       canvas.removeEventListener("pointerdown", onDown);
       canvas.removeEventListener("pointermove", onMove);
-      canvas.removeEventListener("pointerup",   onUp);
+      canvas.removeEventListener("pointerup", onUp);
       canvas.removeEventListener("pointercancel", onUp);
     };
   }, []);

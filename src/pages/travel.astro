@@ -184,7 +184,6 @@ import BasicLayout from "@/layouts/BasicLayout.astro";
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    animation: travel-spin 22s linear infinite;
   }
 
   .travel-ring--two {
@@ -193,7 +192,6 @@ import BasicLayout from "@/layouts/BasicLayout.astro";
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%) rotate(24deg);
-    animation: travel-spin-rev 28s linear infinite;
   }
 
   .travel-list {
@@ -202,16 +200,6 @@ import BasicLayout from "@/layouts/BasicLayout.astro";
     font-size: 0.72rem;
     color: #70829f;
     letter-spacing: 0.04em;
-  }
-
-  @keyframes travel-spin {
-    0% { transform: translate(-50%, -50%) rotate(0deg); }
-    100% { transform: translate(-50%, -50%) rotate(360deg); }
-  }
-
-  @keyframes travel-spin-rev {
-    0% { transform: translate(-50%, -50%) rotate(24deg); }
-    100% { transform: translate(-50%, -50%) rotate(-336deg); }
   }
 
   :global(html.dark) .travel-shell {
