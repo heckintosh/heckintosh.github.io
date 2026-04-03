@@ -84,6 +84,20 @@ import Card from "./Card/index.astro";
   .globe-mini__marker--au { top: 65px; left: 72px; }
   .globe-mini__marker--tw { top: 34px; left: 70px; }
 
+  :global(html.dark) .globe-mini {
+    filter: drop-shadow(0 14px 28px rgba(4, 10, 18, 0.6));
+  }
+
+  :global(html.dark) .globe-mini__core {
+    border-color: rgba(250, 204, 21, 0.35);
+    background:
+      radial-gradient(circle at 28% 26%, rgba(244, 209, 95, 0.9), rgba(39, 88, 133, 0.92) 45%, rgba(8, 18, 29, 1) 100%);
+  }
+
+  :global(html.dark) .globe-mini__ring {
+    border-color: rgba(255, 255, 255, 0.24);
+  }
+
   @keyframes globe-spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }

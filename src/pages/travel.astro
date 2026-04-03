@@ -8,20 +8,24 @@ import BasicLayout from "@/layouts/BasicLayout.astro";
   description="Places I've been to: Vietnam, Australia, Taiwan"
   page="travel"
 >
-  <div class="travel-shell">
-    <a
-      href="/"
-      class="travel-back"
-    >
-      ← back
-    </a>
+  <div class="travel-shell" id="travel-shell">
+    <div class="travel-noise" aria-hidden="true"></div>
+    <div class="travel-orb travel-orb--a" aria-hidden="true"></div>
+    <div class="travel-orb travel-orb--b" aria-hidden="true"></div>
 
-    <div class="travel-panel">
-      <p class="travel-label">visited</p>
+    <div class="travel-actions">
+      <a href="/" class="travel-back">← back</a>
+      <button id="travel-theme-toggle" class="travel-theme-toggle" type="button" aria-label="Toggle dark mode">theme</button>
+    </div>
+
+    <div class="travel-panel" id="travel-panel">
+      <p class="travel-label">visited // atlas</p>
       <h1 class="travel-title">countries touched</h1>
 
-      <div class="travel-globe-wrap">
+      <div class="travel-globe-wrap" id="travel-globe-wrap">
         <GlobeFull client:load />
+        <div class="travel-ring travel-ring--one" aria-hidden="true"></div>
+        <div class="travel-ring travel-ring--two" aria-hidden="true"></div>
       </div>
 
       <p class="travel-list">vietnam · australia · taiwan</p>
@@ -35,43 +39,99 @@ import BasicLayout from "@/layouts/BasicLayout.astro";
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 2rem 1rem;
+    padding: 2rem 1rem 1rem;
+    position: relative;
+    overflow: hidden;
     background:
-      radial-gradient(900px 480px at 16% -10%, rgba(248, 209, 82, 0.28), transparent 60%),
-      radial-gradient(1000px 560px at 88% -20%, rgba(77, 125, 181, 0.28), transparent 62%),
+      radial-gradient(900px 480px at 16% -10%, rgba(248, 209, 82, 0.35), transparent 60%),
+      radial-gradient(1000px 560px at 88% -20%, rgba(77, 125, 181, 0.36), transparent 62%),
       #eef1f7;
   }
 
-  .travel-back {
+  .travel-noise {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.28;
+    background-image:
+      radial-gradient(rgba(0,0,0,0.12) 0.45px, transparent 0.45px);
+    background-size: 4px 4px;
+    mix-blend-mode: soft-light;
+  }
+
+  .travel-orb {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(24px);
+    pointer-events: none;
+  }
+
+  .travel-orb--a {
+    width: 320px;
+    height: 320px;
+    top: -70px;
+    right: -70px;
+    background: radial-gradient(circle, rgba(248, 209, 82, 0.5), transparent 70%);
+  }
+
+  .travel-orb--b {
+    width: 280px;
+    height: 280px;
+    bottom: -60px;
+    left: -50px;
+    background: radial-gradient(circle, rgba(77, 125, 181, 0.52), transparent 70%);
+  }
+
+  .travel-actions {
     position: fixed;
-    top: 1.25rem;
-    left: 1.25rem;
+    top: 1.2rem;
+    left: 1.2rem;
+    right: 1.2rem;
+    z-index: 20;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+  }
+
+  .travel-back,
+  .travel-theme-toggle {
+    pointer-events: auto;
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.75rem;
-    color: #5f6c83;
-    text-decoration: none;
-    border: 1px solid #d8dee8;
-    padding: 0.45rem 0.8rem;
+    color: #5c6a84;
+    border: 1px solid #d4dbe8;
+    padding: 0.48rem 0.86rem;
     border-radius: 0.5rem;
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(8px);
-    z-index: 10;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.76);
+    backdrop-filter: blur(10px);
     transition: border-color 180ms ease, color 180ms ease, transform 180ms ease;
   }
 
-  .travel-back:hover {
-    color: #b07f05;
-    border-color: rgba(176, 127, 5, 0.45);
+  .travel-theme-toggle {
+    text-transform: lowercase;
+    cursor: pointer;
+  }
+
+  .travel-back:hover,
+  .travel-theme-toggle:hover {
+    color: #b17f05;
+    border-color: rgba(177, 127, 5, 0.45);
     transform: translateY(-1px);
   }
 
   .travel-panel {
+    position: relative;
+    z-index: 5;
     width: min(980px, 100%);
-    border: 1px solid rgba(208, 216, 229, 0.95);
-    border-radius: 1rem;
-    padding: 1.25rem 1.25rem 1rem;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(251, 253, 255, 0.74));
-    box-shadow: 0 20px 42px rgba(18, 39, 63, 0.12);
+    border: 1px solid rgba(208, 216, 229, 0.82);
+    border-radius: 1.1rem;
+    padding: 1.15rem 1.15rem 1rem;
+    background:
+      linear-gradient(140deg, rgba(255, 255, 255, 0.82), rgba(251, 253, 255, 0.64)),
+      radial-gradient(circle at 20% 10%, rgba(248, 209, 82, 0.2), transparent 60%),
+      radial-gradient(circle at 80% 20%, rgba(77, 125, 181, 0.2), transparent 55%);
+    box-shadow: 0 24px 46px rgba(18, 39, 63, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.45);
   }
 
   .travel-label {
@@ -85,26 +145,55 @@ import BasicLayout from "@/layouts/BasicLayout.astro";
 
   .travel-title {
     margin: 0.45rem 0 0.9rem;
-    font-size: clamp(1.25rem, 2.4vw, 1.65rem);
+    font-size: clamp(1.25rem, 2.8vw, 1.9rem);
     line-height: 1.1;
     color: #223046;
     font-weight: 700;
-    text-transform: lowercase;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
   }
 
   .travel-globe-wrap {
+    position: relative;
     border: 1px solid rgba(208, 216, 229, 0.85);
     border-radius: 0.9rem;
     padding: 0.5rem;
     background:
-      radial-gradient(circle at 50% 0%, rgba(77, 125, 181, 0.14), transparent 48%),
-      radial-gradient(circle at 50% 100%, rgba(248, 209, 82, 0.13), transparent 46%),
-      rgba(250, 252, 255, 0.86);
+      radial-gradient(circle at 40% -10%, rgba(77, 125, 181, 0.16), transparent 52%),
+      radial-gradient(circle at 70% 120%, rgba(248, 209, 82, 0.18), transparent 50%),
+      rgba(250, 252, 255, 0.9);
+    overflow: hidden;
   }
 
   .travel-globe-wrap :global(canvas) {
     width: 100%;
     display: block;
+    border-radius: 0.65rem;
+  }
+
+  .travel-ring {
+    position: absolute;
+    border: 1px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 9999px;
+    pointer-events: none;
+  }
+
+  .travel-ring--one {
+    width: 66%;
+    aspect-ratio: 1;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: travel-spin 22s linear infinite;
+  }
+
+  .travel-ring--two {
+    width: 84%;
+    aspect-ratio: 1;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(24deg);
+    animation: travel-spin-rev 28s linear infinite;
   }
 
   .travel-list {
@@ -114,4 +203,89 @@ import BasicLayout from "@/layouts/BasicLayout.astro";
     color: #70829f;
     letter-spacing: 0.04em;
   }
+
+  @keyframes travel-spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+
+  @keyframes travel-spin-rev {
+    0% { transform: translate(-50%, -50%) rotate(24deg); }
+    100% { transform: translate(-50%, -50%) rotate(-336deg); }
+  }
+
+  :global(html.dark) .travel-shell {
+    background:
+      radial-gradient(900px 480px at 16% -10%, rgba(248, 209, 82, 0.16), transparent 60%),
+      radial-gradient(1000px 560px at 88% -20%, rgba(77, 125, 181, 0.22), transparent 62%),
+      #090f18;
+  }
+
+  :global(html.dark) .travel-noise {
+    opacity: 0.17;
+  }
+
+  :global(html.dark) .travel-back,
+  :global(html.dark) .travel-theme-toggle {
+    color: #8b9cb8;
+    border-color: rgba(72, 95, 127, 0.78);
+    background: rgba(10, 18, 30, 0.74);
+  }
+
+  :global(html.dark) .travel-back:hover,
+  :global(html.dark) .travel-theme-toggle:hover {
+    color: #f5d56a;
+    border-color: rgba(245, 213, 106, 0.45);
+  }
+
+  :global(html.dark) .travel-panel {
+    border-color: rgba(65, 86, 114, 0.72);
+    background:
+      linear-gradient(145deg, rgba(10, 19, 32, 0.86), rgba(8, 15, 26, 0.74)),
+      radial-gradient(circle at 16% 12%, rgba(248, 209, 82, 0.12), transparent 58%),
+      radial-gradient(circle at 82% 18%, rgba(89, 135, 190, 0.14), transparent 56%);
+    box-shadow: 0 26px 48px rgba(2, 7, 14, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  :global(html.dark) .travel-label {
+    color: #f0ca53;
+  }
+
+  :global(html.dark) .travel-title {
+    color: #dde8f7;
+  }
+
+  :global(html.dark) .travel-globe-wrap {
+    border-color: rgba(65, 86, 114, 0.72);
+    background:
+      radial-gradient(circle at 40% -10%, rgba(77, 125, 181, 0.2), transparent 52%),
+      radial-gradient(circle at 70% 120%, rgba(248, 209, 82, 0.12), transparent 50%),
+      rgba(7, 14, 24, 0.82);
+  }
+
+  :global(html.dark) .travel-list {
+    color: #8fa1bc;
+  }
 </style>
+
+<script>
+  (() => {
+    const root = document.documentElement;
+    const btn = document.getElementById("travel-theme-toggle");
+    if (!btn) return;
+
+    const sync = () => {
+      const dark = root.classList.contains("dark");
+      btn.textContent = dark ? "light" : "dark";
+    };
+
+    btn.addEventListener("click", () => {
+      const dark = !root.classList.contains("dark");
+      root.classList.toggle("dark", dark);
+      try { localStorage.setItem("theme", dark ? "dark" : "light"); } catch {}
+      sync();
+    });
+
+    sync();
+  })();
+</script>
