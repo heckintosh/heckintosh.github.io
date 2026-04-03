@@ -53,50 +53,66 @@ const arc = (a?: number[] | null, b?: number[] | null, lift = 14) => {
 
 const arcTaiwanVietnam = arc(coords.taiwan, coords.vietnam, 10);
 const arcVietnamAustralia = arc(coords.vietnam, coords.australia, 14);
+const id = `gg-${Math.random().toString(36).slice(2, 9)}`;
 ---
 
 <div class={`geo-globe ${compact ? "geo-globe--compact" : "geo-globe--full"}`}>
   <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Visited countries globe">
     <defs>
-      <radialGradient id="gg-ocean" cx="28%" cy="24%" r="76%">
+      <radialGradient id={`${id}-ocean`} cx="28%" cy="24%" r="76%">
         <stop offset="0%" stop-color="#7ab1ee" />
         <stop offset="48%" stop-color="#2f6dab" />
         <stop offset="100%" stop-color="#152a42" />
       </radialGradient>
-      <radialGradient id="gg-shine" cx="24%" cy="22%" r="64%">
+      <radialGradient id={`${id}-shine`} cx="24%" cy="22%" r="64%">
         <stop offset="0%" stop-color="rgba(255,255,255,0.35)" />
         <stop offset="100%" stop-color="rgba(255,255,255,0)" />
       </radialGradient>
-      <filter id="gg-pin-glow" x="-100%" y="-100%" width="300%" height="300%">
+      <linearGradient id={`${id}-night`} x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="22%" stop-color="rgba(9, 20, 34, 0)" />
+        <stop offset="66%" stop-color="rgba(9, 20, 34, 0.36)" />
+        <stop offset="100%" stop-color="rgba(9, 20, 34, 0.62)" />
+      </linearGradient>
+      <filter id={`${id}-pin-glow`} x="-100%" y="-100%" width="300%" height="300%">
         <feGaussianBlur stdDeviation="2" result="blur" />
         <feMerge>
           <feMergeNode in="blur" />
           <feMergeNode in="SourceGraphic" />
         </feMerge>
       </filter>
-      <clipPath id="gg-sphere-clip">
+      <clipPath id={`${id}-sphere-clip`}>
         <circle cx={centerX} cy={centerY} r={radius} />
       </clipPath>
     </defs>
 
     <circle class="gg-shadow" cx={centerX} cy={centerY} r={radius + 2} />
-    <circle class="gg-sphere" cx={centerX} cy={centerY} r={radius} fill="url(#gg-ocean)" />
+    <circle class="gg-sphere" cx={centerX} cy={centerY} r={radius} fill={`url(#${id}-ocean)`} />
 
-    <g clip-path="url(#gg-sphere-clip)">
-      <path d={graticulePath} class="gg-graticule" />
-      {features.map((feature: any) => (
-        <path d={feature.d} class={feature.visited ? "gg-country gg-country--visited" : "gg-country"} />
-      ))}
+    <g clip-path={`url(#${id}-sphere-clip)`}>
+      <g class="gg-map">
+        <path d={graticulePath} class="gg-graticule" />
+        {features.map((feature: any) => (
+          <path d={feature.d} class={feature.visited ? "gg-country gg-country--visited" : "gg-country"} />
+        ))}
 
-      {arcTaiwanVietnam && <path d={arcTaiwanVietnam} class="gg-flight" />}
-      {arcVietnamAustralia && <path d={arcVietnamAustralia} class="gg-flight" />}
+        {arcTaiwanVietnam && <path d={arcTaiwanVietnam} class="gg-flight" />}
+        {arcVietnamAustralia && <path d={arcVietnamAustralia} class="gg-flight" />}
 
-      {coords.taiwan && <circle cx={coords.taiwan[0]} cy={coords.taiwan[1]} r="2.4" class="gg-pin" />}
-      {coords.vietnam && <circle cx={coords.vietnam[0]} cy={coords.vietnam[1]} r="2.6" class="gg-pin" />}
-      {coords.australia && <circle cx={coords.australia[0]} cy={coords.australia[1]} r="2.8" class="gg-pin" />}
+        {coords.taiwan && (
+          <circle cx={coords.taiwan[0]} cy={coords.taiwan[1]} r="2.4" class="gg-pin" style={`filter:url(#${id}-pin-glow)`} />
+        )}
+        {coords.vietnam && (
+          <circle cx={coords.vietnam[0]} cy={coords.vietnam[1]} r="2.6" class="gg-pin" style={`filter:url(#${id}-pin-glow)`} />
+        )}
+        {coords.australia && (
+          <circle cx={coords.australia[0]} cy={coords.australia[1]} r="2.8" class="gg-pin" style={`filter:url(#${id}-pin-glow)`} />
+        )}
+      </g>
+
+      <circle class="gg-night" cx={centerX} cy={centerY} r={radius} fill={`url(#${id}-night)`} />
     </g>
 
-    <circle class="gg-shine" cx={centerX} cy={centerY} r={radius} fill="url(#gg-shine)" />
+    <circle class="gg-shine" cx={centerX} cy={centerY} r={radius} fill={`url(#${id}-shine)`} />
     <circle class="gg-atmos" cx={centerX} cy={centerY} r={radius + 1.6} />
   </svg>
 </div>
@@ -150,16 +166,23 @@ const arcVietnamAustralia = arc(coords.vietnam, coords.australia, 14);
     stroke-width: 0.72;
   }
 
+  .gg-map {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: gg-spin 30s linear infinite;
+    will-change: transform;
+  }
+
   .gg-flight {
     fill: none;
     stroke: rgba(248, 214, 97, 0.78);
     stroke-width: 0.9;
     stroke-dasharray: 2 2;
+    animation: gg-flight 2.6s linear infinite;
   }
 
   .gg-pin {
     fill: rgba(250, 216, 102, 1);
-    filter: url(#gg-pin-glow);
   }
 
   .gg-shine {
@@ -167,10 +190,47 @@ const arcVietnamAustralia = arc(coords.vietnam, coords.australia, 14);
     mix-blend-mode: screen;
   }
 
+  .gg-night {
+    opacity: 0.78;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: gg-night 18s ease-in-out infinite alternate;
+  }
+
   .gg-atmos {
     fill: none;
     stroke: rgba(122, 183, 255, 0.36);
     stroke-width: 2.6;
+  }
+
+  .geo-globe--compact .gg-map {
+    animation-duration: 22s;
+  }
+
+  @keyframes gg-spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(-360deg);
+    }
+  }
+
+  @keyframes gg-flight {
+    to {
+      stroke-dashoffset: -20;
+    }
+  }
+
+  @keyframes gg-night {
+    from {
+      transform: translateX(-6px);
+      opacity: 0.68;
+    }
+    to {
+      transform: translateX(6px);
+      opacity: 0.84;
+    }
   }
 
   :global(html.dark) .gg-shadow {
@@ -195,7 +255,19 @@ const arcVietnamAustralia = arc(coords.vietnam, coords.australia, 14);
     stroke: rgba(248, 215, 104, 1);
   }
 
+  :global(html.dark) .gg-night {
+    opacity: 0.84;
+  }
+
   :global(html.dark) .gg-atmos {
     stroke: rgba(112, 173, 255, 0.44);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gg-map,
+    .gg-flight,
+    .gg-night {
+      animation: none;
+    }
   }
 </style>
