@@ -15,7 +15,6 @@ import BasicLayout from "@/layouts/BasicLayout.astro";
 
     <div class="travel-actions">
       <a href="/" class="travel-back">← back</a>
-      <button id="travel-theme-toggle" class="travel-theme-toggle" type="button" aria-label="Toggle dark mode">theme</button>
     </div>
 
     <div class="travel-panel" id="travel-panel">
@@ -93,8 +92,7 @@ import BasicLayout from "@/layouts/BasicLayout.astro";
     pointer-events: none;
   }
 
-  .travel-back,
-  .travel-theme-toggle {
+  .travel-back {
     pointer-events: auto;
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.75rem;
@@ -108,13 +106,7 @@ import BasicLayout from "@/layouts/BasicLayout.astro";
     transition: border-color 180ms ease, color 180ms ease, transform 180ms ease;
   }
 
-  .travel-theme-toggle {
-    text-transform: lowercase;
-    cursor: pointer;
-  }
-
-  .travel-back:hover,
-  .travel-theme-toggle:hover {
+  .travel-back:hover {
     color: #b17f05;
     border-color: rgba(177, 127, 5, 0.45);
     transform: translateY(-1px);
@@ -213,15 +205,13 @@ import BasicLayout from "@/layouts/BasicLayout.astro";
     opacity: 0.17;
   }
 
-  :global(html.dark) .travel-back,
-  :global(html.dark) .travel-theme-toggle {
+  :global(html.dark) .travel-back {
     color: #8b9cb8;
     border-color: rgba(72, 95, 127, 0.78);
     background: rgba(10, 18, 30, 0.74);
   }
 
-  :global(html.dark) .travel-back:hover,
-  :global(html.dark) .travel-theme-toggle:hover {
+  :global(html.dark) .travel-back:hover {
     color: #f5d56a;
     border-color: rgba(245, 213, 106, 0.45);
   }
@@ -255,25 +245,3 @@ import BasicLayout from "@/layouts/BasicLayout.astro";
     color: #8fa1bc;
   }
 </style>
-
-<script>
-  (() => {
-    const root = document.documentElement;
-    const btn = document.getElementById("travel-theme-toggle");
-    if (!btn) return;
-
-    const sync = () => {
-      const dark = root.classList.contains("dark");
-      btn.textContent = dark ? "light" : "dark";
-    };
-
-    btn.addEventListener("click", () => {
-      const dark = !root.classList.contains("dark");
-      root.classList.toggle("dark", dark);
-      try { localStorage.setItem("theme", dark ? "dark" : "light"); } catch {}
-      sync();
-    });
-
-    sync();
-  })();
-</script>
