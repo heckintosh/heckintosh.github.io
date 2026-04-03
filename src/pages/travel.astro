@@ -1,5 +1,5 @@
 ---
-import GlobeFull from "@/components/GlobeFull";
+import OrbitalGlobe from "@/components/OrbitalGlobe.astro";
 import BasicLayout from "@/layouts/BasicLayout.astro";
 ---
 
@@ -22,9 +22,7 @@ import BasicLayout from "@/layouts/BasicLayout.astro";
       <h1 class="travel-title">countries touched</h1>
 
       <div class="travel-globe-wrap" id="travel-globe-wrap">
-        <GlobeFull client:load />
-        <div class="travel-ring travel-ring--one" aria-hidden="true"></div>
-        <div class="travel-ring travel-ring--two" aria-hidden="true"></div>
+        <OrbitalGlobe />
       </div>
 
       <p class="travel-list">vietnam · australia · taiwan</p>
@@ -157,33 +155,11 @@ import BasicLayout from "@/layouts/BasicLayout.astro";
     overflow: hidden;
   }
 
-  .travel-globe-wrap :global(canvas) {
-    width: 100%;
+  .travel-globe-wrap :global(svg) {
+    width: min(100%, 640px);
+    height: auto;
     display: block;
-    border-radius: 0.65rem;
-  }
-
-  .travel-ring {
-    position: absolute;
-    border: 1px dashed rgba(255, 255, 255, 0.2);
-    border-radius: 9999px;
-    pointer-events: none;
-  }
-
-  .travel-ring--one {
-    width: 66%;
-    aspect-ratio: 1;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
-
-  .travel-ring--two {
-    width: 84%;
-    aspect-ratio: 1;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(24deg);
+    margin: 0 auto;
   }
 
   .travel-list {
