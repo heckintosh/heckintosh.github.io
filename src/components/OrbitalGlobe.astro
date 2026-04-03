@@ -1,183 +1,201 @@
 ---
+import { geoOrthographic, geoPath, geoGraticule10 } from "d3-geo";
+// @ts-ignore
+import worldData from "../lib/world.json";
+
 interface Props {
   compact?: boolean;
 }
 
 const { compact = false } = Astro.props;
+
+const width = 220;
+const height = 220;
+const radius = 82;
+const centerX = width / 2;
+const centerY = height / 2;
+
+const projection = geoOrthographic()
+  .scale(radius)
+  .translate([centerX, centerY])
+  .rotate([-112, -18])
+  .clipAngle(90);
+
+const path = geoPath(projection);
+const graticule = geoGraticule10();
+const visited = new Set(["Vietnam", "Australia", "Taiwan"]);
+
+const features = (worldData as any).features
+  .map((feature: any) => {
+    const d = path(feature);
+    if (!d) return null;
+    return {
+      d,
+      visited: visited.has(feature?.properties?.name),
+    };
+  })
+  .filter(Boolean);
+
+const graticulePath = path(graticule) || "";
+
+const coords = {
+  taiwan: projection([121.0, 23.7]),
+  vietnam: projection([108.2772, 14.0583]),
+  australia: projection([133.7751, -25.2744]),
+};
+
+const arc = (a?: number[] | null, b?: number[] | null, lift = 14) => {
+  if (!a || !b) return "";
+  const cx = (a[0] + b[0]) / 2;
+  const cy = (a[1] + b[1]) / 2 - lift;
+  return `M ${a[0]} ${a[1]} Q ${cx} ${cy} ${b[0]} ${b[1]}`;
+};
+
+const arcTaiwanVietnam = arc(coords.taiwan, coords.vietnam, 10);
+const arcVietnamAustralia = arc(coords.vietnam, coords.australia, 14);
 ---
 
-<div class={`orbital-globe ${compact ? "orbital-globe--compact" : "orbital-globe--full"}`}>
-  <svg viewBox="0 0 200 200" role="img" aria-label="Visited countries globe">
+<div class={`geo-globe ${compact ? "geo-globe--compact" : "geo-globe--full"}`}>
+  <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Visited countries globe">
     <defs>
-      <radialGradient id="ocean" cx="30%" cy="24%" r="78%">
-        <stop offset="0%" stop-color="#7db3f2" />
-        <stop offset="46%" stop-color="#2f6fb3" />
-        <stop offset="100%" stop-color="#13273d" />
+      <radialGradient id="gg-ocean" cx="28%" cy="24%" r="76%">
+        <stop offset="0%" stop-color="#7ab1ee" />
+        <stop offset="48%" stop-color="#2f6dab" />
+        <stop offset="100%" stop-color="#152a42" />
       </radialGradient>
-      <linearGradient id="land" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#8ed5a4" />
-        <stop offset="100%" stop-color="#4ea777" />
-      </linearGradient>
-      <radialGradient id="shine" cx="28%" cy="20%" r="60%">
-        <stop offset="0%" stop-color="rgba(255,255,255,0.34)" />
+      <radialGradient id="gg-shine" cx="24%" cy="22%" r="64%">
+        <stop offset="0%" stop-color="rgba(255,255,255,0.35)" />
         <stop offset="100%" stop-color="rgba(255,255,255,0)" />
       </radialGradient>
-      <filter id="pinGlow" x="-100%" y="-100%" width="300%" height="300%">
-        <feGaussianBlur stdDeviation="2.2" result="blur" />
+      <filter id="gg-pin-glow" x="-100%" y="-100%" width="300%" height="300%">
+        <feGaussianBlur stdDeviation="2" result="blur" />
         <feMerge>
           <feMergeNode in="blur" />
           <feMergeNode in="SourceGraphic" />
         </feMerge>
       </filter>
-      <clipPath id="sphereClip">
-        <circle cx="100" cy="100" r="73" />
+      <clipPath id="gg-sphere-clip">
+        <circle cx={centerX} cy={centerY} r={radius} />
       </clipPath>
     </defs>
 
-    <circle class="sphere-shadow" cx="100" cy="100" r="76" />
-    <circle class="sphere-base" cx="100" cy="100" r="73" fill="url(#ocean)" />
+    <circle class="gg-shadow" cx={centerX} cy={centerY} r={radius + 2} />
+    <circle class="gg-sphere" cx={centerX} cy={centerY} r={radius} fill="url(#gg-ocean)" />
 
-    <g clip-path="url(#sphereClip)">
-      <g class="graticule">
-        <ellipse cx="100" cy="100" rx="65" ry="20" />
-        <ellipse cx="100" cy="100" rx="65" ry="36" />
-        <ellipse cx="100" cy="100" rx="65" ry="52" />
-        <path d="M34 100H166" />
-      </g>
+    <g clip-path="url(#gg-sphere-clip)">
+      <path d={graticulePath} class="gg-graticule" />
+      {features.map((feature: any) => (
+        <path d={feature.d} class={feature.visited ? "gg-country gg-country--visited" : "gg-country"} />
+      ))}
 
-      <g class="lands globe-rotor">
-        <path d="M48 84c8-16 25-26 46-24c8 1 13 4 17 8c4 4 2 10-3 14c-3 2-7 3-10 7c-3 4-4 10-8 14c-5 5-13 8-22 8c-17 0-28-8-30-20c-1-4 3-5 6-7c2-1 3-4 4-7z" fill="url(#land)" />
-        <path d="M110 74c12-1 26 2 33 8c6 4 8 10 5 16c-2 4-6 5-9 8c-4 4-4 11-9 15c-6 6-16 10-27 10c-10 0-16-4-18-10c-2-5 3-6 6-8c3-2 4-7 5-12c1-6 4-15 14-19z" fill="url(#land)" />
-        <path d="M122 127c7-4 16-4 23 0c6 3 10 8 9 13c-1 7-9 13-20 14c-11 1-21-4-24-11c-2-6 4-13 12-16z" fill="url(#land)" />
-      </g>
+      {arcTaiwanVietnam && <path d={arcTaiwanVietnam} class="gg-flight" />}
+      {arcVietnamAustralia && <path d={arcVietnamAustralia} class="gg-flight" />}
 
-      <path class="flight-arc" d="M126 88Q128 90 124 95" />
-      <path class="flight-arc" d="M124 95Q130 108 133 123" />
-
-      <circle class="pin pin-tw" cx="126" cy="88" r="2.7" />
-      <circle class="pin pin-vn" cx="124" cy="95" r="2.9" />
-      <circle class="pin pin-au" cx="133" cy="123" r="3.1" />
+      {coords.taiwan && <circle cx={coords.taiwan[0]} cy={coords.taiwan[1]} r="2.4" class="gg-pin" />}
+      {coords.vietnam && <circle cx={coords.vietnam[0]} cy={coords.vietnam[1]} r="2.6" class="gg-pin" />}
+      {coords.australia && <circle cx={coords.australia[0]} cy={coords.australia[1]} r="2.8" class="gg-pin" />}
     </g>
 
-    <circle class="sphere-shine" cx="100" cy="100" r="73" fill="url(#shine)" />
-    <circle class="atmos" cx="100" cy="100" r="75" />
-
-    <ellipse class="orbit orbit-a" cx="100" cy="100" rx="86" ry="34" />
-    <ellipse class="orbit orbit-b" cx="100" cy="100" rx="86" ry="34" transform="rotate(-18 100 100)" />
+    <circle class="gg-shine" cx={centerX} cy={centerY} r={radius} fill="url(#gg-shine)" />
+    <circle class="gg-atmos" cx={centerX} cy={centerY} r={radius + 1.6} />
   </svg>
 </div>
 
 <style>
-  .orbital-globe {
+  .geo-globe {
     width: 100%;
     display: grid;
     place-items: center;
   }
 
-  .orbital-globe svg {
-    width: min(100%, 520px);
-    height: auto;
+  .geo-globe svg {
     display: block;
+    width: min(100%, 560px);
+    height: auto;
   }
 
-  .orbital-globe--compact svg {
-    width: 118px;
+  .geo-globe--compact svg {
+    width: 126px;
   }
 
-  .orbital-globe--full svg {
-    width: min(100%, 620px);
+  .geo-globe--full svg {
+    width: min(100%, 640px);
   }
 
-  .sphere-shadow {
-    fill: rgba(10, 18, 32, 0.22);
-    filter: blur(0.6px);
+  .gg-shadow {
+    fill: rgba(8, 18, 31, 0.2);
+    filter: blur(0.5px);
   }
 
-  .sphere-base {
+  .gg-sphere {
     stroke: rgba(255, 255, 255, 0.24);
     stroke-width: 1;
   }
 
-  .graticule path,
-  .graticule ellipse {
+  .gg-graticule {
     fill: none;
-    stroke: rgba(255, 255, 255, 0.16);
-    stroke-width: 0.7;
+    stroke: rgba(255, 255, 255, 0.18);
+    stroke-width: 0.65;
   }
 
-  .globe-rotor {
-    transform-origin: 100px 100px;
-    animation: globeDrift 34s linear infinite;
+  .gg-country {
+    fill: rgba(52, 110, 156, 0.84);
+    stroke: rgba(255, 255, 255, 0.2);
+    stroke-width: 0.36;
   }
 
-  .flight-arc {
+  .gg-country--visited {
+    fill: rgba(248, 214, 97, 0.95);
+    stroke: rgba(248, 214, 97, 1);
+    stroke-width: 0.72;
+  }
+
+  .gg-flight {
     fill: none;
-    stroke: rgba(248, 214, 98, 0.75);
-    stroke-width: 1;
+    stroke: rgba(248, 214, 97, 0.78);
+    stroke-width: 0.9;
     stroke-dasharray: 2 2;
   }
 
-  .pin {
-    fill: rgba(250, 216, 102, 0.98);
-    filter: url(#pinGlow);
+  .gg-pin {
+    fill: rgba(250, 216, 102, 1);
+    filter: url(#gg-pin-glow);
   }
 
-  .sphere-shine {
+  .gg-shine {
+    opacity: 0.7;
     mix-blend-mode: screen;
-    opacity: 0.72;
   }
 
-  .atmos {
+  .gg-atmos {
     fill: none;
-    stroke: rgba(127, 184, 255, 0.34);
-    stroke-width: 3;
+    stroke: rgba(122, 183, 255, 0.36);
+    stroke-width: 2.6;
   }
 
-  .orbit {
-    fill: none;
-    stroke: rgba(255, 255, 255, 0.22);
-    stroke-width: 1;
-    stroke-dasharray: 4 4;
-    transform-origin: 100px 100px;
+  :global(html.dark) .gg-shadow {
+    fill: rgba(0, 0, 0, 0.45);
   }
 
-  .orbit-a { animation: orbitSpin 26s linear infinite; }
-  .orbit-b { animation: orbitSpinReverse 32s linear infinite; }
-
-  @keyframes globeDrift {
-    0% { transform: translateX(0) rotate(0deg); }
-    50% { transform: translateX(-6px) rotate(8deg); }
-    100% { transform: translateX(0) rotate(0deg); }
-  }
-
-  @keyframes orbitSpin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-
-  @keyframes orbitSpinReverse {
-    0% { transform: rotate(-18deg); }
-    100% { transform: rotate(-378deg); }
-  }
-
-  :global(html.dark) .sphere-shadow {
-    fill: rgba(0, 0, 0, 0.4);
-  }
-
-  :global(html.dark) .sphere-base {
+  :global(html.dark) .gg-sphere {
     stroke: rgba(255, 255, 255, 0.18);
   }
 
-  :global(html.dark) .graticule path,
-  :global(html.dark) .graticule ellipse {
+  :global(html.dark) .gg-graticule {
+    stroke: rgba(255, 255, 255, 0.22);
+  }
+
+  :global(html.dark) .gg-country {
+    fill: rgba(66, 121, 166, 0.8);
     stroke: rgba(255, 255, 255, 0.2);
   }
 
-  :global(html.dark) .atmos {
-    stroke: rgba(111, 173, 255, 0.42);
+  :global(html.dark) .gg-country--visited {
+    fill: rgba(248, 215, 104, 0.95);
+    stroke: rgba(248, 215, 104, 1);
   }
 
-  :global(html.dark) .orbit {
-    stroke: rgba(255, 255, 255, 0.28);
+  :global(html.dark) .gg-atmos {
+    stroke: rgba(112, 173, 255, 0.44);
   }
 </style>
