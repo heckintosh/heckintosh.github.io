@@ -123,7 +123,7 @@ const schema =
     }
     <script type="application/ld+json" set:html={JSON.stringify(schema)} />
   </head>
-  <body class="md:h-screen flex flex-col justify-center p-4 md:p-12">
+  <body class={page === "travel" ? "min-h-screen" : "md:h-screen flex flex-col justify-center p-4 md:p-12"}>
     <slot name="loader" />
     <slot />
   </body>
