@@ -114,14 +114,14 @@ import BasicLayout from "@/layouts/BasicLayout.astro";
     position: relative;
     z-index: 5;
     width: min(980px, 100%);
-    border: 1px solid rgba(208, 216, 229, 0.82);
-    border-radius: 1.1rem;
-    padding: 1.15rem 1.15rem 1rem;
+    border: 1px solid rgba(208, 216, 229, 0.76);
+    border-radius: 1.35rem;
+    padding: 1.2rem 1.2rem 1.05rem;
     background:
-      linear-gradient(140deg, rgba(255, 255, 255, 0.82), rgba(251, 253, 255, 0.64)),
-      radial-gradient(circle at 20% 10%, rgba(248, 209, 82, 0.2), transparent 60%),
-      radial-gradient(circle at 80% 20%, rgba(77, 125, 181, 0.2), transparent 55%);
-    box-shadow: 0 24px 46px rgba(18, 39, 63, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+      linear-gradient(140deg, rgba(255, 255, 255, 0.84), rgba(248, 251, 255, 0.66)),
+      radial-gradient(circle at 18% 8%, rgba(248, 209, 82, 0.18), transparent 56%),
+      radial-gradient(circle at 82% 18%, rgba(77, 125, 181, 0.18), transparent 52%);
+    box-shadow: 0 28px 56px rgba(18, 39, 63, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.5);
   }
 
   .travel-label {
@@ -145,14 +145,15 @@ import BasicLayout from "@/layouts/BasicLayout.astro";
 
   .travel-globe-wrap {
     position: relative;
-    border: 1px solid rgba(208, 216, 229, 0.85);
-    border-radius: 0.9rem;
-    padding: 0.5rem;
+    border: 1px solid rgba(208, 216, 229, 0.74);
+    border-radius: 1.1rem;
+    padding: 0.85rem;
     background:
-      radial-gradient(circle at 40% -10%, rgba(77, 125, 181, 0.16), transparent 52%),
-      radial-gradient(circle at 70% 120%, rgba(248, 209, 82, 0.18), transparent 50%),
-      rgba(250, 252, 255, 0.9);
+      radial-gradient(circle at 40% -10%, rgba(77, 125, 181, 0.12), transparent 52%),
+      radial-gradient(circle at 70% 120%, rgba(248, 209, 82, 0.12), transparent 50%),
+      linear-gradient(180deg, rgba(251, 253, 255, 0.84), rgba(243, 248, 254, 0.74));
     overflow: hidden;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.52);
   }
 
   .travel-globe-wrap :global(svg) {
@@ -195,10 +196,10 @@ import BasicLayout from "@/layouts/BasicLayout.astro";
   :global(html.dark) .travel-panel {
     border-color: rgba(65, 86, 114, 0.72);
     background:
-      linear-gradient(145deg, rgba(10, 19, 32, 0.86), rgba(8, 15, 26, 0.74)),
-      radial-gradient(circle at 16% 12%, rgba(248, 209, 82, 0.12), transparent 58%),
-      radial-gradient(circle at 82% 18%, rgba(89, 135, 190, 0.14), transparent 56%);
-    box-shadow: 0 26px 48px rgba(2, 7, 14, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      linear-gradient(145deg, rgba(10, 19, 32, 0.88), rgba(8, 15, 26, 0.76)),
+      radial-gradient(circle at 16% 12%, rgba(248, 209, 82, 0.1), transparent 58%),
+      radial-gradient(circle at 82% 18%, rgba(89, 135, 190, 0.12), transparent 56%);
+    box-shadow: 0 30px 56px rgba(2, 7, 14, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   }
 
   :global(html.dark) .travel-label {
@@ -212,9 +213,10 @@ import BasicLayout from "@/layouts/BasicLayout.astro";
   :global(html.dark) .travel-globe-wrap {
     border-color: rgba(65, 86, 114, 0.72);
     background:
-      radial-gradient(circle at 40% -10%, rgba(77, 125, 181, 0.2), transparent 52%),
-      radial-gradient(circle at 70% 120%, rgba(248, 209, 82, 0.12), transparent 50%),
-      rgba(7, 14, 24, 0.82);
+      radial-gradient(circle at 40% -10%, rgba(77, 125, 181, 0.16), transparent 52%),
+      radial-gradient(circle at 70% 120%, rgba(248, 209, 82, 0.1), transparent 50%),
+      linear-gradient(180deg, rgba(7, 14, 24, 0.88), rgba(8, 16, 29, 0.78));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
   }
 
   :global(html.dark) .travel-list {
